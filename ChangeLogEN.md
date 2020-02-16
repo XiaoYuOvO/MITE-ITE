@@ -10,6 +10,7 @@
     But they won't drop the item that has a low durability(less than quarter) 
 * Mobs will have more powerful armors,Except for specific monsters\
     all monsters have a 20% chance to get equipment in each equipment slot\
+    After 64 days, normal monster's equipments may be enchanted\
     (Every monster will have armors after 365 days,and the tier of armors will increase with the number of days)
 * Skeleton's bow will have 5 level of enchantment arrow knockback
 * Player can have 40 max health by level up

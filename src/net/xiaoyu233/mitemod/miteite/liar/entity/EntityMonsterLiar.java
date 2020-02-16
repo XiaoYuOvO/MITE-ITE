@@ -76,7 +76,7 @@ public class EntityMonsterLiar extends EntityInsentient implements IMonster {
         if (rand.nextInt(3 - Math.min(day_count/128,2)) == 0||day_count>365){
             int minTier = rand.nextInt(2 + Math.min(day_count/64,6))+1;
             for (int index = 4;index > 1;index--){
-                if (rand.nextInt(5-Math.min(day_count/32,4)) == 0){
+                if (rand.nextInt(5-Math.min(day_count/32,4)) == 0||day_count>512){
                     this.c(index,new ItemStack(ARMORS[index-1][getRandomItemTier(rand,11,minTier)]).randomizeForMob(this,day_count > 64));
                 }
             }

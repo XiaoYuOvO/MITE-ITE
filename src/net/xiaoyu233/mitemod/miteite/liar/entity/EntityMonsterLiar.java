@@ -73,7 +73,7 @@ public class EntityMonsterLiar extends EntityInsentient implements IMonster {
 
     private void addDefaultArmor(int day_count){
         Random rand = this.aD();
-        if (rand.nextInt(3 - Math.min(day_count/128,2)) == 0){
+        if (rand.nextInt(3 - Math.min(day_count/128,2)) == 0||day_count>365){
             int minTier = rand.nextInt(2 + Math.min(day_count/64,6))+1;
             for (int index = 4;index > 1;index--){
                 if (rand.nextInt(5-Math.min(day_count/32,4)) == 0){
@@ -89,7 +89,7 @@ public class EntityMonsterLiar extends EntityInsentient implements IMonster {
             ItemStack var4 = this.n(var3);
             if (var4 != null) {
                 try {
-                    if ((boolean) picked_up_a_held_item_field.get(this) && var4.getRemainingDurability() > var4.l()/4) {
+                    if (!var4.g()||((boolean) picked_up_a_held_item_field.get(this) && var4.getRemainingDurability() > var4.l()/4)) {
                         this.dropItemStack(var4, 0.0F);
                         this.c(var3, null);
                     }

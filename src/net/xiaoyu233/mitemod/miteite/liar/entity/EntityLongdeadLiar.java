@@ -25,7 +25,7 @@ public class EntityLongdeadLiar extends EntitySkeleton {
     }
 
     protected void enchantEquipment(ItemStack item_stack) {
-        if (this.aD().nextFloat() <= (0.15d + this.getWorld().getDayOfWorld() / 64d / 10)) {
+        if (this.aD().nextFloat() <= (0.2d + this.getWorld().getDayOfWorld() / 64d / 10)) {
             EnchantmentManager.a(this.aD(), item_stack, (int)(5.0F + (this.aD().nextInt(15 + this.getWorld().getDayOfWorld() / 48)) / 10 * (float)this.aD().nextInt(18)));
         }
     }

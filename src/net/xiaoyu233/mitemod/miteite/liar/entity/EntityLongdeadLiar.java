@@ -16,7 +16,7 @@ public class EntityLongdeadLiar extends EntitySkeleton {
         this.setEntityAttribute(GenericAttributes.b, 40.0D);
         this.setEntityAttribute(GenericAttributes.a, this.isGuardian() ? 28.0D : 16.0D);
         this.setEntityAttribute(GenericAttributes.d, 0.29F);
-        this.setEntityAttribute(GenericAttributes.e, this.isGuardian() ? 9.0D : 7.0D);
+        this.setEntityAttribute(GenericAttributes.e, this.isGuardian() ? 8.0D : 6.0D);
     }
 
     @Stealing

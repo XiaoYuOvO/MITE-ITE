@@ -1,6 +1,4 @@
-package net.xiaoyu233.mitemod.miteite.liar.util;
-
-import team.unknowndomain.liar.annotation.Stealing;
+package net.xiaoyu233.mitemod.miteite.util;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

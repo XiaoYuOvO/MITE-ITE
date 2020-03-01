@@ -5,21 +5,26 @@ import team.unknowndomain.liar.annotation.Deceive;
 import team.unknowndomain.liar.annotation.Liar;
 import team.unknowndomain.liar.annotation.Stealing;
 
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Random;
 
 import static net.minecraft.EntityInsentient.getEquipmentPosition;
 
 @Deceive(EntityInsentient.class)
-public class EntityInsentientLiar {
+public class EntityInsentientLiar extends EntityLiving{
     @Liar
     public boolean M;
     @Liar
     public float[] e;
     @Liar
+    public boolean[] picked_up_a_held_item_array;
+    @Liar
     public boolean picked_up_a_held_item;
+
+    @Stealing
+    public EntityInsentientLiar(World par1World) {
+        super(par1World);
+    }
 
     public void tryPickUpItems() {
         if (!this.getWorld().I && this.bD() && !getM() && this.aN() > 0.0F && this.getWorld().O().b("mobGriefing") && this.getTicksExistedWithOffset() % 10 == 0) {
@@ -88,7 +93,6 @@ public class EntityInsentientLiar {
                             }
 
                             if (pickup) {
-                                System.out.println(item_stack_on_ground);
                                 this.a("random.pop", 0.2F, ((this.aD().nextFloat() - this.aD().nextFloat()) * 0.7F + 1.0F) * 2.0F);
                                 if (current_item_stack != null && this.aD().nextFloat() < this.getE()[var5]) {
                                     this.dropItemStack(current_item_stack, 0.0F);
@@ -105,12 +109,13 @@ public class EntityInsentientLiar {
                                 }
 
                                 getE()[var5] = 2.0F;
-                                setPickUpAHeldItem(true);
+                                this.picked_up_a_held_item = true;
+                                picked_up_a_held_item_array[var5] = true;
                                 if (set_dead) {
                                     this.a(entity_item, 1);
                                     entity_item.x();
                                 }
-                                setPickUpAHeldItem(true);
+
                                 break;
                             }
                         }
@@ -120,33 +125,6 @@ public class EntityInsentientLiar {
 
         }
     }
-
-    @Stealing
-    private float aN() {
-        return 0f;
-    }
-
-    @Stealing
-    private World getWorld() {
-        return null;
-    }
-
-    @Stealing
-    private Random aD() {
-        return null;
-    }
-
-    @Stealing
-    private EntityItem dropItemStack(ItemStack current_item_stack, float v) {
-        return null;
-    }
-
-    @Stealing
-    private int getTicksExistedWithOffset() {
-        return 0;
-    }
-
-
     @Stealing
     private boolean bD() {
         return false;
@@ -223,6 +201,12 @@ public class EntityInsentientLiar {
 
     }
 
+    @Override
+    protected void az() {
+        super.az();
+        this.picked_up_a_held_item_array = new boolean[5];
+        this.setEntityAttribute(GenericAttributes.b, 16.0D);
+    }
 
     public boolean getM() {
         return this.M;
@@ -230,9 +214,5 @@ public class EntityInsentientLiar {
 
     public float[] getE() {
         return this.e;
-    }
-
-    public void setPickUpAHeldItem(boolean b){
-        this.picked_up_a_held_item = b;
     }
 }

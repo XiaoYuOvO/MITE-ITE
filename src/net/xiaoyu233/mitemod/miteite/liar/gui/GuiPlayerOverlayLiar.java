@@ -24,7 +24,7 @@ public class GuiPlayerOverlayLiar {
 
         int var4 = MathHelper.f(this.g.h.aN());
         int var5 = MathHelper.f(this.g.h.ax);
-        this.f.setSeed((long)(this.i * 312871));
+        this.f.setSeed(this.i * 312871);
         FoodMetaData var7 = this.g.h.bI();
         int var8 = var7.getNutrition();
 //        AttributeInstance var10 = this.g.h.a(GenericAttributes.a);
@@ -196,7 +196,7 @@ public class GuiPlayerOverlayLiar {
         this.g.C.c("air");
         if (this.g.h.a(Material.h)) {
             int var23 = this.g.h.al();
-            int var35 = MathHelper.f((double)(var23 - 2) * 10.0D / 300.0D);
+                int var35 = MathHelper.f((double)(var23 - 2) * 10.0D / 300.0D);
             int var25 = MathHelper.f((double)var23 * 10.0D / 300.0D) - var35;
 
             for(int var26 = 0; var26 < var35 + var25; ++var26) {

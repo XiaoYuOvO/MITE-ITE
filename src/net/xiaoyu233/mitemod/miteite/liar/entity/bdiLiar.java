@@ -1,7 +1,6 @@
 package net.xiaoyu233.mitemod.miteite.liar.entity;
 
 import net.minecraft.*;
-import net.xiaoyu233.mitemod.miteite.liar.util.Constant;
 import team.unknowndomain.liar.annotation.Deceive;
 import team.unknowndomain.liar.annotation.Liar;
 import team.unknowndomain.liar.annotation.Stealing;
@@ -25,8 +24,7 @@ public class bdiLiar extends bex {
             this.delta_tournament_score_opacity = par1Minecraft.last_known_delta_tournament_score_opacity;
             this.tournament_score = par1Minecraft.last_known_tournament_score;
         }
-        this.a(ChatMessage.e("[Server]:").a(ChatMessage.e("MITE-ITE模组已加载,当前版本:").a(EnumChatFormat.c)).a(ChatMessage.e(
-                Constant.MITE_ITE_VERSION).a(EnumChatFormat.e)));
+
     }
     @Stealing
     public void b(String par1Str){}

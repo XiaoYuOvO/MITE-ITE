@@ -2,7 +2,6 @@ package net.xiaoyu233.mitemod.miteite.liar.entity;
 
 import net.minecraft.*;
 import team.unknowndomain.liar.annotation.Deceive;
-import team.unknowndomain.liar.annotation.Liar;
 import team.unknowndomain.liar.annotation.Stealing;
 
 @Deceive(EntityAncientBoneLord.class)
@@ -18,8 +17,8 @@ public class EntityAncientBoneLordLiar extends EntityBoneLord {
         super.az();
         this.setEntityAttribute(GenericAttributes.b, 48.0D);
         this.setEntityAttribute(GenericAttributes.d, 0.30F);
-        this.setEntityAttribute(GenericAttributes.e, 11.0D);
-        this.setEntityAttribute(GenericAttributes.a, 32.0D);
+        this.setEntityAttribute(GenericAttributes.e, 9.0D);
+        this.setEntityAttribute(GenericAttributes.a, 30.0D);
     }
 
     protected void enchantEquipment(ItemStack item_stack) {

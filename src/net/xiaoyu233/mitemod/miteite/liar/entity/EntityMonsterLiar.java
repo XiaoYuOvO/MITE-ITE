@@ -21,13 +21,12 @@ public class EntityMonsterLiar extends EntityInsentient implements IMonster {
         int hour = this.getWorld().getHourOfDay();
         int day = this.getWorld().getDayOfWorld();
         if ((day > 32 && ((day % 2 == 0 && hour>=18)||((day-1) % 2 == 0 && hour <= 6)) )|| day > 365) {
-            this.c(new MobEffect(1, 999999, this.aD().nextInt((day-32)/96), true));
+            this.c(new MobEffect(1, 999999, this.aD().nextInt(Math.max(((day-32)/96),1)), true));
             Random rand = this.aD();
             if (rand.nextInt(5) == 0) {
-                this.c(new MobEffect(5, 999999, this.aD().nextInt((day-32)/128), true));
+                this.c(new MobEffect(5, 999999, this.aD().nextInt(Math.max(((day-32)/128),1)), true));
             }
-            addDefaultArmor(day);
-
+            addDefaultArmor(day,this,false);
         }
 
     }
@@ -40,14 +39,14 @@ public class EntityMonsterLiar extends EntityInsentient implements IMonster {
                 this.setEntityAttribute(GenericAttributes.e, this.getEntityAttributeValue(GenericAttributes.e) * 2);
             } catch (NullPointerException e) {
                 this.setEntityAttribute(GenericAttributes.a, GenericAttributes.a.b() * 2d);
-                this.setEntityAttribute(GenericAttributes.e, GenericAttributes.e.b() * 1.5d);
+                this.setEntityAttribute(GenericAttributes.e, GenericAttributes.e.b() * 2d);
             }
             this.setEntityAttribute(GenericAttributes.b, 32.0D);
             this.setEntityAttribute(GenericAttributes.e);
 
     }
 
-    private int getRandomItemTier(Random random,int maxTier,int minTier,int dayCount){
+    private static int getRandomItemTier(Random random,int maxTier,int minTier,int dayCount){
         int now = minTier;
         while (now < maxTier && random.nextInt(Math.max((2 * now + 1)-(dayCount/12),1)) == 0) {
             now++;
@@ -55,13 +54,13 @@ public class EntityMonsterLiar extends EntityInsentient implements IMonster {
         return now;
     }
 
-    private void addDefaultArmor(int day_count){
-        Random rand = this.aD();
-        if (rand.nextInt(3 - Math.min(day_count/128,2)) == 0||day_count>365){
+    public static void addDefaultArmor(int day_count,EntityInsentient monster,boolean haveAll){
+        Random rand = monster.aD();
+        if (rand.nextInt(3 - Math.min(day_count/128,2)) == 0||day_count>365 || haveAll){
             int minTier = rand.nextInt(2 + Math.min(day_count/64,6))+1;
             for (int index = 4;index > 0;index--){
-                if (rand.nextInt(5-Math.min(day_count/32,4)) == 0||day_count>192){
-                    this.c(index,new ItemStack(ARMORS[index-1][getRandomItemTier(rand,Math.min(10,day_count/16),minTier,day_count) + day_count > 365 ? 1 : 0]).randomizeForMob(this,day_count > 64));
+                if (rand.nextInt(5-Math.min(day_count/32,4)) == 0||day_count>192 || haveAll){
+                    monster.c(index,new ItemStack(ARMORS[index-1][Math.min(getRandomItemTier(rand,Math.min(10,day_count/16),minTier,day_count) + (day_count > 365 ? 1 : 0),ARMORS[index-1].length-1)]).randomizeForMob(monster,day_count > 64));
                 }
             }
         }

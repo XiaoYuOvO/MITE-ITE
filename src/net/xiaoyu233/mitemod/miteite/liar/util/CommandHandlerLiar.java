@@ -2,6 +2,8 @@ package net.xiaoyu233.mitemod.miteite.liar.util;
 
 import net.minecraft.*;
 import net.minecraft.server.MinecraftServer;
+import net.xiaoyu233.mitemod.miteite.item.ArmorModifierTypes;
+import net.xiaoyu233.mitemod.miteite.item.ToolModifierTypes;
 import net.xiaoyu233.mitemod.miteite.util.Constant;
 import team.unknowndomain.liar.annotation.Deceive;
 import team.unknowndomain.liar.annotation.Liar;
@@ -148,6 +150,14 @@ public class CommandHandlerLiar {
                             par1ICommandSender.a(ChatMessage.d("Skills are not enabled").a(EnumChatFormat.m));
                         }
 
+                        return 1;
+                    }
+
+                    if (atv.inDevMode() && par2Str.equals("dragon")){
+                        par1ICommandSender.a(ChatMessage.d("Dragon spawned").a(EnumChatFormat.o));
+                        EntityEnderDragon dragon = new EntityEnderDragon(player.q);
+                        player.q.d(dragon);
+                        dragon.setPosition(player.u,player.v,player.w,false);
                         return 1;
                     }
 
@@ -1009,12 +1019,14 @@ public class CommandHandlerLiar {
                                     return 1;
                                 }
 
+
+
                                 if (par2Str.equals("drill")) {
                                     for(x1 = 10; x1 < player.getFootBlockPosY(); ++x1) {
                                         world.i(player.getBlockPosX(), x1, player.getBlockPosZ());
                                     }
 
-                                    player.a((double)player.getBlockPosX() + 0.0D, 0.0D, (double)player.getBlockPosZ() + 0.0D);
+                                    player.a((double)player.getBlockPosX()  + 0.5D, 10.5D, (double)player.getBlockPosZ()+ 0.5D);
                                     x1 = player.getBlockPosX();
                                     y = player.getBlockPosY();
                                     z = player.getBlockPosZ();
@@ -1040,6 +1052,57 @@ public class CommandHandlerLiar {
 
                                     return 1;
                                 }
+
+                                if (par2Str.startsWith("itemlevel setLevel")){
+                                    ItemStack itemStack = player.getHeldItemStack();
+                                    if (itemStack.e != null){
+                                        NBTTagCompound compound = itemStack.e;
+                                        if (compound.b("tool_level")){
+                                            compound.a("tool_level",Integer.parseInt(par2Str.substring(19)));
+                                        }
+                                    }
+                                    return 1;
+                                }
+                                if (par2Str.startsWith("itemlevel setXp")){
+                                    ItemStack itemStack = player.getHeldItemStack();
+                                    if (itemStack.e != null){
+                                        NBTTagCompound compound = itemStack.e;
+                                        if (compound.b("tool_exp")){
+                                            compound.a("tool_exp",Integer.parseInt(par2Str.substring(16)));
+                                        }
+                                    }
+                                    return 1;
+                                }
+                                // /toollevel addAttr slowdown_modifier 1.0
+                                if (par2Str.startsWith("itemlevel addAttrA")){
+                                    ItemStack itemStack = player.getHeldItemStack();
+                                    if (itemStack.e != null){
+                                        NBTTagCompound compound = itemStack.e;
+                                        if (compound.b("modifiers")){
+                                            String modifierName = par2Str.substring(19,par2Str.lastIndexOf(" ")).toUpperCase();
+                                            ToolModifierTypes modifierType = ToolModifierTypes.valueOf(modifierName);
+                                            int level = modifierType.getModifierLevel(compound);
+                                            NBTTagCompound modifiers = compound.l("modifiers");
+                                            modifiers.a(modifierType.nbtName,level + Integer.parseInt(par2Str.substring(19 + modifierName.length() + 1)));
+                                        }
+                                    }
+                                    return 1;
+                                }
+                                if (par2Str.startsWith("itemlevel addAttrB")){
+                                    ItemStack itemStack = player.getHeldItemStack();
+                                    if (itemStack.e != null){
+                                        NBTTagCompound compound = itemStack.e;
+                                        if (compound.b("modifiers")){
+                                            String modifierName = par2Str.substring(19,par2Str.lastIndexOf(" ")).toUpperCase();
+                                            ArmorModifierTypes modifierType = ArmorModifierTypes.valueOf(modifierName);
+                                            int level = modifierType.getModifierLevel(compound);
+                                            NBTTagCompound modifiers = compound.l("modifiers");
+                                            modifiers.a(modifierType.nbtName,level + Integer.parseInt(par2Str.substring(19 + modifierName.length() + 1)));
+                                        }
+                                    }
+                                    return 1;
+                                }
+
 
                                 if (par2Str.startsWith("teleport ")) {
                                     System.out.println(par2Str);

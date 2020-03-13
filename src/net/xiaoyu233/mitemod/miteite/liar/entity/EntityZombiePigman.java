@@ -16,9 +16,11 @@ public class EntityZombiePigman extends EntityZombie {
 
     protected void az() {
         super.az();
+        int day = this.getWorld() != null ? Math.max(this.getWorld().getDayOfWorld() - 64,0) : 0;
+        this.setEntityAttribute(GenericAttributes.a, 30.0D + day / 16D);
         this.setEntityAttribute(GenericAttributes.b, 40.0D);
         this.setEntityAttribute(GenericAttributes.d, 0.23F);
-        this.setEntityAttribute(GenericAttributes.e, 5.0D);
+        this.setEntityAttribute(GenericAttributes.e, 5.0D + day / 48D);
         this.setEntityAttribute(EntityZombie.bp, super.ab.nextDouble() * (double)0.1F);
     }
 }

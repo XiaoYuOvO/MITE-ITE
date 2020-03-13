@@ -37,7 +37,7 @@ public class EnchantmentWeaponDamageXLiar extends Enchantment{
     }
 
     @Override
-    public int getNumLevels() {
+    public int getNumLevelsForVibranium() {
         return 7;
     }
 

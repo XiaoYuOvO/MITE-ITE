@@ -14,9 +14,22 @@ public class EntityLongdeadLiar extends EntitySkeleton {
     protected void az() {
         super.az();
         this.setEntityAttribute(GenericAttributes.b, 40.0D);
-        this.setEntityAttribute(GenericAttributes.a, this.isGuardian() ? 28.0D : 16.0D);
+        this.setEntityAttribute(GenericAttributes.a, this.isGuardian() ? 26.0D : 14.0D);
         this.setEntityAttribute(GenericAttributes.d, 0.29F);
-        this.setEntityAttribute(GenericAttributes.e, this.isGuardian() ? 8.0D : 6.0D);
+        this.setEntityAttribute(GenericAttributes.e, this.isGuardian() ? 10.0D : 8.0D);
+    }
+
+    protected void addRandomEquipment() {
+        this.addRandomWeapon();
+        int day = this.getWorld() != null ? Math.max(this.getWorld().getDayOfWorld() - 64,0) : 0;
+        if (day < 160) {
+            this.setBoots((new ItemStack(Item.bootsChainAncientMetal)).randomizeForMob(this, true));
+            this.setLeggings((new ItemStack(Item.legsChainAncientMetal)).randomizeForMob(this, true));
+            this.setCuirass((new ItemStack(Item.plateChainAncientMetal)).randomizeForMob(this, true));
+            this.setHelmet((new ItemStack(Item.helmetChainAncientMetal)).randomizeForMob(this, true));
+        }else{
+            EntityMonsterLiar.addDefaultArmor(day,this,true);
+        }
     }
 
     @Stealing

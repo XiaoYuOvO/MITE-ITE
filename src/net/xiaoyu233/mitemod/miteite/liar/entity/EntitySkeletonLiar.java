@@ -1,6 +1,7 @@
 package net.xiaoyu233.mitemod.miteite.liar.entity;
 
 import net.minecraft.*;
+import net.minecraft.server.MinecraftServer;
 import team.unknowndomain.liar.annotation.Deceive;
 import team.unknowndomain.liar.annotation.Stealing;
 
@@ -21,6 +22,38 @@ public class EntitySkeletonLiar extends EntityMonster {
     }
 
 
+    public void addRandomWeapon() {
+        int day_of_world = MinecraftServer.F().getOverworld().getDayOfWorld();
+        if (this.bV() == 2 && day_of_world >= 64){
+            if (this.aD().nextInt(Math.max(2,20-day_of_world/48)) == 1){
+                this.c(0, (new ItemStack(Item.s)).randomizeForMob(this, day_of_world >= 96));
+            }else if (!this.aD().nextBoolean()){
+                this.c(0, (new ItemStack(Item.daggerIron)).randomizeForMob(this, day_of_world >= 128));
+            }else{
+                this.c(0, (new ItemStack(Item.daggerRustedIron)).randomizeForMob(this, day_of_world >=96));
+            }
+            return;
+        }
+        if (this.bV() == 2 && this.aD().nextInt(20) == 0) {
+            if (day_of_world >= 10) {
+                if (!this.aD().nextBoolean()) {
+                    if (day_of_world >= 20) {
+                        this.c(0, (new ItemStack(Item.swordRustedIron)).randomizeForMob(this, false));
+                    } else {
+                        this.c(0, (new ItemStack(Item.daggerRustedIron)).randomizeForMob(this, false));
+                    }
+                } else {
+                    this.c(0, (new ItemStack(Item.daggerRustedIron)).randomizeForMob(this, false));
+                }
+                return;
+            }
+        }
+
+
+        this.c(0, (new ItemStack(this.bV() == 2 ? Item.clubWood : Item.m)).randomizeForMob(this, true));
+    }
+
+
     @Stealing
     public boolean isLongdead(){
         return false;
@@ -30,7 +63,7 @@ public class EntitySkeletonLiar extends EntityMonster {
         EntityArrow var3 = new EntityArrow(this.getWorld(), this, par1EntityLivingBase, 1.6F, (float)(14 - this.getWorld().r * 4), this.isLongdead() ? Item.arrowAncientMetal : Item.arrowRustedIron, false);
         int day = this.getWorld() != null ? Math.max(this.getWorld().getDayOfWorld() - 64,0) : 0;
         int var4 = EnchantmentManager.a(Enchantment.v.z, this.getHeldItemStack()) + 1;
-        int var5 = (int) (EnchantmentManager.a(Enchantment.w.z, this.getHeldItemStack()) + Math.max((1 + Math.floor(day / 48F)),5));
+        int var5 = (int) (EnchantmentManager.a(Enchantment.w.z, this.getHeldItemStack()) + Math.min((1 + Math.floor(day / 48F)),5));
         double damage = (double)(par2 * 2.0F) + this.aD().nextGaussian() * 0.0D + (double)((float)this.getWorld().r * 0.11F);
         var3.b(damage);
         if (var4 > 0) {
@@ -48,6 +81,7 @@ public class EntitySkeletonLiar extends EntityMonster {
         this.a("random.bow", 1.0F, 1.0F / (this.aD().nextFloat() * 0.4F + 0.8F));
         this.getWorld().d(var3);
     }
+
 
     @Stealing
     public int bV() {

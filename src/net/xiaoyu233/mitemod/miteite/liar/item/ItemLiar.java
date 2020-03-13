@@ -1,6 +1,9 @@
 package net.xiaoyu233.mitemod.miteite.liar.item;
 
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 import net.minecraft.*;
+import net.xiaoyu233.mitemod.miteite.item.ItemModifierTypes;
 import net.xiaoyu233.mitemod.miteite.item.Items;
 import net.xiaoyu233.mitemod.miteite.item.Materials;
 import net.xiaoyu233.mitemod.miteite.util.Constant;
@@ -26,6 +29,65 @@ public class ItemLiar{
         }
     }
 
+    public void addExpForTool(ItemStack stack, EntityHuman player, int exp) {
+        stack.fixNBT();
+        NBTTagCompound tagCompound = stack.e;
+        if (tagCompound != null) {
+            if (tagCompound.b("tool_exp")) {
+                tagCompound.a("tool_exp", tagCompound.e("tool_exp") + exp);
+                if (tagCompound.b("tool_level")) {
+                    int currentLevel = tagCompound.e("tool_level");
+                    int nextLevelExpReq = this.getExpReqForLevel(currentLevel + 1, this.isWeapon(stack.b()));
+                    if (tagCompound.e("tool_exp") >= nextLevelExpReq) {
+                        tagCompound.a("tool_level", currentLevel + 1);
+                        tagCompound.a("tool_exp", 0);
+                        if (!player.q.I) {
+                            player.a(ChatMessage.e(
+                                    "你的" + stack.getMITEStyleDisplayName() + "已升级,当前等级:" + (currentLevel + 1)).a(
+                                    EnumChatFormat.d));
+                        }
+                        if (!tagCompound.b("modifiers")) {
+                            tagCompound.a("modifiers", new NBTTagCompound());
+                        }
+                        this.onItemLevelUp(tagCompound,player,stack);
+                    }
+                }
+            }
+        }else {
+            NBTTagCompound compound = new NBTTagCompound();
+            compound.a("tool_exp",0);
+            compound.a("tool_level",0);
+            stack.e = compound;
+        }
+    }
+
+    public int addModifierLevelFor(NBTTagCompound modifiers, ItemModifierTypes<?> modifierType){
+        int effectLevel = modifiers.e(modifierType.getNbtName()) + 1;
+        modifiers.a(modifierType.getNbtName(), effectLevel);
+        return effectLevel;
+    }
+
+    public void onItemLevelUp(NBTTagCompound tagCompound,EntityHuman player,ItemStack stack){}
+
+    public int getExpReqForLevel(int i, boolean weapon){
+        return 0;
+    }
+
+    public boolean isWeapon(Item b){
+        return false;
+    }
+
+    public Multimap<String,AttributeModifier> getAttrModifiers(ItemStack stack) {
+        return HashMultimap.create();
+    }
+
+    public float getMeleeDamageBonus(ItemStack stack){
+        return 0.0F;
+    }
+    public float getStrVsBlock(Block block, int metadata,ItemStack itemStack,EntityHuman user) {
+        return 0.0F;
+    }
+
     public int getCookTime(){
         if (this.cv == Block.cE.cF){
             return 2000;
@@ -39,6 +101,10 @@ public class ItemLiar{
     @Stealing
     public boolean isBlock() {
 //        return dyCast(this instanceof ItemBlock;
+        return false;
+    }
+
+    public boolean hasExpAndLevel(){
         return false;
     }
 

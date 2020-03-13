@@ -1,6 +1,7 @@
 package net.xiaoyu233.mitemod.miteite.liar.entity;
 
 import net.minecraft.*;
+import net.xiaoyu233.mitemod.miteite.item.ToolModifierTypes;
 import team.unknowndomain.liar.annotation.Deceive;
 import team.unknowndomain.liar.annotation.Liar;
 import team.unknowndomain.liar.annotation.Stealing;
@@ -25,6 +26,29 @@ public class EntityInsentientLiar extends EntityLiving{
     public EntityInsentientLiar(World par1World) {
         super(par1World);
     }
+
+    @Override
+    public void onMeleeAttacked(EntityLiving attacker, EntityDamageResult result) {
+        if (result!=null && attacker !=null) {
+            if (result.entityLostHealth()) {
+                ItemStack stack = attacker.getHeldItemStack();
+                if (stack!= null) {
+                    Item item = stack.b();
+                    if (attacker instanceof EntityPlayer) {
+                        if (item instanceof ItemSword || item instanceof ItemWarHammer || item instanceof ItemBattleAxe) {
+                            item.addExpForTool(stack, ((EntityHuman) attacker), (int) Math.min(this.aT(), result.getAmountOfHealthLost()));
+                            float slowMdfLvl = ToolModifierTypes.SLOWDOWN_MODIFIER.getModifierValue(stack.q());
+                            if (result.entity instanceof EntityLiving && slowMdfLvl >= 1){
+                                ((EntityLiving) result.entity).c(new MobEffect(2,(int) (slowMdfLvl * 20),(int) (slowMdfLvl / 2)));
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        super.onMeleeAttacked(attacker, result);
+    }
+
 
     public void tryPickUpItems() {
         if (!this.getWorld().I && this.bD() && !getM() && this.aN() > 0.0F && this.getWorld().O().b("mobGriefing") && this.getTicksExistedWithOffset() % 10 == 0) {

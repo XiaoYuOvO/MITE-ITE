@@ -20,6 +20,20 @@ public class EntityBoneLordLiar extends EntitySkeleton {
         this.setEntityAttribute(GenericAttributes.a, 22.0D);
     }
 
+    @Override
+    protected void addRandomEquipment() {
+        this.addRandomWeapon();
+        int day = this.getWorld() != null ? Math.max(this.getWorld().getDayOfWorld() - 64,0) : 0;
+        if (day < 128) {
+            this.setBoots((new ItemStack(Item.bootsRustedIron)).randomizeForMob(this, true));
+            this.setLeggings((new ItemStack(Item.legsRustedIron)).randomizeForMob(this, true));
+            this.setCuirass((new ItemStack(Item.plateRustedIron)).randomizeForMob(this, true));
+            this.setHelmet((new ItemStack(Item.helmetRustedIron)).randomizeForMob(this, true));
+        }else{
+            EntityMonsterLiar.addDefaultArmor(day,this,true);
+        }
+    }
+
     protected void enchantEquipment(ItemStack item_stack) {
         if (this.aD().nextFloat() <= (0.2d + this.getWorld().getDayOfWorld() / 64d / 10)) {
             EnchantmentManager.a(this.aD(), item_stack, (int)(5.0F + (this.aD().nextInt(15 + this.getWorld().getDayOfWorld() / 24) + 3) / 10 * (float)this.aD().nextInt(18)));

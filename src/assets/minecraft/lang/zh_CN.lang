@@ -14,6 +14,7 @@ item.diamond_chunk.name=钻石碎块
 item.vibranium_dagger.name=振金短剑
 item.vibranium_war_hammer.name=振金战锤
 item.vibranium_battle_axe.name=振金战斧
+item.vibranium_bow.name=振金弓
 tile.anvil_vibranium.name=振金砧
 tile.anvil_vibranium.intact.name=振金砧
 tile.anvil_vibranium.slightlyDamaged.name=轻微受损的振金砧

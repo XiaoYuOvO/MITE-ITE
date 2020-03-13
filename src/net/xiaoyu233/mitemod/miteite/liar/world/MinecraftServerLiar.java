@@ -6,11 +6,20 @@ import net.minecraft.EnumChatFormat;
 import net.minecraft.server.MinecraftServer;
 import net.xiaoyu233.mitemod.miteite.util.Constant;
 import team.unknowndomain.liar.annotation.Deceive;
+import team.unknowndomain.liar.annotation.Liar;
 import team.unknowndomain.liar.annotation.Stealing;
 
 @Deceive(MinecraftServer.class)
 public class MinecraftServerLiar {
-    public static void setTreacheryDetected() {}
+    @Liar
+    private static boolean treachery_detected;
+    @Liar
+    private static int treachery_shutdown_counter;
+
+    public static void setTreacheryDetected() {
+        treachery_detected = false;
+        treachery_shutdown_counter = 0;
+    }
     public void playerLoggedIn(EntityPlayer par1EntityPlayerMP) {
         par1EntityPlayerMP.a(ChatMessage.e("[Server]:").a(ChatMessage.e("MITE-ITE模组已加载,当前版本:").a(EnumChatFormat.c)).a(ChatMessage.e(
                 Constant.MITE_ITE_VERSION).a(EnumChatFormat.e)));

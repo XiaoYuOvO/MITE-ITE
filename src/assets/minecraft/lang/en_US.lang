@@ -14,6 +14,7 @@ item.diamond_chunk.name=Diamond Chunk
 item.vibranium_dagger.name=Vibranium Dagger
 item.vibranium_war_hammer.name=Vibranium War Hammer
 item.vibranium_battle_axe.name=Vibranium Battle Axe
+item.vibranium_bow.name=Vibranium Bow
 tile.anvil_vibranium.name=Vibranium Anvil
 tile.anvil_vibranium.intact.name=Vibranium Anvil
 tile.anvil_vibranium.slightlyDamaged.name=Slightly Damaged Vibranium Anvil

@@ -3,6 +3,7 @@ package net.xiaoyu233.mitemod.miteite.item;
 import net.minecraft.*;
 import net.xiaoyu233.mitemod.miteite.block.Blocks;
 import net.xiaoyu233.mitemod.miteite.liar.item.CraftingManagerHelper;
+import net.xiaoyu233.mitemod.miteite.util.Constant;
 
 import static net.xiaoyu233.mitemod.miteite.util.ReflectHelper.createInstance;
 
@@ -24,6 +25,7 @@ public class Items{
     public static final ItemBattleAxe VIBRANIUM_BATTLE_AXE = createInstance(ItemBattleAxe.class,new Class[]{int.class,Material.class},Item.getNextItemID(),Materials.vibranium);
     public static final Item DIAMOND_CHUNK = createInstance(Item.class,new Class[]{int.class,Material.class,String.class},Item.getNextItemID(),Material.diamond,"diamond_chunk").setCraftingDifficultyAsComponent(ItemRock.getCraftingDifficultyAsComponent(Material.diamond) /(float)4);
     public static final Item BLAZE_COAL = new ItemBlazeCoal(Item.getNextItemID());
+    public static final ItemBow VIBRANIUM_BOW = new ItemBow(Item.getNextItemID(),Materials.vibranium);
     public static void registerItems() {
         register("obsidian_stick",OBSIDIAN_STICK,CreativeModeTab.l);
         register("vibranium", VIBRANIUM_INGOT,CreativeModeTab.l);
@@ -41,6 +43,8 @@ public class Items{
         register("vibranium_battle_axe",VIBRANIUM_BATTLE_AXE);
         register("diamond_chunk",DIAMOND_CHUNK,CreativeModeTab.l);
         register("blaze_coal",BLAZE_COAL,CreativeModeTab.l);
+        register("bows/vibranium/",VIBRANIUM_BOW).b("vibranium_bow");
+        Constant.initItemArray();
     }
     public static void registerRecipes(){
         CraftingManagerHelper.registerShapedRecipe(new ItemStack(OBSIDIAN_STICK),true,
@@ -138,15 +142,26 @@ public class Items{
                 'D',Item.p,
                 'N', Block.furnaceNetherrackIdle
                 );
-        RecipesFurnace.a().addSmelting(Block.cE.cF,new ItemStack(Items.DIAMOND_CHUNK));
+        RecipesFurnace.a().addSmelting(Block.cE.cF, new ItemStack(Items.DIAMOND_CHUNK));
+        CraftingManagerHelper.registerShapedRecipe(new ItemStack(Items.VIBRANIUM_BOW),true,
+                "NSL",
+                        "SVL",
+                        "NSL",
+                'S',Items.OBSIDIAN_STICK,
+                'V',Items.VIBRANIUM_INGOT,
+                'L',Item.M,
+                'N',Items.VIBRANIUM_NUGGET
+                );
     }
-    private static void register(String resourceLocation,Item item,CreativeModeTab tab){
+    private static Item register(String resourceLocation,Item item,CreativeModeTab tab){
         item.setResourceLocation(item.getResourceLocationPrefix() + resourceLocation);
         item.b(resourceLocation);
         item.setCreativeTable(tab);
+        return item;
     }
-    private static void register(String resourceLocation,Item item){
+    private static Item register(String resourceLocation,Item item){
         item.setResourceLocation(item.getResourceLocationPrefix() +resourceLocation);
         item.b(resourceLocation);
+        return item;
     }
 }

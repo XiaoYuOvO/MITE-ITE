@@ -15,10 +15,25 @@ public class EntityAncientBoneLordLiar extends EntityBoneLord {
     @Override
     protected void az() {
         super.az();
-        this.setEntityAttribute(GenericAttributes.b, 48.0D);
-        this.setEntityAttribute(GenericAttributes.d, 0.30F);
-        this.setEntityAttribute(GenericAttributes.e, 9.0D);
-        this.setEntityAttribute(GenericAttributes.a, 30.0D);
+            this.setEntityAttribute(GenericAttributes.b, 48.0D);
+            this.setEntityAttribute(GenericAttributes.d, 0.30F);
+            this.setEntityAttribute(GenericAttributes.e, 10.0D);
+            this.setEntityAttribute(GenericAttributes.a, 25.0D);
+
+    }
+
+    @Override
+    protected void addRandomEquipment() {
+        this.addRandomWeapon();
+        int day = this.getWorld() != null ? Math.max(this.getWorld().getDayOfWorld() - 64,0) : 0;
+        if (day < 192) {
+            this.setBoots((new ItemStack(Item.bootsAncientMetal)).randomizeForMob(this, true));
+            this.setLeggings((new ItemStack(Item.legsAncientMetal)).randomizeForMob(this, true));
+            this.setCuirass((new ItemStack(Item.plateAncientMetal)).randomizeForMob(this, true));
+            this.setHelmet((new ItemStack(Item.helmetAncientMetal)).randomizeForMob(this, true));
+        }else{
+            EntityMonsterLiar.addDefaultArmor(day,this,true);
+        }
     }
 
     protected void enchantEquipment(ItemStack item_stack) {

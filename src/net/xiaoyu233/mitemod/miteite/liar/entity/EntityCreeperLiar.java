@@ -20,8 +20,8 @@ public class EntityCreeperLiar extends EntityMonster {
 
     protected void az() {
         super.az();
-        br = 45;
         int day = this.getWorld() != null ? Math.max(this.getWorld().getDayOfWorld() - 32,0) : 0;
+        br = day >= 128 ? (45 + (day-128) / 8) : 45;
         this.a(GenericAttributes.d).a(0.25D);
         this.setEntityAttribute(GenericAttributes.a,16D + (day/16D));
     }

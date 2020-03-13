@@ -3,7 +3,6 @@ package net.xiaoyu233.mitemod.miteite.liar.item.enchantment;
 import net.minecraft.*;
 import net.xiaoyu233.mitemod.miteite.item.Materials;
 import team.unknowndomain.liar.annotation.Deceive;
-import team.unknowndomain.liar.annotation.Stealing;
 
 import java.util.*;
 
@@ -24,10 +23,32 @@ public class EnchantmentManagerLiar {
         }
 
     }
-    @Stealing
+
     private static Map b(int enchantment_levels, ItemStack item_stack) {
-        return null;
+        Item item = item_stack.b();
+        boolean is_vibranium = item.getHardestMetalMaterial() == Materials.vibranium;
+        boolean is_book = item == Item.aN;
+        HashMap<Integer,EnchantmentInstance> map = new HashMap<>();
+
+        for(int i = 0; i < Enchantment.b.length; ++i) {
+            Enchantment enchantment = Enchantment.get(i);
+            if (enchantment != null && (is_book || enchantment.canEnchantItem(item))) {
+                if (enchantment.hasLevels()) {
+                    for(int level = is_vibranium ? enchantment.getNumLevelsForVibranium(): enchantment.getNumLevels(); level > 0; --level) {
+                        if (enchantment.getMinEnchantmentLevelsCost(level) <= enchantment_levels) {
+                            map.put(enchantment.z, new EnchantmentInstance(enchantment, level));
+                            break;
+                        }
+                    }
+                } else if (enchantment.getMinEnchantmentLevelsCost() <= enchantment_levels) {
+                    map.put(enchantment.z, new EnchantmentInstance(enchantment, 1));
+                }
+            }
+        }
+
+        return map.size() == 0 ? null : map;
     }
+
     public static List b(Random random, ItemStack item_stack, int enchantment_levels) {
         Item item = item_stack.b();
         int enchantability = item.c();
@@ -41,9 +62,9 @@ public class EnchantmentManagerLiar {
                 adjusted_enchantment_levels = 1;
             }
 
-            ArrayList enchantments_for_item = new ArrayList();
+            ArrayList<EnchantmentInstance> enchantments_for_item = new ArrayList<>();
 
-            while(adjusted_enchantment_levels > 0) {
+            while(true) {
                 Map all_possible_enchantments = b(adjusted_enchantment_levels, item_stack);
                 if (all_possible_enchantments == null) {
                     break;
@@ -72,12 +93,12 @@ public class EnchantmentManagerLiar {
                 }
             }
 
-            ArrayList enchantments_for_item_shuffled = new ArrayList();
+            ArrayList<EnchantmentInstance> enchantments_for_item_shuffled = new ArrayList<>();
             int n = enchantments_for_item.size();
 
             while(n > 0) {
                 int index = random.nextInt(enchantments_for_item.size());
-                EnchantmentInstance enchantment_data = (EnchantmentInstance)enchantments_for_item.get(index);
+                EnchantmentInstance enchantment_data = enchantments_for_item.get(index);
                 if (enchantment_data != null) {
                     enchantments_for_item_shuffled.add(enchantment_data);
                     enchantments_for_item.set(index, null);

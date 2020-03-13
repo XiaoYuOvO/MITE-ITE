@@ -8,6 +8,9 @@ public class ReflectHelper {
         return ((T) from);
     }
 
+    public static <T> T dyCast(Class<T> to, Object from){
+        return ((T) from);
+    }
     public static <T> T createInstance(Class<T> tClass,Object... args){
         Class<?>[] types = new Class[args.length];
         for (int i = 0; i < args.length; i++) {

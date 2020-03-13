@@ -1,4 +1,40 @@
 [中文版](https://github.com/XiaoYuOvO/MITE-ITE/blob/master/ChangeLogCN.md)
+# B0.3.9,B0.3.8,B0.3.7 ChangeLog
+## Items
+* Add vibranium bow(give 75% additional arrow speed)
+* Make weapons and armors have levels,and they can get or strengthen a modifier when they level up(All current modifiers is shown below)
+* Only vibranium items can have powerful enchantment
+## Mobs
+* Increased the health amount and attack damage of some mobs(Ancient bone lord,long dead,revenant,zombie,zombie pigman)
+* Creeper's explosion radius will increase with the day
+* Ancient bone lord,bone lord,revenant will have better armors in late period
+* Make ender dragon stronger:
+    + If you dont hit its head,you can only deal 20% damage
+    + Increased the damage of it hit player(Now is 20)
+    + Its max health is 500 now
+    + It will always fly in the sky if its heal is lower than 150,and it will heal itself 2HP per 1.5s
+    + The distance of ender crystal healing ender dragon is 48 blocks now
+    + The dragon only take 5HP of damage when the nearby crystal exploded
+    + Ender crystal will heal the dragon 2HP per 0.5s
+* Skeleton will have better weapon(iron sword or iron dagger)
+
+### _List of available modifiers_
+
+   Name | Effect | Can use at
+    --------------------------------|---------------------------------------------------------|---------------------
+      Efficiency Modifier           | Make your tool mines faster                             | Tools
+      Aquadynamic Modifier          | Make your tool mines faster when you're in water or rain| Tools
+      Durability Modifier           | Make your item drops durability more slower             | Tools Weapons Armors
+      Damage Modifier               | Make your weapon deals more damage                      | Weapons
+      Slowdown Modifier             | Make your weapon slow down the entity that you hit      | Weapons
+      Projectile Protection Modifier| Make you take less damage of projectiles                | Armors
+      Explosion Protection Modifier | Make you take less damage of explosion                  | Armors
+      Fire Protection Modifier      | Make you take less damage of fire                       | Armors
+      Protection Modifier           | Make you take less damage                               | Armors
+      Steady Modifier               | Make you not easy to be knockbacked                     | Armors
+      Blessed Modifier              | Make you take less damage from undead mobs              | Armors
+      
+---
 # B0.3.6 ChangeLog
 ## Items
 * Add vibranium weapons and tools(they are better that adamantium's things,all the vibranium tools need use obsidian stick to craft) 

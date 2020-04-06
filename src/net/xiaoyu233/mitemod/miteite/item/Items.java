@@ -2,30 +2,31 @@ package net.xiaoyu233.mitemod.miteite.item;
 
 import net.minecraft.*;
 import net.xiaoyu233.mitemod.miteite.block.Blocks;
-import net.xiaoyu233.mitemod.miteite.liar.item.CraftingManagerHelper;
+import net.xiaoyu233.mitemod.miteite.trans.item.CraftingManagerHelper;
+import net.xiaoyu233.mitemod.miteite.trans.item.ItemTrans;
 import net.xiaoyu233.mitemod.miteite.util.Constant;
 
 import static net.xiaoyu233.mitemod.miteite.util.ReflectHelper.createInstance;
 
 @SuppressWarnings("ConstantConditions")
-public class Items{
-    public static final Item OBSIDIAN_STICK = createInstance(Item.class,new Class[]{int.class,Material.class,String.class},Item.getNextItemID(),Material.obsidian,"obsidian_stick");
-    public static final Item VIBRANIUM_INGOT = createInstance(ItemIngot.class,new Class[]{int.class,Material.class},Item.getNextItemID(),Materials.vibranium);
-    public static final ItemNugget VIBRANIUM_NUGGET = createInstance(ItemNugget.class, new Class[]{int.class,Material.class},Item.getNextItemID(),Materials.vibranium);
-    public static final ItemArmor VIBRANIUM_HELMET = new ItemHelmet(Item.getNextItemID(),Materials.vibranium,false);
-    public static final ItemArmor VIBRANIUM_CHESTPLATE = new ItemCuirass(Item.getNextItemID(), Materials.vibranium, false);
-    public static final ItemArmor VIBRANIUM_LEGGINGS = new ItemLeggings(Item.getNextItemID(),Materials.vibranium,false);
-    public static final ItemArmor VIBRANIUM_BOOTS = new ItemBoots(Item.getNextItemID(),Materials.vibranium,false);
-    public static final ItemSword VIBRANIUM_SWORD = createInstance(ItemSword.class,new Class[]{int.class,Material.class},Item.getNextItemID(), Materials.vibranium);
-    public static final ItemShovel VIBRANIUM_SHOVEL = createInstance(ItemShovel.class,new Class[]{int.class,Material.class},Item.getNextItemID(),Materials.vibranium);
-    public static final ItemPickaxe VIBRANIUM_PICKAXE = createInstance(ItemPickaxe.class,new Class[]{int.class,Material.class},Item.getNextItemID(),Materials.vibranium);
-    public static final ItemAxe VIBRANIUM_AXE = createInstance(ItemAxe.class,new Class[]{int.class,Material.class},Item.getNextItemID(),Materials.vibranium);
-    public static final ItemDagger VIBRANIUM_DAGGER = createInstance(ItemDagger.class,new Class[]{int.class,Material.class},Item.getNextItemID(),Materials.vibranium);
-    public static final ItemWarHammer VIBRANIUM_WAR_HAMMER = createInstance(ItemWarHammer.class,new Class[]{int.class,Material.class},Item.getNextItemID(),Materials.vibranium);
-    public static final ItemBattleAxe VIBRANIUM_BATTLE_AXE = createInstance(ItemBattleAxe.class,new Class[]{int.class,Material.class},Item.getNextItemID(),Materials.vibranium);
-    public static final Item DIAMOND_CHUNK = createInstance(Item.class,new Class[]{int.class,Material.class,String.class},Item.getNextItemID(),Material.diamond,"diamond_chunk").setCraftingDifficultyAsComponent(ItemRock.getCraftingDifficultyAsComponent(Material.diamond) /(float)4);
-    public static final Item BLAZE_COAL = new ItemBlazeCoal(Item.getNextItemID());
-    public static final ItemBow VIBRANIUM_BOW = new ItemBow(Item.getNextItemID(),Materials.vibranium);
+public class Items extends Item{
+    public static final Item OBSIDIAN_STICK = createInstance(Item.class,new Class[]{int.class,Material.class,String.class},ItemTrans.getNextItemID(),Material.obsidian,"obsidian_stick");
+    public static final Item VIBRANIUM_INGOT = createInstance(ItemIngot.class,new Class[]{int.class,Material.class},ItemTrans.getNextItemID(),Materials.vibranium);
+    public static final ItemNugget VIBRANIUM_NUGGET = createInstance(ItemNugget.class, new Class[]{int.class,Material.class},ItemTrans.getNextItemID(),Materials.vibranium);
+    public static final ItemArmor VIBRANIUM_HELMET = new ItemHelmet(ItemTrans.getNextItemID(),Materials.vibranium,false);
+    public static final ItemArmor VIBRANIUM_CHESTPLATE = new ItemCuirass(ItemTrans.getNextItemID(), Materials.vibranium, false);
+    public static final ItemArmor VIBRANIUM_LEGGINGS = new ItemLeggings(ItemTrans.getNextItemID(),Materials.vibranium,false);
+    public static final ItemArmor VIBRANIUM_BOOTS = new ItemBoots(ItemTrans.getNextItemID(),Materials.vibranium,false);
+    public static final ItemSword VIBRANIUM_SWORD = createInstance(ItemSword.class,new Class[]{int.class,Material.class},ItemTrans.getNextItemID(), Materials.vibranium);
+    public static final ItemShovel VIBRANIUM_SHOVEL = createInstance(ItemShovel.class,new Class[]{int.class,Material.class},ItemTrans.getNextItemID(),Materials.vibranium);
+    public static final ItemPickaxe VIBRANIUM_PICKAXE = createInstance(ItemPickaxe.class,new Class[]{int.class,Material.class},ItemTrans.getNextItemID(),Materials.vibranium);
+    public static final ItemAxe VIBRANIUM_AXE = createInstance(ItemAxe.class,new Class[]{int.class,Material.class},ItemTrans.getNextItemID(),Materials.vibranium);
+    public static final ItemDagger VIBRANIUM_DAGGER = createInstance(ItemDagger.class,new Class[]{int.class,Material.class},ItemTrans.getNextItemID(),Materials.vibranium);
+    public static final ItemWarHammer VIBRANIUM_WAR_HAMMER = createInstance(ItemWarHammer.class,new Class[]{int.class,Material.class},ItemTrans.getNextItemID(),Materials.vibranium);
+    public static final ItemBattleAxe VIBRANIUM_BATTLE_AXE = createInstance(ItemBattleAxe.class,new Class[]{int.class,Material.class},ItemTrans.getNextItemID(),Materials.vibranium);
+    public static final Item DIAMOND_CHUNK = createInstance(Item.class,new Class[]{int.class,Material.class,String.class},ItemTrans.getNextItemID(),Material.diamond,"diamond_chunk").setCraftingDifficultyAsComponent(ItemRock.getCraftingDifficultyAsComponent(Material.diamond) /(float)4);
+    public static final Item BLAZE_COAL = new ItemBlazeCoal(ItemTrans.getNextItemID());
+    public static final ItemBow VIBRANIUM_BOW = new ItemBow(ItemTrans.getNextItemID(),Materials.vibranium);
     public static void registerItems() {
         register("obsidian_stick",OBSIDIAN_STICK,CreativeModeTab.l);
         register("vibranium", VIBRANIUM_INGOT,CreativeModeTab.l);

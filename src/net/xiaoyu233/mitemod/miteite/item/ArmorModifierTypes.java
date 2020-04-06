@@ -6,12 +6,13 @@ import net.minecraft.ItemStack;
 import net.minecraft.NBTTagCompound;
 import net.xiaoyu233.mitemod.miteite.util.EnumChatFormats;
 
-import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.function.Predicate;
 
-public enum ArmorModifierTypes implements ItemModifierTypes<ArmorModifierTypes>{
+public enum ArmorModifierTypes implements ItemModifierTypes{
+    //Armor Modifiers
     DURABILITY_MODIFIER(0.1F,"持久",EnumChatFormat.f,20,(stack -> true)),
     PROJECTILE_PROTECTION_MODIFIER(0.5F,"弹射物保护", EnumChatFormats.DARK_GREY,7,(stack -> hasNotOtherProtectionModifier(stack,3))),
     EXPLOSION_PROTECTION_MODIFIER(0.5F,"爆炸保护", EnumChatFormats.DARK_RED,7,(stack -> hasNotOtherProtectionModifier(stack,2))),
@@ -60,17 +61,17 @@ public enum ArmorModifierTypes implements ItemModifierTypes<ArmorModifierTypes>{
         return itemTag != null && itemTag.b("modifiers") && itemTag.l("modifiers").b(modifierType.nbtName);
     }
 
-    @Nonnull
+    @Nullable
     public static ArmorModifierTypes getModifierWithWeight(Random rand,ItemStack stack){
-        ArrayList<ArmorModifierTypes> p_180166_0_ = ArmorModifierTypes.getAllCanBeApplied(stack);
+        ArrayList<ArmorModifierTypes> p1801660 = ArmorModifierTypes.getAllCanBeApplied(stack);
         int totalWeight = 0;
-        for (ArmorModifierTypes modifierTypes : p_180166_0_) {
+        for (ArmorModifierTypes modifierTypes : p1801660) {
             totalWeight += modifierTypes.weight;
         }
         int currentWeight = rand.nextInt(totalWeight);
         int x = 0;
-        for(int j = p_180166_0_.size(); x < j; ++x) {
-            ArmorModifierTypes t = p_180166_0_.get(x);
+        for(int j = p1801660.size(); x < j; ++x) {
+            ArmorModifierTypes t = p1801660.get(x);
             currentWeight -= t.weight;
             if (currentWeight < 0) {
                 return t;

@@ -2097,3 +2097,4 @@ pu : net.minecraft.PathfinderGoalSelectorItem
 abo : net.minecraft.TileEntityMobSpawnerData
 java.nio.channels.FileChannel : java.nio.channels.FileChannel
 java.net.URLEncoder : java.net.URLEncoder
+bdj : net.minecraft.bdj

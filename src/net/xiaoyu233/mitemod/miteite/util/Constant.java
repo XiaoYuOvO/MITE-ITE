@@ -4,7 +4,6 @@ import net.minecraft.Item;
 import net.minecraft.ItemArmor;
 import net.xiaoyu233.mitemod.miteite.item.Items;
 
-@NoTrans
 public class Constant {
     public static int nextItemID = 2024;
     public static int nextBlockID = 160;

@@ -3,7 +3,7 @@ package net.xiaoyu233.mitemod.miteite.item;
 import net.minecraft.EnumEquipmentMaterial;
 import net.minecraft.Material;
 import net.minecraft.MaterialMapColor;
-import net.minecraft.atv;
+import net.minecraft.Minecraft;
 
 public class Materials extends Material {
     public static final Materials vibranium = (Materials) new Materials(EnumEquipmentMaterials.vibranium).setMetal(false).setHarmedByLava(false).setMinHarvestLevel(6);
@@ -55,7 +55,7 @@ public class Materials extends Material {
         } else if (this == vibranium){
             return 9.0F;
         }else{
-            atv.setErrorMessage("getDamageVsEntity: unhandled material " + this.name);
+            Minecraft.setErrorMessage("getDamageVsEntity: unhandled material " + this.name);
             return 0.0F;
         }
     }

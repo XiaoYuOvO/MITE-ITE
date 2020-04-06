@@ -3,7 +3,7 @@ package net.xiaoyu233.mitemod.miteite.block;
 import net.minecraft.*;
 import net.xiaoyu233.mitemod.miteite.item.Items;
 import net.xiaoyu233.mitemod.miteite.item.Materials;
-import net.xiaoyu233.mitemod.miteite.liar.item.CraftingManagerHelper;
+import net.xiaoyu233.mitemod.miteite.trans.item.CraftingManagerHelper;
 import net.xiaoyu233.mitemod.miteite.util.Constant;
 import net.xiaoyu233.mitemod.miteite.util.ReflectHelper;
 
@@ -36,8 +36,10 @@ public class Blocks {
     public static final BlockAnvil anvilVibranium = ReflectHelper.createInstance(BlockAnvil.class, new Class[]{int.class, Material.class},
             getNextBlockID(), Materials.vibranium);
     public static final BlockOreBlock blockVibranium = new BlockOreBlock(getNextBlockID(),Materials.vibranium);
-    public static final Block furnaceVibraniumIdle = new BlockFurnaceVibranium(getNextBlockID(),false).a(CreativeModeTab.c).setBlockHardness(8.0F).setExplosionResistance(0.875f).setStepSound(Block.k);
-    public static final Block furnaceVibraniumBurning = new BlockFurnaceVibranium(getNextBlockID(), true).setBlockHardness(8.0F).setExplosionResistance(0.875f).setStepSound(Block.k);
+    public static final Block furnaceVibraniumIdle =
+            new BlockFurnaceVibranium(getNextBlockID(),false).a(CreativeModeTab.c).setBlockHardness(8.0F).setExplosionResistance(0.875f).setStepSound(Block.k);
+    public static final Block furnaceVibraniumBurning =
+            new BlockFurnaceVibranium(getNextBlockID(), true).setBlockHardness(8.0F).setExplosionResistance(0.875f).setStepSound(Block.k);
     public static void registerBlocks(){
 
         registerBlock(anvilVibranium,"anvil_vibranium");

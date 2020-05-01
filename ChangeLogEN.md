@@ -1,4 +1,13 @@
 [中文版](https://github.com/XiaoYuOvO/MITE-ITE/blob/master/ChangeLogCN.md)
+# B0.3.10 ChangeLog
+## Mobs
+* Blaze's max health changed to 40 and attack damage changed to 6
+* Ghast's max health changed to 15,and it's fireball's explosion radio changed to 2(it was 1),the speed of shooting fireball changed to 1 fireball per 2.5s
+* Wither skeleton's basic max health changed to 24(plus 1 per 16 days after 64 day),and it has a ancient metal sword now
+* Zombie pigman's basic health changed to 50 and add 1 per 12 days after 64 day,it's basic attack damage added to 8 now(plus 1 per 48 days after 64 day)
+## Others
+* Players can sit on stairs now
+---
 # B0.3.9,B0.3.8,B0.3.7 ChangeLog
 ## Items
 * Add vibranium bow(give 75% additional arrow speed)

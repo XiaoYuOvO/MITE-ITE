@@ -16,9 +16,9 @@ public class EnchantmentManagerTrans {
 
             while(iterator.hasNext()) {
                 int id = (Integer)iterator.next();
-//                if (enchantment instanceof EnchantmentWeaponDamage ? !((EnchantmentWeaponDamage) enchantment).isCompatibleWith(Enchantment.get(id),item) :  !enchantment.a(Enchantment.get(id))) {
-//                    iterator.remove();
-//                }
+                if (enchantment instanceof EnchantmentWeaponDamage ? !((EnchantmentWeaponDamage) enchantment).isCompatibleWith(Enchantment.get(id),item) :  !enchantment.a(Enchantment.get(id))) {
+                    iterator.remove();
+                }
             }
         }
 

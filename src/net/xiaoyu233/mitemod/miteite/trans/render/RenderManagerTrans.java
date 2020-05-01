@@ -105,6 +105,7 @@ public class RenderManagerTrans {
         this.q.put(EntityHorse.class, new bgt(new bbp(), 0.75F));
         this.q.put(EntityLightning.class, new bha());
         this.q.put(EntityAncientDragon.class,new RenderAncientDragon());
+//        this.q.put(EntityRideMarker.class,new RenderAncientDragon());
 
         for (Object o : this.q.values()) {
             bgm var2 = (bgm) o;

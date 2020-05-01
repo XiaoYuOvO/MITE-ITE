@@ -5,6 +5,7 @@ import net.xiaoyu233.fml.asm.annotations.Link;
 import net.xiaoyu233.fml.asm.annotations.Marker;
 import net.xiaoyu233.fml.asm.annotations.Transform;
 import net.xiaoyu233.mitemod.miteite.entity.EntityAncientDragon;
+import net.xiaoyu233.mitemod.miteite.entity.EntityRideMarker;
 
 import java.util.*;
 
@@ -123,5 +124,6 @@ public class EntityTypesTrans {
         a(EntityVillager.class, "Villager", 120, 5651507, 12422002);
         a(EntityEnderCrystal.class, "EnderCrystal", 200);
         a(EntityAncientDragon.class, "EntityTest", 201);
+        a(EntityRideMarker.class, "EntityMarker", 202);
     }
 }

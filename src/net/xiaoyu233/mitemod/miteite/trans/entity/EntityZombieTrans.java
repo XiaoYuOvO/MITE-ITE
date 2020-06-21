@@ -23,10 +23,10 @@ class EntityZombieTrans extends EntityAnimalWatcher {
     protected void az() {
         super.az();
         int day = this.getWorld() != null ? Math.max(this.getWorld().getDayOfWorld() - 64,0) : 0;
-        this.setEntityAttribute(GenericAttributes.b, 40.0D);
+        this.setEntityAttribute(GenericAttributes.b, 64.0D);
         this.setEntityAttribute(GenericAttributes.d, 0.23F);
-        this.setEntityAttribute(GenericAttributes.e, 9D + day / 48D);
-        this.setEntityAttribute(GenericAttributes.a, 40.0D + day / 16D);
+        this.setEntityAttribute(GenericAttributes.e, 10D + day / 48D);
+        this.setEntityAttribute(GenericAttributes.a, 50.0D + day / 14D);
         this.setEntityAttribute(bp, this.aD().nextDouble() * (double)0.1F);
     }
 }

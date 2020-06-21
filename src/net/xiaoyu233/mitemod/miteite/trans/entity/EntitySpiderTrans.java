@@ -18,7 +18,8 @@ public class EntitySpiderTrans extends EntityArachnid {
     protected void az() {
         super.az();
         int day = this.getWorld() != null ? Math.max(this.getWorld().getDayOfWorld() - 32,0) : 0;
-        this.setEntityAttribute(GenericAttributes.a, this.getEntityAttributeValue(GenericAttributes.a)*1.5 + day / 32D);
-        this.setEntityAttribute(GenericAttributes.e, this.getEntityAttributeValue(GenericAttributes.e)*1.5 + day / 96D);
+        this.setEntityAttribute(GenericAttributes.a, this.getEntityAttributeValue(GenericAttributes.a)*1.5 + day / 28D);
+        this.setEntityAttribute(GenericAttributes.e, this.getEntityAttributeValue(GenericAttributes.e)*1.5 + day / 90D);
+        this.setEntityAttribute(GenericAttributes.b, 64d);
     }
 }

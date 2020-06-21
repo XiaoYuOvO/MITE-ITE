@@ -28,11 +28,11 @@ public class EntityRevenantTrans extends EntityZombie {
     @Override
     protected void az() {
         super.az();
-        this.setEntityAttribute(GenericAttributes.b, 48.0D);
+        this.setEntityAttribute(GenericAttributes.b, 64d);
         this.setEntityAttribute(GenericAttributes.d, 0.28F);
-        this.setEntityAttribute(GenericAttributes.e, 9.0D);
+        this.setEntityAttribute(GenericAttributes.e, 12.0D);
         this.setEntityAttribute(EntityZombie.bp, this.aD().nextDouble() * (double)0.1F);
-        this.setEntityAttribute(GenericAttributes.a, 34.0D);
+        this.setEntityAttribute(GenericAttributes.a, 38.0D);
     }
 
     protected void enchantEquipment(ItemStack item_stack) {

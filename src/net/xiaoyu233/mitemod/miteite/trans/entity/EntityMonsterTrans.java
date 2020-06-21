@@ -20,15 +20,23 @@ public class EntityMonsterTrans extends EntityInsentient implements IMonster {
     protected void bw() {
         int hour = this.getWorld().getHourOfDay();
         int day = this.getWorld().getDayOfWorld();
-        if ((day > 32 && ((day % 2 == 0 && hour>=18)||((day-1) % 2 == 0 && hour <= 6)) )|| day > 365) {
+        if ((day > 32 && (((day % 2 == 0 || day > 64) && hour>=18)||(((day-1) % 2 == 0 || day > 64) && hour <= 6)) )) {
             this.c(new MobEffect(1, 999999, this.aD().nextInt(Math.max(((day-32)/96),1)), true));
             Random rand = this.aD();
             if (rand.nextInt(5) == 0) {
                 this.c(new MobEffect(5, 999999, this.aD().nextInt(Math.max(((day-32)/128),1)), true));
             }
             addDefaultArmor(day,this,false);
+        }else if ( day > 128){
+            Random rand = this.aD();
+            if (rand.nextInt(4)< (day-96)/32) {
+                this.c(new MobEffect(1, 999999, this.aD().nextInt(Math.max(((day - 32) / 96), 1)), true));
+            }
+            if (rand.nextInt(5)< (day-96)/32) {
+                this.c(new MobEffect(5, 999999, this.aD().nextInt(Math.max(((day-32)/128),1)), true));
+            }
+            addDefaultArmor(day,this,false);
         }
-
     }
 
     protected void az() {

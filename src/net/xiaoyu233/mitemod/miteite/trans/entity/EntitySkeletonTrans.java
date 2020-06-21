@@ -12,7 +12,10 @@ import java.util.Calendar;
 public class EntitySkeletonTrans extends EntityMonster {
     private PathfinderGoalArrowAttack bp = new PathfinderGoalArrowAttack(ReflectHelper.dyCast(this), 1.0D, 20, 60, 15.0F);
     private PathfinderGoalMeleeAttack bq = new PathfinderGoalMeleeAttack(this, EntityHuman.class, 1.2D, false);
+    private int DATA_OBJ_ID_CAN_USE_FIRE_ARROW;
     public int forced_skeleton_type = -1;
+    private int data_object_id_is_frenzied_by_bone_lord;
+
     public EntitySkeletonTrans(World par1World) {
         super(par1World);
         super.c.a(1, new PathfinderGoalFloat(this));
@@ -30,9 +33,16 @@ public class EntitySkeletonTrans extends EntityMonster {
 
     }
 
-    @Marker
-    private void bT() {
-
+    public void bT() {
+        this.c.a(this.bq);
+        this.c.a(this.bp);
+        ItemStack var1 = this.getHeldItemStack();
+        if (var1 != null && var1.b() instanceof ItemBow) {
+            this.c.a(4, this.bp);
+            this.c.a(3, new EntityAISeekFiringPosition(this, 1.0F, true));
+        } else {
+            this.c.a(4, this.bq);
+        }
     }
 
     @Marker
@@ -46,13 +56,20 @@ public class EntitySkeletonTrans extends EntityMonster {
 
     }
 
+    protected void a() {
+        super.a();
+        this.ah.addObject(13, (byte) 0);
+        this.data_object_id_is_frenzied_by_bone_lord = this.ah.addObject(this.ah.getNextAvailableId(), (byte) 0);
+        this.DATA_OBJ_ID_CAN_USE_FIRE_ARROW = this.ah.addObject(this.ah.getNextAvailableId(), (byte)0);
+    }
+
     public GroupDataEntity a(GroupDataEntity par1EntityLivingData) {
         par1EntityLivingData = super.a(par1EntityLivingData);
         int skeleton_type = this.forced_skeleton_type >= 0 ? this.forced_skeleton_type : this.getRandomSkeletonType(super.q);
         if (skeleton_type == 1) {
             super.c.a(4, this.bq);
             this.a(1);
-            super.c(0, (new ItemStack(Item.swordAncientMetal)).setQuality(EnumQuality.poor).randomizeForMob(this, this.q.getDayOfWorld() > 160));
+            super.c(0, (new ItemStack(Item.swordAncientMetal)).setQuality(EnumQuality.poor).randomizeForMob(this, super.q.getDayOfWorld() > 160));
             this.a(GenericAttributes.e).a(4.0D);
             this.setEntityAttribute(GenericAttributes.a,this.getEntityAttributeValue(GenericAttributes.a) * 2d);
             super.g(24f);
@@ -62,6 +79,7 @@ public class EntitySkeletonTrans extends EntityMonster {
                 super.c.a(4, this.bq);
             } else if (skeleton_type == 0) {
                 super.c.a(4, this.bp);
+                this.ah.b(DATA_OBJ_ID_CAN_USE_FIRE_ARROW,(byte)((this.ab.nextInt(10)>5) ? 1 : 0));
             } else {
                 Minecraft.setErrorMessage("onSpawnWithEgg: Unrecognized skeleton type " + skeleton_type);
             }
@@ -72,7 +90,7 @@ public class EntitySkeletonTrans extends EntityMonster {
         this.h(true);
         if (this.n(4) == null) {
             Calendar var2 = super.q.W();
-            if (var2.get(2) + 1 == 10 && var2.get(5) == 31 && this.aD().nextFloat() < 0.25F) {
+            if (var2.get(Calendar.MONTH) + 1 == 10 && var2.get(Calendar.DATE) == 31 && this.aD().nextFloat() < 0.25F) {
                 super.c(4, new ItemStack(this.aD().nextFloat() < 0.1F ? Block.bk : Block.bf));
                 super.e[4] = 0.0F;
             }
@@ -133,7 +151,8 @@ public class EntitySkeletonTrans extends EntityMonster {
 
     public void a(EntityLiving par1EntityLivingBase, float par2) {
         EntityArrow var3 = new EntityArrow(this.getWorld(), this, par1EntityLivingBase, 1.6F, (float)(14 - this.getWorld().r * 4), this.isLongdead() ? Item.arrowAncientMetal : Item.arrowRustedIron, false);
-        int day = this.getWorld() != null ? Math.max(this.getWorld().getDayOfWorld() - 64,0) : 0;
+        int rawDay = this.getWorld() != null ? this.getWorld().getDayOfWorld() : 0;
+        int day = Math.max(rawDay - 64,0);
         int var4 = EnchantmentManager.a(Enchantment.v.z, this.getHeldItemStack()) + 1;
         int var5 = (int) (EnchantmentManager.a(Enchantment.w.z, this.getHeldItemStack()) + Math.min((1 + Math.floor(day / 48F)),5));
         double damage = (double)(par2 * 2.0F) + this.aD().nextGaussian() * 0.0D + (double)((float)this.getWorld().r * 0.11F);
@@ -146,7 +165,7 @@ public class EntitySkeletonTrans extends EntityMonster {
             var3.a(var5);
         }
 
-        if (EnchantmentManager.a(Enchantment.x.z, this.getHeldItemStack()) > 0 || this.bV() == 1 || this.af() && this.aD().nextInt(3) == 0) {
+        if ((EnchantmentManager.a(Enchantment.x.z, this.getHeldItemStack()) > 0 || this.bV() == 1 || (this.af() && this.aD().nextInt(3) == 0)) || (this.ah.a(DATA_OBJ_ID_CAN_USE_FIRE_ARROW) > 0 && rawDay>196)) {
             var3.d(100);
         }
 
@@ -163,9 +182,9 @@ public class EntitySkeletonTrans extends EntityMonster {
     protected void az() {
         super.az();
         int day = this.getWorld() != null ? Math.max(this.getWorld().getDayOfWorld() - 64,0) : 0;
-        this.setEntityAttribute(GenericAttributes.a,(this.bV() == 1 ? 24d : 12d) + day / 16D);
+        this.setEntityAttribute(GenericAttributes.a,(this.bV() == 1 ? 28d : 15d) + day / 14D);
         this.setEntityAttribute(GenericAttributes.d, 0.3F);
-        this.setEntityAttribute(GenericAttributes.b, 32D);
-        this.setEntityAttribute(GenericAttributes.e, this.getEntityAttributeValue(GenericAttributes.e) * 3d);
+        this.setEntityAttribute(GenericAttributes.b, 64D);
+        this.setEntityAttribute(GenericAttributes.e, this.getEntityAttributeValue(GenericAttributes.e) * 3.6d);
     }
 }

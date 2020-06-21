@@ -18,6 +18,8 @@ public class RenderAncientDragon extends bhe {
         GL11.glScalef(13.5f, 13.5f, 13.5f);
     }
 
+
+
     @Override
     protected bjo a(Entity entity) {
         return this.textures[0];

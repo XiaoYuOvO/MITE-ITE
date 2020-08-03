@@ -1,3 +1,4 @@
+[中文版](https://github.com/XiaoYuOvO/MITE-ITE/blob/master/README_CN.md)
 # MITE-ITE
 A hard mod of MITE1.6.4
 

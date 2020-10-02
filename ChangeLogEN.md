@@ -1,4 +1,21 @@
 [中文版](https://github.com/XiaoYuOvO/MITE-ITE/blob/master/ChangeLogCN.md)
+# B0.3.12 ChangeLog
+## Mobs
+* Make bone lord and the ancient bone lord's health,damage,xp drops doubled **_(Can be disabled in config< name:`bone-lord-tweak`>)_**
+* Make players will get 1 damage per second when they are standing netherrack in the nether **_(can be disabled in config< name:`netherrack-damage`>)_**
+* Ghost will shoot three fireballs for a time
+## Game mechanism
+* Players will be teleported randomly if they stay for a time in underworld **_(can be modified<name:> or disable< name:`underworld-random-teleport-time`> in config)_**
+
+ _**Config file: `mite-ite-cfg.json`**_
+ 
+---
+# B0.3.11 ChangeLog
+## Mobs
+* After 128 days, pigmen in the nether have a 10% chance to spawn a special zombie pigman (with smoke effect prompt), which will add power and speed effects to the zombie pigmen in the surrounding 8 blocks (level and duration increase with the number of days)
+* After 128 days, the monster has a 1/4 probability to obtain a speed effect, and a 1/5 probability to obtain a power effect (the higher the probability in the later stage, the higher the effect level)
+* After 196 days, the skeleton has a 1/2 probability of using the fire bow
+---
 # B0.3.10 ChangeLog
 ## Mobs
 * Blaze's max health changed to 40 and attack damage changed to 6

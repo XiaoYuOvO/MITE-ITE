@@ -29,10 +29,15 @@ public class Config extends JsonConfig {
     }
 
     private void fixMissingCfg(){
+        boolean modified = false;
         for (ConfigEntry<?> value : ConfigEntry.values()) {
             if (!this.has(value.cfgName)){
                 this.set(value.cfgName,value.defaultValue);
+                modified = true;
             }
+        }
+        if (modified){
+            this.save();
         }
     }
 
@@ -41,6 +46,7 @@ public class Config extends JsonConfig {
         public static final ConfigEntry<Boolean> UNDERWORLD_RANDOM_TELEPORT = new ConfigEntry<>("underworld-random-teleport",false);
         public static final ConfigEntry<Double> UNDERWORLD_RANDOM_TELEPORT_TIME = new ConfigEntry<>("underworld-random-teleport-time",36000d);
         public static final ConfigEntry<Boolean> NETHERRACK_DAMAGE = new ConfigEntry<>("netherrack-damage",true);
+        public static final ConfigEntry<Boolean> BONE_LORD_TWEAK = new ConfigEntry<>("bone-lord-tweak",true);
         public final String cfgName;
         public final T defaultValue;
         private final BiLazyValue<Config,T> getter ;

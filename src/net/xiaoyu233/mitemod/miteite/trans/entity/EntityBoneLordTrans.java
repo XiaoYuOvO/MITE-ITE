@@ -3,6 +3,8 @@ package net.xiaoyu233.mitemod.miteite.trans.entity;
 import net.minecraft.*;
 import net.xiaoyu233.fml.asm.annotations.Marker;
 import net.xiaoyu233.fml.asm.annotations.Transform;
+import net.xiaoyu233.mitemod.miteite.MITEITEMod;
+import net.xiaoyu233.mitemod.miteite.util.Config;
 
 @Transform(EntityBoneLord.class)
 public class EntityBoneLordTrans extends EntitySkeleton {
@@ -14,10 +16,11 @@ public class EntityBoneLordTrans extends EntitySkeleton {
     @Override
     protected void az() {
         super.az();
+        boolean boneLordTweak = Config.ConfigEntry.BONE_LORD_TWEAK.getFrom(MITEITEMod.CONFIG);
         this.setEntityAttribute(GenericAttributes.b, 44.0D);
         this.setEntityAttribute(GenericAttributes.d, 0.27F);
-        this.setEntityAttribute(GenericAttributes.e, 5.5D);
-        this.setEntityAttribute(GenericAttributes.a, 22.0D);
+        this.setEntityAttribute(GenericAttributes.e, boneLordTweak ? 10.0d : 5.5D);
+        this.setEntityAttribute(GenericAttributes.a, boneLordTweak ? 44.0d : 22.0d);
     }
 
     @Override
@@ -38,5 +41,10 @@ public class EntityBoneLordTrans extends EntitySkeleton {
         if (this.aD().nextFloat() <= (0.2d + this.getWorld().getDayOfWorld() / 64d / 10)) {
             EnchantmentManager.a(this.aD(), item_stack, (int)(5.0F + (this.aD().nextInt(15 + this.getWorld().getDayOfWorld() / 24) + 3) / 10 * (float)this.aD().nextInt(18)));
         }
+    }
+
+    @Override
+    public int getExperienceValue() {
+        return Config.ConfigEntry.BONE_LORD_TWEAK.getFrom(MITEITEMod.CONFIG)  ? super.getExperienceValue() * 6 :super.getExperienceValue() * 3;
     }
 }

@@ -24,7 +24,7 @@ public class EntityTrans extends Entity {
     }
 
     public boolean isInFire() {
-        if (MITEITEMod.CONFIG.get(Config.ConfigEntry.NETHERRACK_DAMAGE) && this.q.isTheNether() &&  this.q
+        if (this.q.isTheNether() && MITEITEMod.CONFIG.get(Config.ConfigEntry.NETHERRACK_DAMAGE) &&  this.q
                 .doesBoundingBoxContainBlock(this.E.b(0.001D, 0.001D, 0.001D), Block.bg.cF, -1)){
             netherrackWalkTime++;
             if (netherrackWalkTime > 20){

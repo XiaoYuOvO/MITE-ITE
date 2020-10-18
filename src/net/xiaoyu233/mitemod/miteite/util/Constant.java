@@ -8,8 +8,8 @@ public class Constant {
     public static int nextItemID = 2024;
     public static int nextBlockID = 160;
     public static int nextAchievementID = 136;
-    public static final String MITE_ITE_VERSION = "B0.3.12";
-    public static final int MITE_ITE_VER_NUM = 317;
+    public static final String MITE_ITE_VERSION = "B0.3.12-1";
+    public static final int MITE_ITE_VER_NUM = 318;
     public static ItemArmor[] HELMETS = null;
     public static ItemArmor[] CHESTPLATES = null;
     public static ItemArmor[] LEGGINGS = null;

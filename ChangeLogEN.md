@@ -1,4 +1,9 @@
 [中文版](https://github.com/XiaoYuOvO/MITE-ITE/blob/master/ChangeLogCN.md)
+# B0.3.12-1 ChangeLog
+* Fixed the problem that players can use dev commands without permission
+
+---
+
 # B0.3.12 ChangeLog
 ## Mobs
 * Make bone lord and the ancient bone lord's health,damage,xp drops doubled **_(Can be disabled in config< name:`bone-lord-tweak`>)_**
@@ -7,7 +12,7 @@
 ## Game mechanism
 * Players will be teleported randomly if they stay for a time in underworld **_(can be modified<name:> or disable< name:`underworld-random-teleport-time`> in config)_**
 
- _**Config file: `mite-ite-cfg.json`**_
+_**Config file: `mite-ite-cfg.json`**_
  
 ---
 # B0.3.11 ChangeLog
@@ -109,3 +114,6 @@
     (Every monster will have armors after 365 days,and the tier of armors will increase with the number of days)
 * Skeleton's bow will have 5 level of enchantment arrow knockback
 * Player can have 40 max health by level up
+
+[B0.3.12 ChangeLog]: #b0312-changelog
+

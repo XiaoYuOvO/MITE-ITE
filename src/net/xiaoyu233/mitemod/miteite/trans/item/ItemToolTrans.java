@@ -43,6 +43,23 @@ public class ItemToolTrans extends Item {
         }
     }
 
+    public EnumItemInUseAction getItemInUseAction(ItemStack par1ItemStack, EntityHuman player) {
+        //Make tools cannot block damage
+        return null;
+    }
+
+    public boolean onItemRightClick(EntityHuman player, float partial_tick, boolean ctrl_is_down) {
+        return false;
+    }
+
+    private boolean canBlock() {
+        return false;
+    }
+
+    public int d_(ItemStack par1ItemStack) {
+        return 0;
+    }
+
     @Override
     public float getStrVsBlock(Block block, int metadata,ItemStack itemStack,EntityHuman player) {
         return this.isEffectiveAgainstBlock(block, metadata) ? this.getMultipliedHarvestEfficiency(block,

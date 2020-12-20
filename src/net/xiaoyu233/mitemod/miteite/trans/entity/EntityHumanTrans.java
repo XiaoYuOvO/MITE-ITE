@@ -154,11 +154,11 @@ public abstract class EntityHumanTrans extends EntityLiving implements ICommandL
                     this.a(ChatMessage.e("---你将于一分钟后被随机传送,请做好准备!!!---").a(EnumChatFormat.o));
                 }
                 if (timeToTeleport <= 200 && this.underworldRandomTeleportTime % 20 == 0){
-                    this.a(ChatMessage.e("!!!你将于"+ timeToTeleport / 20 +"秒后被随机传送!!!").a(EnumChatFormat.m));
+                    this.a(ChatMessage.e("!!!你将于"+ (int)timeToTeleport / 20 +"秒后被随机传送!!!").a(EnumChatFormat.m));
                 }
                 if (this.underworldRandomTeleportTime > randomTeleportTime) {
                     if (ReflectHelper.dyCast(EntityHuman.class,this) instanceof EntityPlayer){
-                        this.initiateRunegateTeleport(this.q.getAsWorldServer(),this.getBlockPosX(),this.getBlockPosY(),this.getBlockPosZ(), (ReflectHelper.dyCast(this)),false);
+                        this.initiateRunegateTeleport(this.q.getAsWorldServer(),this.getBlockPosX(),this.getBlockPosY(),this.getBlockPosZ(), (ReflectHelper.dyCast(this)));
                     }
                     this.underworldRandomTeleportTime = 0;
                 }
@@ -200,8 +200,8 @@ public abstract class EntityHumanTrans extends EntityLiving implements ICommandL
             this.collided_with_gelatinous_cube = false;
             List var5 = this.q.b(this, var4);
             if (var5 != null) {
-                for(int var6 = 0; var6 < var5.size(); ++var6) {
-                    Entity var7 = (Entity)var5.get(var6);
+                for (Object value : var5) {
+                    Entity var7 = (Entity) value;
                     if (!var7.M) {
                         this.r(var7);
                     }
@@ -211,11 +211,11 @@ public abstract class EntityHumanTrans extends EntityLiving implements ICommandL
 
     }
 
-    private void initiateRunegateTeleport(WorldServer world, int x, int y, int z, EntityPlayer player, boolean is_portal_to_world_spawn) {
-        player.is_runegate_teleporting = true;
-        player.runegate_destination_coords = is_portal_to_world_spawn ? new int[]{world.getSpawnX(), world.getTopSolidOrLiquidBlockMITE(world.getSpawnX(), world.getSpawnZ(), false) + 1, world.getSpawnZ()} : this.getRunegateDestinationCoords(world, x, y, z);
+    private void initiateRunegateTeleport(WorldServer world, int x, int y, int z, EntityPlayer player) {
+        int[] runegate_destination_coords = this.getRunegateDestinationCoords(world, x, y, z);
+        player.runegate_destination_coords = runegate_destination_coords;
+        player.a(runegate_destination_coords[0], runegate_destination_coords[1], runegate_destination_coords[2]);
         player.a.b(new Packet85SimpleSignal(EnumSignal.runegate_start));
-        player.prevent_runegate_achievement = is_portal_to_world_spawn;
     }
 
     public int[] getRunegateDestinationCoords(WorldServer world, int x, int y, int z) {

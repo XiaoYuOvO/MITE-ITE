@@ -184,7 +184,7 @@ public class ItemArmorTrans extends Item implements IDamageableItem {
 
     @Override
     public boolean isMaxToolLevel(ItemStack itemStack) {
-        return this.getMaterialForDurability().getMinHarvestLevel() * 4 <= this.getToolLevel(itemStack);
+        return this.getMaterialForDurability().getMinHarvestLevel() * 3 <= this.getToolLevel(itemStack);
     }
 
     @Marker

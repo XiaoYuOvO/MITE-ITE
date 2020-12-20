@@ -1,4 +1,19 @@
 [中文版](https://github.com/XiaoYuOvO/MITE-ITE/blob/master/ChangeLogCN.md)
+# B0.3.13 ChangeLog
+## Blocks
+* Make players cannot use leaves to use x-ray
+## Game mechanism
+* Make the hitbox of nether fire damage bigger(in Y axis) to prevent jumping to avoid damage
+## Mobs
+* Changed the village trade of wool to emerald to wool to emerald shard 
+## Items
+* Make weapons and tools cannot use block
+* Decresed the max armor level of armors
+## Bug Fix
+* Fixed the bug that players can exit game to escape random teleport
+
+---
+
 # B0.3.12-1 ChangeLog
 * Fixed the problem that players can use dev commands without permission
 

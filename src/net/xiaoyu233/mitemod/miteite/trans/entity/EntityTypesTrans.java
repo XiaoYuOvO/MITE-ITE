@@ -12,15 +12,15 @@ import java.util.*;
 @Transform(EntityTypes.class)
 public class EntityTypesTrans {
     @Link
-    private static Map b = new HashMap();
+    private static final Map b = new HashMap();
     @Link
-    private static Map c = new HashMap();
+    private static final Map c = new HashMap();
     @Link
-    private static Map d = new HashMap();
+    private static final Map d = new HashMap();
     @Link
-    private static Map e = new HashMap();
+    private static final Map e = new HashMap();
     @Link
-    private static Map f = new HashMap();
+    private static final Map f = new HashMap();
     @Link
     public static HashMap a = new LinkedHashMap();
     @Link

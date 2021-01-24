@@ -2,9 +2,11 @@ package net.xiaoyu233.mitemod.miteite.util;
 
 import net.minecraft.Item;
 import net.minecraft.ItemArmor;
+import net.minecraft.bjo;
 import net.xiaoyu233.mitemod.miteite.item.Items;
 
 public class Constant {
+    public static final bjo icons_ite = new bjo("textures/gui/icons_ite.png");
     public static int nextItemID = 2024;
     public static int nextBlockID = 160;
     public static int nextAchievementID = 136;

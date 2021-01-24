@@ -1,0 +1,10 @@
+Worldspawner change(increase mob count in blood moon)
+Giant spawning//TODO Decrease the amount of giant zombies in once generating
+Health display{
+    Change the content of Update health packet
+    Send&Receive UpdateHealth Packet
+    patch the sending of UpdateHealth packet
+    Add field to 'bdi' for storing health vars
+}//Almost done(expect tweaking gui)
+
+Add more items using only one id(separate by metadata[damage])

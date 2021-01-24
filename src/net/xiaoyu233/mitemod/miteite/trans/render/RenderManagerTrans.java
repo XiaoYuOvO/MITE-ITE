@@ -14,7 +14,7 @@ import static net.xiaoyu233.mitemod.miteite.util.ReflectHelper.dyCast;
 @Transform(bgl.class)
 public class RenderManagerTrans {
     @Link
-    private Map q = new HashMap();
+    private final Map q = new HashMap();
 
     private RenderManagerTrans() {
         this.q.put(EntityCaveSpider.class, new bgd());

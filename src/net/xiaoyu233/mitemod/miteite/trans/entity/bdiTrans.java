@@ -7,6 +7,8 @@ import net.xiaoyu233.fml.asm.annotations.Transform;
 
 @Transform(bdi.class)
 public class bdiTrans extends bex {
+    private int protein;
+    private int phytonutrients;
     @Link
     private final bcw a;
     @Link
@@ -26,6 +28,23 @@ public class bdiTrans extends bex {
         }
 
     }
+
+    public void setProtein(int protein) {
+        this.protein = protein;
+    }
+
+    public void setPhytonutrients(int phytonutrients) {
+        this.phytonutrients = phytonutrients;
+    }
+
+    public int getProtein() {
+        return protein;
+    }
+
+    public int getPhytonutrients() {
+        return phytonutrients;
+    }
+
     @Marker
     public void b(String par1Str){}
     @Override

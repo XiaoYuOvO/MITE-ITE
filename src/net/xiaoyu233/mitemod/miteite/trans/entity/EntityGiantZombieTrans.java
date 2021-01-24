@@ -1,0 +1,104 @@
+package net.xiaoyu233.mitemod.miteite.trans.entity;
+
+import net.minecraft.*;
+import net.xiaoyu233.fml.asm.annotations.Transform;
+
+import java.util.Random;
+
+import static net.xiaoyu233.mitemod.miteite.util.Constant.ARMORS;
+
+@Transform(EntityGiantZombie.class)
+public class EntityGiantZombieTrans extends EntityMonster {
+    public EntityGiantZombieTrans(World var1) {
+        super(var1);
+        this.N *= 6.0F;
+        this.a(this.O * 3.0f, this.P * 6.0F);
+        this.c.a(0, new PathfinderGoalFloat(this));
+        this.c.a(2, new PathfinderGoalMeleeAttack(this, EntityHuman.class, 1.5D, true));
+        this.c.a(3, new PathfinderGoalMeleeAttack(this, EntityVillager.class, 1.0D, true));
+        this.c.a(4, new PathfinderGoalMoveTowardsRestriction(this, 1.0D));
+        this.c.a(5, new PathfinderGoalMoveThroughVillage(this, 1.0D, false));
+        this.c.a(6, new PathfinderGoalRandomStroll(this, 1.0D));
+        this.c.a(7, new PathfinderGoalLookAtPlayer(this, EntityHuman.class, 8.0F));
+        this.c.a(7, new PathfinderGoalRandomLookaround(this));
+        this.d.a(1, new PathfinderGoalHurtByTarget(this, true));
+        this.d.a(2, new PathfinderGoalNearestAttackableTarget(this, EntityHuman.class, 0, true));
+        this.d.a(2, new PathfinderGoalNearestAttackableTarget(this, EntityVillager.class, 0, false));
+        this.c.a(4, new PathfinderGoalMeleeAttack(this, EntityAnimal.class, 1.0D, true));
+        this.d.a(3, new PathfinderGoalNearestAttackableTarget(this, EntityAnimal.class, 10, true));
+    }
+
+    protected void az() {
+        super.az();
+        int day = this.getWorld() != null ? Math.max(this.getWorld().getDayOfWorld() - 64,0) : 0;
+        this.a(GenericAttributes.e).a(20.0D + (double)day / 48.0D);
+        this.a(GenericAttributes.a).a(100.0D + (double)day / 16.0D * 10);
+        this.a(GenericAttributes.d).a(0.5D);
+    }
+
+    @Override
+    public boolean getCanSpawnHere(boolean perform_light_check) {
+        return this.getWorld().getClosestEntityLivingBase(this,new Class[]{this.getClass()},32,false,false) == null;
+    }
+
+    protected void bw() {
+        int hour = this.getWorld().getHourOfDay();
+        int day = this.getWorld().getDayOfWorld();
+        if ((day > 32 && (((day % 2 == 0 || day > 64) && hour>=18)||(((day-1) % 2 == 0 || day > 64) && hour <= 6)) )) {
+            this.c(new MobEffect(1, 999999, this.aD().nextInt(Math.max(((day-32)/96),1)), true));
+            Random rand = this.aD();
+            if (rand.nextInt(5) == 0) {
+                this.c(new MobEffect(5, 999999, this.aD().nextInt(Math.max(((day-32)/128),1)), true));
+            }
+            addDefaultArmor(day,this,false);
+        }else if ( day > 128){
+            Random rand = this.aD();
+            if (rand.nextInt(4)< (day-96)/32) {
+                this.c(new MobEffect(1, 999999, this.aD().nextInt(Math.max(((day - 32) / 96), 1)), true));
+            }
+            if (rand.nextInt(5)< (day-96)/32) {
+                this.c(new MobEffect(5, 999999, this.aD().nextInt(Math.max(((day-32)/128),1)), true));
+            }
+            addDefaultArmor(day,this,false);
+        }
+    }
+
+    private static int getRandomItemTier(Random random,int maxTier,int minTier,int dayCount){
+        int now = minTier;
+        while (now < maxTier && random.nextInt(Math.max((2 * now + 1)-(dayCount/12),1)) == 0) {
+            now++;
+        }
+        return now;
+    }
+
+    public static void addDefaultArmor(int day_count,EntityInsentient monster,boolean haveAll){
+        Random rand = monster.aD();
+        if (rand.nextInt(3 - Math.min(day_count/128,2)) == 0||day_count>365 || haveAll){
+            int minTier = rand.nextInt(2 + Math.min(day_count/64,6))+1;
+            for (int index = 4;index > 0;index--){
+                if (rand.nextInt(5-Math.min(day_count/32,4)) == 0||day_count>192 || haveAll){
+                    monster.c(index,new ItemStack(ARMORS[index-1][Math.min(getRandomItemTier(rand,Math.min(10,day_count/16),minTier,day_count) + (day_count > 365 ? 1 : 0),ARMORS[index-1].length-1)]).randomizeForMob(monster,day_count > 64));
+                }
+            }
+        }
+    }
+
+    protected void enchantEquipment(ItemStack item_stack) {
+        if (this.aD().nextFloat() <= (0.1d + this.getWorld().getDayOfWorld() / 64d / 10)) {
+            EnchantmentManager.a(this.aD(), item_stack, (int)(5.0F + (this.aD().nextInt(15 + this.getWorld().getDayOfWorld() / 24) + 3) / 10 * (float)this.aD().nextInt(18)));
+        }
+    }
+
+    @Override
+    protected void a(boolean recently_hit_by_player, int par2) {
+        for(int var3 = 0; var3 < this.ae().length; ++var3) {
+            ItemStack var4 = this.n(var3);
+            if (var4 != null) {
+                if (!var4.g()||(picked_up_a_held_item_array[var3] && var4.getRemainingDurability() > var4.l()/4)) {
+                    this.dropItemStack(var4, 0.0F);
+                    this.c(var3, null);
+                }
+            }
+        }
+    }
+}

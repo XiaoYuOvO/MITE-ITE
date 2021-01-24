@@ -16,7 +16,7 @@ public class TileEntityFurnaceTrans extends TileEntity{
     @Link
     public int c;
     @Link
-    private ItemStack[] g = new ItemStack[3];
+    private final ItemStack[] g = new ItemStack[3];
 
     public int d(int par1) {
         return this.g[0] == null ? this.c * par1 / 200 : this.c * par1 / (this.g[0].b().getCookTime()/ Math.max(this.heat_level,1));

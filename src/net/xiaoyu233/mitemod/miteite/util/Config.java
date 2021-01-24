@@ -47,6 +47,9 @@ public class Config extends JsonConfig {
         public static final ConfigEntry<Double> UNDERWORLD_RANDOM_TELEPORT_TIME = new ConfigEntry<>("underworld-random-teleport-time",36000d);
         public static final ConfigEntry<Boolean> NETHERRACK_DAMAGE = new ConfigEntry<>("netherrack-damage",true);
         public static final ConfigEntry<Boolean> BONE_LORD_TWEAK = new ConfigEntry<>("bone-lord-tweak",true);
+        public static final ConfigEntry<Integer> HEALTH_BAR_X_OFFSET = new ConfigEntry<>("health_bar_x_offset",0);
+        public static final ConfigEntry<Integer> HEALTH_BAR_Y_OFFSET = new ConfigEntry<>("health_bar_y_offset",0);
+        public static final ConfigEntry<Double> BLOOD_MOON_MAX_HOSTILE_FRACTION = new ConfigEntry<>("blood_moon_max_hostile_fraction",128d);
         public final String cfgName;
         public final T defaultValue;
         private final BiLazyValue<Config,T> getter ;

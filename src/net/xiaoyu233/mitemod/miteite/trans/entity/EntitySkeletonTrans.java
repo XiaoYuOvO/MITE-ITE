@@ -10,8 +10,8 @@ import java.util.Calendar;
 
 @Transform(EntitySkeleton.class)
 public class EntitySkeletonTrans extends EntityMonster {
-    private PathfinderGoalArrowAttack bp = new PathfinderGoalArrowAttack(ReflectHelper.dyCast(this), 1.0D, 20, 60, 15.0F);
-    private PathfinderGoalMeleeAttack bq = new PathfinderGoalMeleeAttack(this, EntityHuman.class, 1.2D, false);
+    private final PathfinderGoalArrowAttack bp = new PathfinderGoalArrowAttack(ReflectHelper.dyCast(this), 1.0D, 20, 60, 15.0F);
+    private final PathfinderGoalMeleeAttack bq = new PathfinderGoalMeleeAttack(this, EntityHuman.class, 1.2D, false);
     private int DATA_OBJ_ID_CAN_USE_FIRE_ARROW;
     public int forced_skeleton_type = -1;
     private int data_object_id_is_frenzied_by_bone_lord;

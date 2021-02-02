@@ -24,6 +24,6 @@ public class EnchantmentExtend extends Enchantment {
 
     @Override
     public boolean isOnCreativeTab(CreativeModeTab var1) {
-        return true;
+        return var1 == CreativeModeTab.i;
     }
 }

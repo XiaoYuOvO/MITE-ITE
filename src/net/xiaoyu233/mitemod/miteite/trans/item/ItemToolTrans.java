@@ -7,6 +7,7 @@ import net.xiaoyu233.fml.asm.annotations.Marker;
 import net.xiaoyu233.fml.asm.annotations.Transform;
 import net.xiaoyu233.mitemod.miteite.item.Materials;
 import net.xiaoyu233.mitemod.miteite.item.ToolModifierTypes;
+import net.xiaoyu233.mitemod.miteite.item.enchantment.Enchantments;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,19 +46,25 @@ public class ItemToolTrans extends Item {
 
     public EnumItemInUseAction getItemInUseAction(ItemStack par1ItemStack, EntityHuman player) {
         //Make tools cannot block damage
-        return null;
+        return EnchantmentManager.hasEnchantment(par1ItemStack, Enchantments.DEFENCED) ? EnumItemInUseAction.BLOCK : null;
     }
 
     public boolean onItemRightClick(EntityHuman player, float partial_tick, boolean ctrl_is_down) {
-        return false;
+        if (this.getItemInUseAction(player.getHeldItemStack(),player) == EnumItemInUseAction.BLOCK) {
+            player.setHeldItemInUse();
+            return true;
+        } else {
+            return false;
+        }
     }
 
     private boolean canBlock() {
         return false;
     }
 
+    //getUseDuration
     public int d_(ItemStack par1ItemStack) {
-        return 0;
+        return 72000;
     }
 
     @Override

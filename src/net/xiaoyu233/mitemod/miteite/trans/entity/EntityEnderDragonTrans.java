@@ -102,7 +102,7 @@ public class EntityEnderDragonTrans extends EntityInsentient implements IComplex
         if (this.bC != null) {
             if (this.bC.M) {
                 if (!super.q.I) {
-                    this.attackEntityFromPart(this.bq, new Damage(DamageSource.a((net.minecraft.Explosion) null), 5.0F));
+                    this.attackEntityFromPart(this.bq, new Damage(DamageSource.a((Explosion) null), 5.0F));
                 }
 
                 this.bC = null;

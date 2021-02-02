@@ -1,4 +1,54 @@
 [中文版](https://github.com/XiaoYuOvO/MITE-ITE/blob/master/ChangeLogCN.md)
+# B0.4.0 ChangeLog
+**_BIG update!_**\
+**_Note:All the places in bold italics in this change log can be modified through the configuration file, and all these values are the default values in this change log, for example:192,\
+Enclosed in braces are the property names in the configuration file,\
+The types are in square brackets_**
+
+### !WARNING!,After this update, the required minimum version of the mod loader will be changed to B0.1.4, please pay attention to the update!
+
+## Mobs
+* ***The pigmen in hell have a 20% chance of launching a long-range attack with a bow***`{zombie_pigman_use_bow}[Boolean]`
+* Increased the explosion range of creepers(2 times)
+* ***The explosion range of Infernal Creeper becomes 3 times the original, but the explosion time increases and decreases as the number of days increases (the initial value is 4.5 s), and the defense increases (increases by 0.15 per day)*** `{infernal_creeper_boost}[Boolean]`
+* ***Skeletons will have a 40% chance to use horizontal three-shot bow*** `{skeleton_triple_shot}[Boolean]`
+* ***When a vampire bat attacks the player, there will be a 50% chance of poisoning the player*** `{bat_poison_attack}[Boolean]`
+## Game Mechanics
+* Giant zombies will spawn on the surface of overworld in the blood moon day(Has the same AI as zombies)
+* Ghasts will spawn on the surface of overworld in the blood moon ***96*** days later`{ghast_spawn_limit_day}[Integer]`
+* Ancient bone lord will spawn on the surface of overworld in the blood moon ***192*** days later`{ancient_bone_lord_spawn_limit_day}[Integer]`
+* Increase in the number of mobs:
+    + The default for Blood Moon mobs spawning is the 256 / **_128_**,which is ***2*** times`{blood_moon_max_hostile_fraction}[Integer]`
+    + The upper limit of spawning monsters will increase with the number of days, and increase ***1*** per day`{mob_max_spawn_count_increase_per_day}[Double]`
+* Players who stay in the underground world for too long will get debuff
+    + Staying for***72000***tick means ***1 hour*** will get SlownessⅠ`{underworld_debuff_period1}[Integer]`
+    + Staying for***108000***tick means ***1 and half an hour*** will get SlownessⅡ`{underworld_debuff_period2}[Integer]`
+    + Staying for***132000***tick means ***1 hour and 50 minutes*** will get SlownessⅢ`{underworld_debuff_period3}[Integer]`
+    + You must stay in other worlds for **the same amount of time** to **completely** eliminate the impact (there will be a prompt in the chat when completely eliminated)
+* ***Players will have progressive damage when they are attacked (when attacked by the same entity multiple times, the damage will increase, each time it increases by 10%)*** `{stepped_mob_damage}[Boolean]`
+* In wall damage *to the player* increased to ***10***`{in_wall_damage_for_player}[Double]`
+* The probability of the player's enchantment to good enchantments is reduced
+## GUI
+* Players can see their nutritional value in real time, around their own shortcut bar,X offset***0***,Y offset***0***`{health_bar_x_offset}[Integer] {health_bar_y_offset}[Integer]`
+## World Generation
+* Reduce the vein size of lapis to 2, but increase the experience of a single lapis to 40
+* _**The overworld will generate Adamantium ore. The probability of generation is one-sixth of Mithril,and the maximum of vein is 3**_ `{overworld_adamantite_ore}[Boolean]`
+## Items
+* Added *Extend* enchantment(Rare,Enchantment difficulty is 10),Can be enchanted to any tool,Up to level 5,increase***0.5*** reach bouns per level `{extend_enchantment_boost_per_lvl}[Double]`
+* Added *Crit* enchantment(Rare,Enchantment difficulty is 10),Can be enchanted to any sword,Up to level 5,increase ***2*** * 10% = ***20%*** critical strike chance per level and ***0.4*** crit damage \
+  `{crit_enchantment_chance_boost_per_lvl}[Integer],{crit_enchantment_damage_boost_per_lvl[Double]}`
+* Added *Defence* enchantment(Rare,Enchantment difficulty is 15),Can be enchanted to vibrantium sowrd,Up to level 1,can use block with it
+* Only players whose level are lower than ***80*** can use quartz to obtain exp`{quartz_max_exp_level}[Integer]`
+* Added some recipes for *Vibrantium Furnace*(The required heat level is *5*)
+    + Four iron blocks can be smelt into a mithril ingot,with the cook time of ***6000***tick means ***5 minutes*** `{iron_to_mithril_cook_time}[Integer]`
+    + A mithril block can be smelt into an adamantium ingot ingot,with the cook time of ***9000***tick means ***7.5 minutes*** `{mithril_to_adamantium_cook_time}[Integer]`
+* Now crafting every vibrantium armor requires an ancient metal block(The ancient metal block of the shoe is placed between the vibrantium ingot in the bottom row.The rest are placed in the top space between vibrantium ingots,vibrantium ingots' position remains the same)
+# Blocks
+* ***The monster spawning block will speed up spawning when there are players within the spawning radius (approximately 2 times the speed)*** `{mob_spawner_speed_up_with_players}[Boolean]`
+## Bug fix
+* Fixed the bug of using glowstone to X-ray
+---
+
 # B0.3.13 ChangeLog
 ## Blocks
 * Make players cannot use leaves to use x-ray

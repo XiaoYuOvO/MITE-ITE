@@ -4,6 +4,8 @@ import net.minecraft.*;
 import net.xiaoyu233.fml.asm.annotations.Link;
 import net.xiaoyu233.fml.asm.annotations.Marker;
 import net.xiaoyu233.fml.asm.annotations.Transform;
+import net.xiaoyu233.mitemod.miteite.MITEITEMod;
+import net.xiaoyu233.mitemod.miteite.util.Config;
 import net.xiaoyu233.mitemod.miteite.util.Constant;
 import org.lwjgl.opengl.GL11;
 
@@ -197,8 +199,8 @@ public class GuiPlayerOverlayTrans extends avk{
             }
             float protein = this.g.h.getProtein();
             float phytonutrients = this.g.h.getPhytonutrients();
-            int y = guiUp+32;
-            int x = var12+240;
+            int y = guiUp+32 + MITEITEMod.CONFIG.get(Config.ConfigEntry.HEALTH_BAR_Y_OFFSET);
+            int x = var12+240 + MITEITEMod.CONFIG.get(Config.ConfigEntry.HEALTH_BAR_X_OFFSET);
             GL11.glPushMatrix();
                 GL11.glPushMatrix();
                     this.b(this.g.l,(int)phytonutrients + "/" + 160000, x-167,y-8,0xffffff);

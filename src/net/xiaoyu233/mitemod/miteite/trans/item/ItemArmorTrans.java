@@ -18,7 +18,7 @@ public class ItemArmorTrans extends Item implements IDamageableItem {
     private Material effective_material;
     @Link
     private boolean is_chain_mail;
-    @Link("b")
+    @Link("delay")
     public int slotIndex;
 
 

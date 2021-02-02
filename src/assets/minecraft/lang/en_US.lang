@@ -33,3 +33,6 @@ achievement.vibraniumFurnace="Molecular recombination instrument"
 achievement.vibraniumFurnace.desc=Make a vibranium furnace(it can turn coal into diamond!)
 commands.version.playing=You are playing
 commands.day.msg=It is day %s of this world
+enchantment.defence=Defence
+enchantment.crit=Crit
+enchantment.extend=Extend

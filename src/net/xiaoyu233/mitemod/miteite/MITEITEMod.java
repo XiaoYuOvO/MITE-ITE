@@ -13,8 +13,8 @@ import java.io.File;
 
 @Mod
 public class MITEITEMod extends AbstractMod {
-    private static final String MOD_LOADER_MIN_VER_STRING = "B0.1.1";
-    private static final int MOD_LOADER_MIN_VER_NUM = 2;
+    private static final String MOD_LOADER_MIN_VER_STRING = "B0.1.4";
+    private static final int MOD_LOADER_MIN_VER_NUM = 5;
     private static final File CFG_FILE = new File(System.getProperty("user.dir"),"mite-ite-cfg.json");
     public static Config CONFIG;
     @Override

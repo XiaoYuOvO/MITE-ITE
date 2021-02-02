@@ -1,5 +1,7 @@
 package net.xiaoyu233.mitemod.miteite.trans.world;
 
+import net.minecraft.AxisAlignedBB;
+import net.minecraft.Block;
 import net.minecraft.World;
 import net.minecraft.WorldData;
 import net.xiaoyu233.fml.asm.annotations.Link;
@@ -73,6 +75,39 @@ public class WorldTrans {
         } else {
             return isBloodMoonDay(this.I()) && !this.isBlueMoon(exclusivelyAtNight);
         }
+    }
+
+    public final boolean anySolidBlockIn(AxisAlignedBB bounding_box) {
+        int min_x = bounding_box.getBlockCoordForMinX();
+        int max_x = bounding_box.getBlockCoordForMaxX();
+        int min_y = bounding_box.getBlockCoordForMinY();
+        int max_y = bounding_box.getBlockCoordForMaxY();
+        int min_z = bounding_box.getBlockCoordForMinZ();
+        int max_z = bounding_box.getBlockCoordForMaxZ();
+
+        for(int x = min_x; x <= max_x; ++x) {
+            for(int y = min_y; y <= max_y; ++y) {
+                for(int z = min_z; z <= max_z; ++z) {
+                    Block block = this.getBlock(x, y, z);
+                    if (block != null && block.isSolid(this.h(x, y, z))) {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
+    @Marker
+    public Block getBlock(int x, int y, int z) {
+        return null;
+    }
+
+    //getMetadata
+    @Marker
+    public final int h(int x, int y, int z) {
+        return 0;
     }
 
     @Marker

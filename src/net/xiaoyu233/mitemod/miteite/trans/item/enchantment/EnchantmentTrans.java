@@ -6,8 +6,14 @@ import net.xiaoyu233.fml.asm.annotations.Link;
 import net.xiaoyu233.fml.asm.annotations.Marker;
 import net.xiaoyu233.fml.asm.annotations.Transform;
 
+import java.util.ArrayList;
+
 @Transform(Enchantment.class)
 public class EnchantmentTrans {
+    @Link
+    public static Enchantment[] b;
+    @Link
+    public static Enchantment[] c;
     @Link
     private int difficulty;
 
@@ -42,5 +48,21 @@ public class EnchantmentTrans {
     @Marker
     private boolean hasLevels() {
         return false;
+    }
+
+    public static void registerEnchantmentsUnsafe(Enchantment enchantments){
+        for (int i = 0, bLength = b.length; i < bLength; i++) {
+            if (b[i] == null){
+                b[i] = enchantments;
+                break;
+            }
+        }
+        ArrayList<Enchantment> var0 = new ArrayList<>();
+        for (Enchantment enchantment : b) {
+            if (enchantment != null){
+                var0.add(enchantment);
+            }
+        }
+        c = var0.toArray(new Enchantment[0]);
     }
 }

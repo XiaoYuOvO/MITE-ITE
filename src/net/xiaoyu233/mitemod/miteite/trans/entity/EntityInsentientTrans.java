@@ -21,6 +21,10 @@ public class EntityInsentientTrans extends EntityLiving{
     public boolean[] picked_up_a_held_item_array;
     @Link
     public boolean picked_up_a_held_item;
+    @Link
+    protected boolean came_from_spawner;
+    @Link
+    protected boolean came_from_spawn_block;
 
     @Marker
     public EntityInsentientTrans(World par1World) {
@@ -49,6 +53,9 @@ public class EntityInsentientTrans extends EntityLiving{
         super.onMeleeAttacked(attacker, result);
     }
 
+    public boolean isCame_from_spawner() {
+        return came_from_spawner;
+    }
 
     public void tryPickUpItems() {
         if (!this.getWorld().I && this.bD() && !getM() && this.aN() > 0.0F && this.getWorld().O().b("mobGriefing") && this.getTicksExistedWithOffset() % 10 == 0) {

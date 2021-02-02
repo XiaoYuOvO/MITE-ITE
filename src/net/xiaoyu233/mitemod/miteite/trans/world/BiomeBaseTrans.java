@@ -12,6 +12,7 @@ import java.util.List;
 @SuppressWarnings("unchecked")
 @Transform(BiomeBase.class)
 public class BiomeBaseTrans {
+    @Link
     protected List J;
     @Link
     protected List K;
@@ -89,7 +90,6 @@ public class BiomeBaseTrans {
         this.M.add(new BiomeMeta(EntityNightwing.class, 4, 1, 4));
         this.J.add(new BiomeMeta(EntityGhoul.class, 10, 1, 1));
         this.J.add(new BiomeMeta(EntityWight.class, 10, 1, 1));
-        this.J.add(new BiomeMeta(EntityGiantZombie.class, 10,1,1));
         this.J.add(new BiomeMeta(EntityInvisibleStalker.class, 10, 1, 1));
         this.J.add(new BiomeMeta(EntityDemonSpider.class, 10, 1, 1));
         this.J.add(new BiomeMeta(EntityHellhound.class, 10, 1, 2));
@@ -104,6 +104,10 @@ public class BiomeBaseTrans {
         this.J.add(new BiomeMeta(EntityClayGolem.class, 50, 1, 1));
         this.J.add(new BiomeMeta(EntityBoneLord.class, 5, 1, 1));
         this.J.add(new BiomeMeta(EntityPhaseSpider.class, 5, 1, 4));
+        //MITEITE
+        this.J.add(new BiomeMeta(EntityGiantZombie.class, 10,1,1));
+        this.J.add(new BiomeMeta(EntityGhast.class, 10,1,1));
+        this.J.add(new BiomeMeta(EntityAncientBoneLord.class, 10,1,1));
     }
 
     @Marker

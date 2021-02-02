@@ -65,22 +65,26 @@ public class Items extends Item{
         CraftingManagerHelper.registerShapelessRecipe(new ItemStack(VIBRANIUM_INGOT),true,Items.VIBRANIUM_NUGGET,Items.VIBRANIUM_NUGGET,Items.VIBRANIUM_NUGGET,Items.VIBRANIUM_NUGGET,Items.VIBRANIUM_NUGGET,Items.VIBRANIUM_NUGGET,Items.VIBRANIUM_NUGGET,Items.VIBRANIUM_NUGGET,Items.VIBRANIUM_NUGGET);
         CraftingManagerHelper.registerShapedRecipe(new ItemStack(VIBRANIUM_HELMET),true,
                 "###",
-                        "# #",
-                        '#',VIBRANIUM_INGOT);
+                        "#A#",
+                        '#',VIBRANIUM_INGOT,
+                        'A',Block.blockAncientMetal);
         CraftingManagerHelper.registerShapedRecipe(new ItemStack(VIBRANIUM_CHESTPLATE),true,
-                "# #",
+                "#A#",
                         "###",
                         "###",
-                        '#',VIBRANIUM_INGOT);
+                        '#',VIBRANIUM_INGOT,
+                'A',Block.blockAncientMetal);
         CraftingManagerHelper.registerShapedRecipe(new ItemStack(VIBRANIUM_LEGGINGS),true,
                 "###",
+                        "#A#",
                         "# #",
-                        "# #",
-                        '#',VIBRANIUM_INGOT);
+                        '#',VIBRANIUM_INGOT,
+                'A',Block.blockAncientMetal);
         CraftingManagerHelper.registerShapedRecipe(new ItemStack(VIBRANIUM_BOOTS),true,
                 "# #",
-                        "# #",
-                        '#',VIBRANIUM_INGOT);
+                        "#A#",
+                        '#',VIBRANIUM_INGOT,
+                'A',Block.blockAncientMetal);
         CraftingManagerHelper.registerShapedRecipe(new ItemStack(VIBRANIUM_PICKAXE),true,
                 "###",
                         " S ",
@@ -153,6 +157,7 @@ public class Items extends Item{
                 'L',Item.M,
                 'N',Items.VIBRANIUM_NUGGET
                 );
+        RecipesFurnace.a().addSmelting(Block.blockMithril.cF, new ItemStack(Item.ingotAdamantium));
     }
     private static Item register(String resourceLocation,Item item,CreativeModeTab tab){
         item.setResourceLocation(item.getResourceLocationPrefix() + resourceLocation);

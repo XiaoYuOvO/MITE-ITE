@@ -12,7 +12,7 @@ public class EntityGiantZombieTrans extends EntityMonster {
     public EntityGiantZombieTrans(World var1) {
         super(var1);
         this.N *= 6.0F;
-        this.a(this.O * 3.0f, this.P * 6.0F);
+        this.a(this.O * 2.0f, this.P * 6.0F);
         this.c.a(0, new PathfinderGoalFloat(this));
         this.c.a(2, new PathfinderGoalMeleeAttack(this, EntityHuman.class, 1.5D, true));
         this.c.a(3, new PathfinderGoalMeleeAttack(this, EntityVillager.class, 1.0D, true));
@@ -31,14 +31,15 @@ public class EntityGiantZombieTrans extends EntityMonster {
     protected void az() {
         super.az();
         int day = this.getWorld() != null ? Math.max(this.getWorld().getDayOfWorld() - 64,0) : 0;
-        this.a(GenericAttributes.e).a(20.0D + (double)day / 48.0D);
+        this.a(GenericAttributes.e).a(20.0D + (double)day / 20D);
         this.a(GenericAttributes.a).a(100.0D + (double)day / 16.0D * 10);
         this.a(GenericAttributes.d).a(0.5D);
     }
 
     @Override
     public boolean getCanSpawnHere(boolean perform_light_check) {
-        return this.getWorld().getClosestEntityLivingBase(this,new Class[]{this.getClass()},32,false,false) == null;
+        Vec3D pos = this.getFootPos();
+        return !this.getWorld().anySolidBlockIn(this.E.a(0.0,1.0,0.0)) && this.getWorld().getClosestEntityLivingBase(this,new Class[]{this.getClass()},64,false,false) == null && this.getWorld().getBlock(pos.getBlockX(),pos.getBlockY(),pos.getBlockZ()) != Block.F;
     }
 
     protected void bw() {

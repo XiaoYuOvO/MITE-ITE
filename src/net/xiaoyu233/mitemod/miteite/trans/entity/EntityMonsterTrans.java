@@ -4,6 +4,9 @@ import net.minecraft.*;
 import net.xiaoyu233.fml.asm.annotations.Link;
 import net.xiaoyu233.fml.asm.annotations.Marker;
 import net.xiaoyu233.fml.asm.annotations.Transform;
+import net.xiaoyu233.mitemod.miteite.MITEITEMod;
+import net.xiaoyu233.mitemod.miteite.item.enchantment.Enchantments;
+import net.xiaoyu233.mitemod.miteite.util.Config;
 
 import java.util.Random;
 
@@ -17,6 +20,81 @@ public class EntityMonsterTrans extends EntityInsentient implements IMonster {
     public EntityMonsterTrans(World par1World) {
         super(par1World);
     }
+
+    public EntityDamageResult attackEntityAsMob(Entity target) {
+        if (this.isDecoy()) {
+            return null;
+        } else if (target instanceof EntityHuman && target.getAsPlayer().isImmuneByGrace()) {
+            return null;
+        } else {
+            ItemStack held_item = this.getHeldItemStack();
+            float critBouns = 0;
+            boolean critical = false;
+            if (EnchantmentManager.hasEnchantment(this.getHeldItemStack(), Enchantments.CRIT)){
+                int critLevel = EnchantmentManager.getEnchantmentLevel(Enchantments.CRIT, this.getHeldItemStack());
+                critical = this.ab.nextInt(10) < MITEITEMod.CONFIG.get(Config.ConfigEntry.CRIT_ENCHANTMENT_CHANCE_BOOST_PER_LVL) * critLevel;
+                critBouns = critLevel * MITEITEMod.CONFIG.get(Config.ConfigEntry.CRIT_ENCHANTMENT_DAMAGE_BOOST_PER_LVL).floatValue();
+            }
+            Damage damage = new Damage(DamageSource.a(this), (float)this.a(GenericAttributes.e).e());
+            if (critical){
+                damage.scaleAmount(1.5f);
+                damage.addAmount(critBouns);
+            }
+            if (this.isFrenzied()) {
+                damage.addAmount((float)this.getEntityAttributeBaseValue(GenericAttributes.e) * 0.5F);
+            }
+
+            int knockback_bonus = 0;
+            if (target.isEntityLivingBase()) {
+                damage.addAmount(EnchantmentWeaponDamage.getDamageModifiers(held_item, target.getAsEntityLivingBase()));
+                knockback_bonus += EnchantmentManager.b(this, target.getAsEntityLivingBase());
+            }
+
+            int fire_aspect = EnchantmentManager.a(this);
+            EntityDamageResult result = target.attackEntityFrom(damage.setFireAspect(fire_aspect > 0));
+            if (result == null) {
+                return result;
+            } else {
+                if (result.entityWasNegativelyAffected()) {
+                    if (knockback_bonus > 0) {
+                        target.g(-MathHelper.a(this.A * 3.1415927F / 180.0F) * (float)knockback_bonus * 0.5F, 0.1D, MathHelper.b(this.A * 3.1415927F / 180.0F) * (float)knockback_bonus * 0.5F);
+                        this.x *= 0.6D;
+                        this.z *= 0.6D;
+                    }
+
+                    if (fire_aspect > 0) {
+                        target.d(fire_aspect * 4);
+                    }
+
+                    if (this.af() && !this.hasHeldItem() && this.ab.nextFloat() < (float)this.q.r * 0.3F) {
+                        target.d(2 * this.q.r);
+                    }
+
+                    if (target.isEntityLivingBase()) {
+                        if (this.q.I) {
+                            System.out.println("EntityMob.attackEntityAsMob() is calling EnchantmentThorns.func_92096_a() on client");
+                            Minecraft.temp_debug = "mob";
+                        }
+
+                        EnchantmentThorns.a(this, target.getAsEntityLivingBase(), this.ab);
+                        int stunning = EnchantmentManager.getStunModifier(this, target.getAsEntityLivingBase());
+                        if ((double)stunning > Math.random() * 10.0D) {
+                            target.getAsEntityLivingBase().c(new MobEffect(MobEffectList.d.H, stunning * 50, stunning * 5));
+                        }
+
+                        this.heal((float)EnchantmentManager.getVampiricTransfer(this, target.getAsEntityLivingBase(), result.getAmountOfHealthLost()), EnumEntityFX.vampiric_gain);
+                    }
+
+                    if (target instanceof EntityHuman) {
+                        this.refreshDespawnCounter(-9600);
+                    }
+                }
+
+                return result;
+            }
+        }
+    }
+
     protected void bw() {
         int hour = this.getWorld().getHourOfDay();
         int day = this.getWorld().getDayOfWorld();

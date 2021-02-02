@@ -3,8 +3,9 @@ package net.xiaoyu233.mitemod.miteite.trans.world;
 import net.minecraft.*;
 import net.xiaoyu233.fml.asm.annotations.Marker;
 import net.xiaoyu233.fml.asm.annotations.Transform;
+import net.xiaoyu233.mitemod.miteite.MITEITEMod;
+import net.xiaoyu233.mitemod.miteite.util.Config;
 
-import java.util.Iterator;
 import java.util.List;
 
 @Transform(WorldServer.class)
@@ -53,6 +54,8 @@ public class WorldServerTrans extends World{
         boolean can_spawn_revenants_on_surface = is_blood_moon_up;
         boolean can_spawn_bone_lords_on_surface = is_blood_moon_up;
         boolean can_spawn_giant_on_surface = is_blood_moon_up;
+        boolean can_spawn_ghast_on_surface = is_blood_moon_up;
+        boolean can_spawn_ancient_bone_lord_on_surface = is_blood_moon_up;
 
         for(int attempt = 0; attempt < 16; ++attempt) {
             List possible_creatures = this.L().a(creature_type, x, y, z);
@@ -143,25 +146,30 @@ public class WorldServerTrans extends World{
                     if ((this.l(x, y, z) || this.blockTypeIsAbove(Block.P, x, y, z) || this.blockTypeIsAbove(Block.O, x, y, z)) && this.blockTypeIsNearTo(Block.O.cF, x, y, z, 5, 2) && this.blockTypeIsNearTo(Block.P.cF, x, y + 5, z, 5, 5)) {
                         return entity_class;
                     }
-                } else {
-                    if (entity_class != EntityBlackWidowSpider.class) {
-                        if (entity_class == EntityGhast.class) {
-                            Iterator i = this.e.iterator();
-
-                            while(i.hasNext()) {
-                                Entity entity = (Entity)i.next();
-                                if (entity instanceof EntityGhast && entity.getDistanceSqToBlock(x, y, z) < 2304.0D && this.s.nextFloat() < 0.8F) {
-                                    entity_class = null;
-                                }
-                            }
-                        }
-
+                } else if (entity_class == EntityAncientBoneLord.class){
+                    if (can_spawn_ancient_bone_lord_on_surface && this.getDayOfWorld() >= MITEITEMod.CONFIG.get(Config.ConfigEntry.ANCIENT_BONE_LORD_SPAWN_LIMIT_DAY)){
                         return entity_class;
                     }
-
+                }else if (entity_class == EntityBlackWidowSpider.class) {
                     if (this.s.nextFloat() >= 0.5F) {
                         return entity_class;
                     }
+                } else {
+                    if (entity_class == EntityGhast.class) {
+                        for (Object value : this.e) {
+                            Entity entity = (Entity) value;
+                            if (entity instanceof EntityGhast)
+                                if (this.isTheNether() && entity.getDistanceSqToBlock(x, y, z) < 2304.0D && this.s.nextFloat() < 0.8F) {
+                                    entity_class = null;
+                                }else if (this.isOverworld() && entity.getDistanceSqToBlock(x, y, z) < 2304.0D && can_spawn_ghast_on_surface){
+                                    if (this.getDayOfWorld() >= MITEITEMod.CONFIG.get(Config.ConfigEntry.GHAST_SPAWN_LIMIT_DAY)){
+                                        return entity_class;
+                                    }
+                                }
+                        }
+                    }
+
+                    return entity_class;
                 }
             } else if (!check_depth || y <= 32) {
                 return entity_class;

@@ -9,9 +9,10 @@ public class Constant {
     public static final bjo icons_ite = new bjo("textures/gui/icons_ite.png");
     public static int nextItemID = 2024;
     public static int nextBlockID = 160;
+    public static int nextEnchantmentID = 96;
     public static int nextAchievementID = 136;
-    public static final String MITE_ITE_VERSION = "B0.3.13";
-    public static final int MITE_ITE_VER_NUM = 319;
+    public static final String MITE_ITE_VERSION = "B0.4.0";
+    public static final int MITE_ITE_VER_NUM = 400;
     public static ItemArmor[] HELMETS = null;
     public static ItemArmor[] CHESTPLATES = null;
     public static ItemArmor[] LEGGINGS = null;

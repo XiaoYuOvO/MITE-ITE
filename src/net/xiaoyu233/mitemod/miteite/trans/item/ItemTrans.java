@@ -6,12 +6,15 @@ import net.minecraft.*;
 import net.xiaoyu233.fml.asm.annotations.Link;
 import net.xiaoyu233.fml.asm.annotations.Marker;
 import net.xiaoyu233.fml.asm.annotations.Transform;
+import net.xiaoyu233.mitemod.miteite.MITEITEMod;
 import net.xiaoyu233.mitemod.miteite.item.ItemModifierTypes;
 import net.xiaoyu233.mitemod.miteite.item.Items;
 import net.xiaoyu233.mitemod.miteite.item.Materials;
 import net.xiaoyu233.mitemod.miteite.util.Constant;
 
 import static net.minecraft.Item.*;
+import static net.xiaoyu233.mitemod.miteite.util.Config.ConfigEntry.IRON_TO_MITHRIL_COOK_TIME;
+import static net.xiaoyu233.mitemod.miteite.util.Config.ConfigEntry.MITHRIL_TO_ADAMANTIUM_COOK_TIME;
 import static net.xiaoyu233.mitemod.miteite.util.ReflectHelper.dyCast;
 
 @Transform(Item.class)
@@ -97,7 +100,11 @@ public class ItemTrans{
     }
 
     public int getCookTime(){
-        if (this.cv == Block.cE.cF){
+        if (this.cv == ingotMithril.cv){
+            return MITEITEMod.CONFIG.get(MITHRIL_TO_ADAMANTIUM_COOK_TIME);
+        }else if (this.cv == Block.an.cF){
+            return MITEITEMod.CONFIG.get(IRON_TO_MITHRIL_COOK_TIME);
+        }else if (this.cv == Block.cE.cF){
             return 2000;
         }else if (this.isBlock()){
             return 200 * (getAsItemBlock().getBlock().getMinHarvestLevel(-1) + 1);
@@ -108,7 +115,7 @@ public class ItemTrans{
 
     @Marker
     public boolean isBlock() {
-        return dyCast(this) instanceof ItemBlock;
+        return false;
     }
 
     public boolean hasExpAndLevel(){

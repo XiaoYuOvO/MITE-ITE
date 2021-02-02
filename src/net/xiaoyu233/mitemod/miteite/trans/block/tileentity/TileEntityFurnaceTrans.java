@@ -23,9 +23,56 @@ public class TileEntityFurnaceTrans extends TileEntity{
 
     }
 
+    public void smeltItem(int heat_level) {
+        if (this.canSmelt(heat_level)) {
+            ItemStack var1 = RecipesFurnace.a().getSmeltingResult(this.getInputItemStack(), heat_level);
+            if (this.g[2] == null) {
+                this.g[2] = var1.m();
+            } else if (this.g[2].d == var1.d) {
+                this.g[2].b += var1.b;
+            }
+
+            byte consumption;
+            if (this.getInputItemStack().d == Block.J.cF && var1.d == Block.V.cF) {
+                consumption = 4;
+            } else if (this.getInputItemStack().d == Block.J.cF && var1.d == Block.R.cF) {
+                consumption = 4;
+            } else if (this.getInputItemStack().d == Block.an.cF && var1.d == Item.ingotMithril.cv){
+                consumption = 4;
+            }else {
+                consumption = 1;
+            }
+
+            ItemStack var10000 = this.getInputItemStack();
+            var10000.b -= consumption;
+            if (this.getInputItemStack().b() == Item.aK && var1.b() == Item.aJ) {
+                int extra_converted = Math.min(this.getOutputItemStack().e() - this.getOutputItemStack().b, this.getInputItemStack().b);
+                if (extra_converted > 3) {
+                    extra_converted = 3;
+                }
+
+                var10000 = this.getOutputItemStack();
+                var10000.b += extra_converted;
+                var10000 = this.getInputItemStack();
+                var10000.b -= extra_converted;
+            }
+
+            if (this.g[0].b <= 0) {
+                this.g[0] = null;
+            }
+        }
+
+    }
+
+    @Marker
+    public ItemStack getInputItemStack() {return this.g[0];}
+    @Marker
+    public ItemStack getOutputItemStack() {
+        return this.g[2];
+    }
 
     public static int getHeatLevelRequired(int item_id) {
-        if (item_id == Block.cE.cF){
+        if (item_id == Block.cE.cF || item_id == Block.an.cF){
             return 5;
         }else if (item_id == Block.oreAdamantium.cF) {
             return 4;
@@ -138,11 +185,6 @@ public class TileEntityFurnaceTrans extends TileEntity{
     @Marker
     public boolean isFlooded() {
         return false;
-    }
-
-    @Marker
-    public void smeltItem(int heat_level) {
-
     }
 
     @Marker

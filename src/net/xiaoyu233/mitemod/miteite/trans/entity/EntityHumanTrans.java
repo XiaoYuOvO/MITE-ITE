@@ -8,21 +8,29 @@ import net.xiaoyu233.mitemod.miteite.MITEITEMod;
 import net.xiaoyu233.mitemod.miteite.achievement.Achievements;
 import net.xiaoyu233.mitemod.miteite.item.ArmorModifierTypes;
 import net.xiaoyu233.mitemod.miteite.item.Materials;
+import net.xiaoyu233.mitemod.miteite.item.enchantment.Enchantments;
 import net.xiaoyu233.mitemod.miteite.util.Config;
 import net.xiaoyu233.mitemod.miteite.util.ReflectHelper;
 
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
+import static net.minecraft.EntityHuman.y_offset_on_client_and_eye_height_on_server;
+import static net.xiaoyu233.mitemod.miteite.util.Config.ConfigEntry.STEPPED_MOB_DAMAGE;
 import static net.xiaoyu233.mitemod.miteite.util.ReflectHelper.dyCast;
 
 @Transform(EntityHuman.class)
 public abstract class EntityHumanTrans extends EntityLiving implements ICommandListener {
 
     @Link
-    public PlayerInventory bn;
+    public PlayerInventory bn = new PlayerInventory(dyCast(this));
     @Link
-    public float vision_dimming;
+    private final InventoryEnderChest a = new InventoryEnderChest();
+    @Link
+    public Container bo;
+    @Link
+    public Container bp;
+    @Link
+    protected FoodMetaData bq;
     @Link
     protected int br;
     @Link
@@ -30,24 +38,63 @@ public abstract class EntityHumanTrans extends EntityLiving implements ICommandL
     @Link
     public float bt;
     @Link
+    protected final String bu;
+    @Link
+    public int bv;
+    @Link
+    public ChunkCoordinates bed_location;
+    @Link
+    public EnumConsciousState conscious_state;
+    @Link
+    private ChunkCoordinates c;
+    @Link
+    private boolean d;
+    @Link
     public PlayerAbilities bG;
+    @Link
+    public int bJ;
+    @Link
+    protected ItemStack f;
+    @Link
+    protected int g;
+    @Link
+    protected float bK;
     @Link
     protected float bL;
     @Link
+    public float vision_dimming;
+    @Link
+    public int countdown_to_mark_all_nearby_chunks_for_render_update;
+    @Link
     public boolean collided_with_gelatinous_cube;
-    public int bJ;
-    public ChunkCoordinates bed_location;
-    private ChunkCoordinates c;
-    private boolean d;
-    protected FoodMetaData bq;
-    private InventoryEnderChest a;
+    @Link
+    List tentative_bounding_boxes;
+    @Link
+    public HashMap stats;
+    @Link
+    public long block_placement_tick;
     private int underworldRandomTeleportTime;
-    private boolean is_runegate_teleporting;
+    private int underworldDebuffTime;
+    private final Map<Entity,Integer> attackCountMap = new HashMap<>();
 
 
-    @Marker
-    public EntityHumanTrans(World par1World) {
+    public EntityHumanTrans(World par1World, String par2Str) {
         super(par1World);
+        this.conscious_state = EnumConsciousState.fully_awake;
+        this.bG = new PlayerAbilities(dyCast(this));
+        this.bK = 0.1F;
+        this.bL = 0.02F;
+        this.countdown_to_mark_all_nearby_chunks_for_render_update = 20;
+        this.tentative_bounding_boxes = new ArrayList();
+        this.stats = new HashMap();
+        this.block_placement_tick = -1L;
+        this.bu = par2Str;
+        this.bo = new ContainerPlayer(dyCast(this));
+        this.bp = this.bo;
+        this.N = y_offset_on_client_and_eye_height_on_server;
+        ChunkCoordinates var3 = par1World.K();
+        this.b((double)var3.a + 0.5D, var3.b + 1, (double)var3.c + 0.5D, 0.0F, 0.0F);
+        this.bq = new FoodMetaData(dyCast(this));
     }
 
     @Override
@@ -90,6 +137,7 @@ public abstract class EntityHumanTrans extends EntityLiving implements ICommandL
             this.a.a(var3);
         }
         this.underworldRandomTeleportTime = par1NBTTagCompound.e("UnderWorldTeleportTime");
+        this.underworldDebuffTime = par1NBTTagCompound.e("UnderWorldDebuffTime");
         this.vision_dimming = par1NBTTagCompound.g("vision_dimming");
     }
 
@@ -110,6 +158,7 @@ public abstract class EntityHumanTrans extends EntityLiving implements ICommandL
         this.bG.a(par1NBTTagCompound);
         par1NBTTagCompound.a("EnderItems", this.a.h());
         par1NBTTagCompound.a("UnderWorldTeleportTime",this.underworldRandomTeleportTime);
+        par1NBTTagCompound.a("UnderWorldDebuffTime",this.underworldDebuffTime);
         par1NBTTagCompound.a("vision_dimming", this.vision_dimming);
     }
 
@@ -146,24 +195,59 @@ public abstract class EntityHumanTrans extends EntityLiving implements ICommandL
         }
 
         if (!this.q.I ){
-            if (this.q.isUnderworld() && Config.ConfigEntry.UNDERWORLD_RANDOM_TELEPORT.getFrom(MITEITEMod.CONFIG)) {
-                double randomTeleportTime = Config.ConfigEntry.UNDERWORLD_RANDOM_TELEPORT_TIME.getFrom(MITEITEMod.CONFIG);
-                this.underworldRandomTeleportTime++;
-                double timeToTeleport = randomTeleportTime - this.underworldRandomTeleportTime;
-                if (timeToTeleport == 1200){
-                    this.a(ChatMessage.e("---你将于一分钟后被随机传送,请做好准备!!!---").a(EnumChatFormat.o));
-                }
-                if (timeToTeleport <= 200 && this.underworldRandomTeleportTime % 20 == 0){
-                    this.a(ChatMessage.e("!!!你将于"+ (int)timeToTeleport / 20 +"秒后被随机传送!!!").a(EnumChatFormat.m));
-                }
-                if (this.underworldRandomTeleportTime > randomTeleportTime) {
-                    if (ReflectHelper.dyCast(EntityHuman.class,this) instanceof EntityPlayer){
-                        this.initiateRunegateTeleport(this.q.getAsWorldServer(),this.getBlockPosX(),this.getBlockPosY(),this.getBlockPosZ(), (ReflectHelper.dyCast(this)));
+            if (this.q.isUnderworld()) {
+                if (Config.ConfigEntry.UNDERWORLD_DEBUFF.getFrom(MITEITEMod.CONFIG)){
+                    this.underworldDebuffTime++;
+                    int period1 = Config.ConfigEntry.UNDERWORLD_DEBUFF_PERIOD1.getFrom(MITEITEMod.CONFIG);
+                    int period2 = Config.ConfigEntry.UNDERWORLD_DEBUFF_PERIOD2.getFrom(MITEITEMod.CONFIG);
+                    int period3 = Config.ConfigEntry.UNDERWORLD_DEBUFF_PERIOD3.getFrom(MITEITEMod.CONFIG);
+                    if (underworldDebuffTime > period1 && underworldDebuffTime < period2){
+                        if (underworldDebuffTime == period1+1){
+                            this.a(ChatMessage.e("---你在地底世界中感到有些疲惫---").a(EnumChatFormat.h));
+                        }
+                        this.c(new MobEffect(2, 60 * 20, 0));
+
+                    }else if (underworldDebuffTime > period2 && underworldDebuffTime < period3){
+                        if (underworldDebuffTime == period2+1){
+                            this.a(ChatMessage.e("---你在地底世界中感到更加疲惫---").a(EnumChatFormat.o));
+                        }
+                        this.c(new MobEffect(2, 120 * 20, 1));
+
+                    }else if (underworldDebuffTime > period3){
+                        if (underworldDebuffTime == period3 + 1) {
+                            this.a(ChatMessage.e("---你在地底世界中感到非常疲惫---").a(EnumChatFormat.e));
+                        }
+                        this.c(new MobEffect(2, 180 * 20, 2));
                     }
-                    this.underworldRandomTeleportTime = 0;
                 }
-            }else if (this.underworldRandomTeleportTime > 0){
-                this.underworldRandomTeleportTime--;
+                if (Config.ConfigEntry.UNDERWORLD_RANDOM_TELEPORT.getFrom(MITEITEMod.CONFIG)) {
+                    double randomTeleportTime = Config.ConfigEntry.UNDERWORLD_RANDOM_TELEPORT_TIME.getFrom(MITEITEMod.CONFIG);
+                    this.underworldRandomTeleportTime++;
+                    double timeToTeleport = randomTeleportTime - this.underworldRandomTeleportTime;
+                    if (timeToTeleport == 1200) {
+                        this.a(ChatMessage.e("---你将于一分钟后被随机传送,请做好准备!!!---").a(EnumChatFormat.o));
+                    }
+                    if (timeToTeleport <= 200 && this.underworldRandomTeleportTime % 20 == 0) {
+                        this.a(ChatMessage.e("!!!你将于" + (int) timeToTeleport / 20 + "秒后被随机传送!!!").a(EnumChatFormat.m));
+                    }
+                    if (this.underworldRandomTeleportTime > randomTeleportTime) {
+                        if (ReflectHelper.dyCast(EntityHuman.class, this) instanceof EntityPlayer) {
+                            this.initiateRunegateTeleport(this.q.getAsWorldServer(), this.getBlockPosX(), this.getBlockPosY(), this.getBlockPosZ(), (ReflectHelper.dyCast(this)));
+                        }
+                        this.underworldRandomTeleportTime = 0;
+                    }
+                } else if (this.underworldRandomTeleportTime > 0) {
+                    this.underworldRandomTeleportTime--;
+                }
+            } else {
+                if (this.underworldRandomTeleportTime > 0) {
+                    this.underworldRandomTeleportTime--;
+                }
+                if (this.underworldDebuffTime > 0){
+                    this.underworldDebuffTime--;
+                }else if (this.underworldDebuffTime == 1){
+                    this.a(ChatMessage.e("---你已从地底世界的疲惫中恢复---").a(EnumChatFormat.c));
+                }
             }
         }
 
@@ -211,11 +295,88 @@ public abstract class EntityHumanTrans extends EntityLiving implements ICommandL
 
     }
 
+
+    public EntityDamageResult attackEntityFrom(Damage damage) {
+        if (this.ac < 1000 && Damage.wasCausedByPlayer(damage) && this.isWithinTournamentSafeZone()) {
+            return null;
+        } else if (this.bG.a && !damage.canHarmInCreative()) {
+            return null;
+        } else {
+            if (this.inBed()) {
+                this.wakeUpPlayer(true, damage.getResponsibleEntityP());
+            }
+
+            if (damage.isExplosion()) {
+                damage.scaleAmount(1.5F);
+            }
+            if (MITEITEMod.CONFIG.get(STEPPED_MOB_DAMAGE)){
+                Entity responsibleEntity = damage.getSource().getResponsibleEntity();
+                if (this.attackCountMap.containsKey(responsibleEntity)) {
+                    this.attackCountMap.put(responsibleEntity, this.attackCountMap.get(responsibleEntity) + 1);
+                    damage.scaleAmount(1 + this.attackCountMap.get(responsibleEntity) * 0.1f);
+                }else {
+                    this.attackCountMap.put(responsibleEntity, 1);
+                }
+            }
+
+            return super.attackEntityFrom(damage);
+        }
+    }
+
+
+    public final float getReach(Block block, int metadata) {
+        if (this.hasExtendedReach()) {
+            return 5.0F;
+        } else {
+            float block_reach = 2.75F;
+            ItemStack item_stack = this.getHeldItemStack();
+            int enchantmentLevel = EnchantmentManager.getEnchantmentLevel(Enchantments.EXTEND, item_stack);
+            return item_stack == null ? block_reach : block_reach + item_stack.b().getReachBonus(block, metadata) + enchantmentLevel * MITEITEMod.CONFIG.get(Config.ConfigEntry.EXTEND_ENCHANTMENT_BOOST_PER_LVL).floatValue();
+        }
+    }
+
+    public float getReach(EnumEntityReachContext context, Entity entity) {
+        if (this.hasExtendedReach()) {
+            return 5.0F;
+        } else {
+            float elevation_difference = (float)(this.v - (double)this.N - (entity.v - (double)entity.N));
+            float height_advantage;
+            if (elevation_difference < -0.5F) {
+                height_advantage = (elevation_difference + 0.5F) * 0.5F;
+                if (height_advantage < -1.0F) {
+                    height_advantage = -1.0F;
+                }
+            } else if (elevation_difference > 0.5F) {
+                height_advantage = (elevation_difference - 0.5F) * 0.5F;
+                if (height_advantage > 1.0F) {
+                    height_advantage = 1.0F;
+                }
+            } else {
+                height_advantage = 0.0F;
+            }
+
+            ItemStack item_stack = this.getHeldItemStack();
+            if (context == EnumEntityReachContext.FOR_MELEE_ATTACK) {
+                int enchantmentLevel = EnchantmentManager.getEnchantmentLevel(Enchantments.EXTEND, item_stack);
+                return entity.adjustPlayerReachForAttacking(dyCast(this), 1.5F + height_advantage + (item_stack == null ? 0.0F : item_stack.b().getReachBonus())) + enchantmentLevel * 0.5f;
+            } else if (context == EnumEntityReachContext.FOR_INTERACTION) {
+                int enchantmentLevel = EnchantmentManager.getEnchantmentLevel(Enchantments.EXTEND, item_stack);
+                return entity.adjustPlayerReachForInteraction(dyCast(this), 2.5F + height_advantage + (item_stack == null ? 0.0F : item_stack.b().getReachBonus(entity)) + enchantmentLevel * 0.5f);
+            } else {
+                Minecraft.setErrorMessage("getReach: invalid context");
+                return 0.0F;
+            }
+        }
+    }
+
+    @Marker
+    protected abstract boolean hasExtendedReach();
+
     private void initiateRunegateTeleport(WorldServer world, int x, int y, int z, EntityPlayer player) {
         int[] runegate_destination_coords = this.getRunegateDestinationCoords(world, x, y, z);
         player.runegate_destination_coords = runegate_destination_coords;
-        player.a(runegate_destination_coords[0], runegate_destination_coords[1], runegate_destination_coords[2]);
         player.a.b(new Packet85SimpleSignal(EnumSignal.runegate_start));
+        player.a(runegate_destination_coords[0], runegate_destination_coords[1], (double)runegate_destination_coords[2]);
     }
 
     public int[] getRunegateDestinationCoords(WorldServer world, int x, int y, int z) {
@@ -317,6 +478,148 @@ public abstract class EntityHumanTrans extends EntityLiving implements ICommandL
 
         return new int[]{x, 64, z};
     }
+
+    public void q(Entity target) {
+        if (!this.isImmuneByGrace()) {
+            if (target.aq()) {
+                boolean critical = this.willDeliverCriticalStrike();
+                float critBouns = 0;
+                if (EnchantmentManager.hasEnchantment(this.getHeldItemStack(), Enchantments.CRIT)){
+                    int critLevel = EnchantmentManager.getEnchantmentLevel(Enchantments.CRIT, this.getHeldItemStack());
+                    critical = this.ab.nextInt(10) < MITEITEMod.CONFIG.get(Config.ConfigEntry.CRIT_ENCHANTMENT_CHANCE_BOOST_PER_LVL) * critLevel;
+                    if (critical){
+                        critBouns = critLevel * MITEITEMod.CONFIG.get(Config.ConfigEntry.CRIT_ENCHANTMENT_DAMAGE_BOOST_PER_LVL).floatValue();
+                    }
+                }
+                float damage = critBouns + this.calcRawMeleeDamageVs(target, critical, this.isSuspendedInLiquid());
+                if (damage <= 0.0F) {
+                    return;
+                }
+
+                int knockback = 0;
+                if (target instanceof EntityLiving) {
+                    knockback += EnchantmentManager.b(this, (EntityLiving)target);
+                }
+
+                if (this.ai()) {
+                    ++knockback;
+                }
+
+                boolean was_set_on_fire = false;
+                int fire_aspect = EnchantmentManager.a(this);
+                if (target instanceof EntityLiving && fire_aspect > 0 && !target.af()) {
+                    was_set_on_fire = true;
+                    target.d(1);
+                }
+
+                if (this.onServer() && target instanceof EntityLiving) {
+                    EntityLiving entity_living_base = (EntityLiving)target;
+                    ItemStack item_stack_to_drop = entity_living_base.getHeldItemStack();
+                    if (item_stack_to_drop != null && this.ab.nextFloat() < EnchantmentManager.getEnchantmentLevelFraction(Enchantment.disarming, this.getHeldItemStack()) && entity_living_base instanceof EntityInsentient) {
+                        EntityInsentient entity_living = (EntityInsentient)entity_living_base;
+                        entity_living.dropItemStack(item_stack_to_drop, entity_living.P / 2.0F);
+                        entity_living.clearMatchingEquipmentSlot(item_stack_to_drop);
+                        entity_living.ticks_disarmed = 40;
+                    }
+                }
+
+                EntityDamageResult result = target.attackEntityFrom(new Damage(DamageSource.a(this).setFireAspectP(fire_aspect > 0), damage));
+                boolean target_was_harmed = result != null && result.entityWasNegativelyAffected();
+                target.onMeleeAttacked(this, result);
+                if (target_was_harmed) {
+                    if (target instanceof EntityLiving) {
+                        int stunning = EnchantmentManager.getStunModifier(this, (EntityLiving)target);
+                        if ((double)stunning > Math.random() * 10.0D) {
+                            ((EntityLiving)target).c(new MobEffect(MobEffectList.d.H, stunning * 50, stunning * 5));
+                        }
+
+                        this.heal((float)EnchantmentManager.getVampiricTransfer(this, (EntityLiving)target, damage), EnumEntityFX.vampiric_gain);
+                    }
+
+                    if (knockback > 0) {
+                        target.g(-MathHelper.a(this.A * 3.1415927F / 180.0F) * (float)knockback * 0.5F, 0.1D, MathHelper.b(this.A * 3.1415927F / 180.0F) * (float)knockback * 0.5F);
+                        this.x *= 0.6D;
+                        this.z *= 0.6D;
+                        this.c(false);
+                    }
+
+                    if (critical) {
+                        this.b(target);
+                    }
+
+                    if (target instanceof EntityLiving && EnchantmentWeaponDamage.getDamageModifiers(this.getHeldItemStack(), (EntityLiving)target) > 0.0F) {
+                        this.c(target);
+                    }
+
+                    if (damage >= 18.0F) {
+                        this.a(AchievementList.E);
+                    }
+
+                    this.setLastAttackTarget(target);
+                    if (target instanceof EntityLiving) {
+                        if (this.q.I) {
+                            System.out.println("EntityPlayer.attackTargetEntityWithCurrentItem() is calling EnchantmentThorns.func_92096_a() on client");
+                            Minecraft.temp_debug = "player";
+                        }
+
+                        EnchantmentThorns.a(this, (EntityLiving)target, this.ab);
+                    }
+                }
+
+                ItemStack held_item_stack = this.getHeldItemStack();
+                Object var10 = target;
+                if (target instanceof EntityComplexPart) {
+                    IComplex var11 = ((EntityComplexPart)target).a;
+                    if (var11 != null && var11 instanceof EntityLiving) {
+                        var10 = var11;
+                    }
+                }
+
+                if (target_was_harmed && held_item_stack != null && var10 instanceof EntityLiving) {
+                    held_item_stack.a((EntityLiving)var10, dyCast(this));
+                }
+
+                if (target instanceof EntityLiving) {
+                    this.a(StatisticList.w, Math.round(damage * 10.0F));
+                    if (fire_aspect > 0 && target_was_harmed) {
+                        target.d(fire_aspect * 4);
+                    } else if (was_set_on_fire) {
+                        target.B();
+                    }
+                }
+
+                if (this.onServer()) {
+                    this.addHungerServerSide(0.3F * EnchantmentManager.getEnduranceModifier(this));
+                }
+            }
+
+        }
+    }
+
+    @Marker
+    public void b(Entity par1Entity) {
+    }
+
+    @Marker
+    public void a(Statistic par1StatBase, int par2) {
+    }
+
+    @Marker
+    public void c(Entity par1Entity) {
+    }
+
+    @Marker
+    public void addHungerServerSide(float hunger){}
+
+    @Marker
+    protected abstract float calcRawMeleeDamageVs(Entity target, boolean critical, boolean suspended_in_liquid);
+
+    public boolean willDeliverCriticalStrike() {
+        return this.T > 0.0F && !this.F && !this.e() && !this.H() && !this.a(MobEffectList.q) && this.o == null;
+    }
+
+    @Marker
+    protected abstract boolean isImmuneByGrace();
 
     @Marker
     private void r(Entity par1Entity) {}

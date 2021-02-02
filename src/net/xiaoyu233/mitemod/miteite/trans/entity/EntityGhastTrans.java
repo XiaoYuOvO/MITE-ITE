@@ -1,19 +1,31 @@
 package net.xiaoyu233.mitemod.miteite.trans.entity;
 
 import net.minecraft.*;
+import net.xiaoyu233.fml.asm.annotations.Link;
 import net.xiaoyu233.fml.asm.annotations.Marker;
 import net.xiaoyu233.fml.asm.annotations.Transform;
+import net.xiaoyu233.mitemod.miteite.MITEITEMod;
+import net.xiaoyu233.mitemod.miteite.util.Config;
 
 @Transform(EntityGhast.class)
 public class EntityGhastTrans extends EntityFlying implements IMonster {
+    @Link
     public int h;
+    @Link
     public double i;
+    @Link
     public double j;
+    @Link
     public double bn;
+    @Link
     private Entity bq;
+    @Link
     private int br;
+    @Link
     public int bo;
+    @Link
     public int bp;
+    @Link
     private int bs;
     
     @Marker
@@ -112,6 +124,18 @@ public class EntityGhastTrans extends EntityFlying implements IMonster {
             }
         }
 
+    }
+
+    @Override
+    public boolean getCanSpawnHere(boolean perform_light_check) {
+        if (this.getWorld().isTheNether()){
+            return super.getCanSpawnHere(perform_light_check) ;
+        }else if (this.getWorld().isOverworld()){
+            return this.getWorld().isBloodMoon24HourPeriod() &&
+                    this.getWorld().getDayOfWorld() >= MITEITEMod.CONFIG.get(Config.ConfigEntry.GHAST_SPAWN_LIMIT_DAY) &&
+                    !this.getWorld().anySolidBlockIn(this.E.a(0.0,3.0,0.0));
+        }
+        return super.getCanSpawnHere(perform_light_check);
     }
 
     @Marker

@@ -24,10 +24,17 @@ public class EntityCreeperTrans extends EntityMonster {
     protected void az() {
         super.az();
         int day = this.getWorld() != null ? Math.max(this.getWorld().getDayOfWorld() - 32,0) : 0;
-        br = day >= 128 ? (45 + (day-128) / 8) : 45;
-        this.bs = 2.0f;
+        bs = day >= 128 ? (2.0f + 0.1f * (day-128) / 8) : 2.0f;
         this.a(GenericAttributes.d).a(0.25D);
         this.setEntityAttribute(GenericAttributes.a,18D + (day/14D));
         this.setEntityAttribute(GenericAttributes.b,64d);
+    }
+
+    public void setExplosionTime(int br){
+        this.br = br;
+    }
+
+    public int getExplosionTime() {
+        return br;
     }
 }

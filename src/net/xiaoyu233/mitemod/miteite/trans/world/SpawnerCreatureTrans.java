@@ -27,7 +27,7 @@ public class SpawnerCreatureTrans {
         boolean is_blood_moon = world.isBloodMoon(false);
         boolean is_blue_moon = world.isBlueMoon(false);
         boolean is_daytime = world.v();
-        int creature_limit = creature_type.b() * this.a.size() / (is_blood_moon ? MITEITEMod.CONFIG.get(Config.ConfigEntry.BLOOD_MOON_MAX_HOSTILE_FRACTION).intValue() : 256);
+        int creature_limit = (int) ((int) (creature_type.b() * this.a.size() / (is_blood_moon ? MITEITEMod.CONFIG.get(Config.ConfigEntry.BLOOD_MOON_MAX_HOSTILE_FRACTION) : 256)) + MITEITEMod.CONFIG.get(Config.ConfigEntry.MOB_MAX_SPAWN_COUNT_INCREASE_PER_DAY) * world.getDayOfWorld());
         if (deep_only) {
             creature_limit *= 2;
         }

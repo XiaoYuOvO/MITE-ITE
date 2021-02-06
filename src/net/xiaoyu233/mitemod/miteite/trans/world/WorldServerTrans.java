@@ -6,6 +6,7 @@ import net.xiaoyu233.fml.asm.annotations.Link;
 import net.xiaoyu233.fml.asm.annotations.Marker;
 import net.xiaoyu233.fml.asm.annotations.Transform;
 import net.xiaoyu233.mitemod.miteite.MITEITEMod;
+import net.xiaoyu233.mitemod.miteite.entity.EntityZombieLord;
 import net.xiaoyu233.mitemod.miteite.util.Config;
 
 import java.util.List;
@@ -131,7 +132,9 @@ public class WorldServerTrans extends World{
                 if (!check_depth || y <= 44 || can_spawn_revenants_on_surface) {
                     return entity_class;
                 }
-            } else if (entity_class == EntityInvisibleStalker.class) {
+            } else if (entity_class == EntityZombieLord.class){
+                return entity_class;
+            }else if (entity_class == EntityInvisibleStalker.class) {
                 if (!check_depth || y <= 40) {
                     return entity_class;
                 }

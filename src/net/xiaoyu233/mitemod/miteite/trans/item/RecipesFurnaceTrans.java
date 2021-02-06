@@ -27,7 +27,7 @@ public class RecipesFurnaceTrans {
                 } else if (input_item_id == Block.an.cF){
                     result_item_stack = heat_level >= 4 && input_item_stack.b >= 4 ? new ItemStack(Item.ingotMithril) : null;
                 }else if (input_item_id == Block.blockMithril.cF){
-                    result_item_stack = heat_level >= 4 && input_item_stack.b >= MITEITEMod.CONFIG.get(Config.ConfigEntry.MITHRIL_BLOCK_COUNT_TO_ADAMANTIUM) ? new ItemStack(Item.ingotMithril) : null;
+                    result_item_stack = heat_level >= 4 && input_item_stack.b >= MITEITEMod.CONFIG.get(Config.ConfigEntry.MITHRIL_BLOCK_COUNT_TO_ADAMANTIUM) ? new ItemStack(Item.ingotAdamantium) : null;
                 }else {
                     result_item_stack = (ItemStack)this.b.get(input_item_id);
                 }
@@ -37,6 +37,6 @@ public class RecipesFurnaceTrans {
         }
     }
     public boolean doesSmeltingRecipeExistFor(ItemStack input_item_stack) {
-        return this.b.get(input_item_stack.d) != null || (input_item_stack.isBlock() && input_item_stack.getItemAsBlock().getBlock().cF == Block.an.cF);
+        return this.b.get(input_item_stack.d) != null || (input_item_stack.isBlock() && (input_item_stack.getItemAsBlock().getBlock().cF == Block.an.cF || input_item_stack.getItemAsBlock().getBlock().cF == Block.blockMithril.cF));
     }
 }

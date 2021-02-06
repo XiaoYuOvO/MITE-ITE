@@ -17,7 +17,7 @@ public class ItemGemsTrans extends Item {
             return 40;
         } else {
             //Make quartz less
-            return item == cb ? 35 : (item == bJ ? 250 : (item == p ? 500 : 0));
+            return item == cb ? 35 : (item == bJ ? 250 : (item == p ? MITEITEMod.CONFIG.get(Config.ConfigEntry.DIAMOND_EXP) : 0));
         }
     }
 

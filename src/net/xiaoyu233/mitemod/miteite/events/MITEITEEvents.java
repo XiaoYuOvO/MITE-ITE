@@ -98,6 +98,9 @@ public class MITEITEEvents {
                 Entity entity = EntityTypes.a(id, world);
                 if (entity != null) {
                     entity.b(player.u, player.v, player.w);
+                    if (entity instanceof  EntityInsentient){
+                        ((EntityInsentient) entity).a((GroupDataEntity) null);
+                    }
                     world.d(entity);
                     par1ICommandSender.a(ChatMessage.d("已生成实体 " + entity.toString()).a(EnumChatFormat.LIGHT_GRAY));
                 } else {

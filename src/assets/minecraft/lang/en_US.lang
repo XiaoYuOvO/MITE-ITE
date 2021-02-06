@@ -37,3 +37,4 @@ enchantment.defence=Defence
 enchantment.crit=Crit
 enchantment.extend=Extend
 enchantment.emergency=Emergency
+entity.EntityZombieLord.name=Zombie Lord

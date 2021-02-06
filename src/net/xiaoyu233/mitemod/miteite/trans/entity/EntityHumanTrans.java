@@ -569,9 +569,11 @@ public abstract class EntityHumanTrans extends EntityLiving implements ICommandL
                     ItemStack item_stack_to_drop = entity_living_base.getHeldItemStack();
                     if (item_stack_to_drop != null && this.ab.nextFloat() < EnchantmentManager.getEnchantmentLevelFraction(Enchantment.disarming, this.getHeldItemStack()) && entity_living_base instanceof EntityInsentient) {
                         EntityInsentient entity_living = (EntityInsentient)entity_living_base;
-                        entity_living.dropItemStack(item_stack_to_drop, entity_living.P / 2.0F);
-                        entity_living.clearMatchingEquipmentSlot(item_stack_to_drop);
-                        entity_living.ticks_disarmed = 40;
+                        if (entity_living.canBeDisarmed()){
+                            entity_living.dropItemStack(item_stack_to_drop, entity_living.P / 2.0F);
+                            entity_living.clearMatchingEquipmentSlot(item_stack_to_drop);
+                            entity_living.ticks_disarmed = 40;
+                        }
                     }
                 }
 

@@ -56,7 +56,7 @@ public class Config extends JsonConfig {
         public static final ConfigEntry<Double> MOB_MAX_SPAWN_COUNT_INCREASE_PER_DAY = new ConfigEntry<>("mob_max_spawn_count_increase_per_day", 1d);
         public static final IntConfigEntry IRON_TO_MITHRIL_COOK_TIME = new IntConfigEntry("iron_to_mithril_cook_time",6000);
         public static final IntConfigEntry MITHRIL_TO_ADAMANTIUM_COOK_TIME = new IntConfigEntry("mithril_to_adamantium_cook_time",9000);
-        public static final IntConfigEntry MITHRIL_BLOCK_COUNT_TO_ADAMANTIUM = new IntConfigEntry("mithril_block_count_to_adamantium",3);
+        public static final IntConfigEntry MITHRIL_BLOCK_COUNT_TO_ADAMANTIUM = new IntConfigEntry("mithril_block_count_to_adamantium",1);
         public static final ConfigEntry<Boolean> OVERWORLD_ADAMANTITE_ORE = new ConfigEntry<>("overworld_adamantite_ore",true);
         public static final IntConfigEntry QUARTZ_MAX_EXP_LEVEL = new IntConfigEntry("quartz_max_exp_level",55);
         public static final ConfigEntry<Double> IN_WALL_DAMAGE_FOR_PLAYER = new ConfigEntry<>("in_wall_damage_for_player",10.0d);
@@ -82,6 +82,7 @@ public class Config extends JsonConfig {
         public static final IntConfigEntry BREED_XP_PIG = new IntConfigEntry("breed_xp_pig", 15);
         public static final IntConfigEntry BREED_XP_COW = new IntConfigEntry("breed_xp_cow", 25);
         public static final IntConfigEntry FISHING_XP_SCALE = new IntConfigEntry("fishing_xp_scale",3);
+        public static final IntConfigEntry DIAMOND_EXP = new IntConfigEntry("diamond_exp",300);
         public static final ConfigEntry<Double> ALL_PROTECTION_V_DEFENCE_FRACTION = new ConfigEntry<>("all_protection_v_defence_fraction",0.1d);
         public static final ConfigEntry<Boolean> WOLVES_ATTACK_PLAYERS_WITH_MEAT = new ConfigEntry<>("wolves_attack_players_with_meat",true);
         public static final ConfigEntry<Boolean> FIRST_DAY_LONGER_DAY_TIME = new ConfigEntry<>("first_day_longer_day_time",true);

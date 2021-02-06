@@ -5,6 +5,7 @@ import net.xiaoyu233.fml.asm.annotations.Link;
 import net.xiaoyu233.fml.asm.annotations.Marker;
 import net.xiaoyu233.fml.asm.annotations.Transform;
 import net.xiaoyu233.fml.util.ReflectHelper;
+import net.xiaoyu233.mitemod.miteite.entity.EntityZombieLord;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -108,6 +109,7 @@ public class BiomeBaseTrans {
         this.J.add(new BiomeMeta(EntityGiantZombie.class, 10,1,1));
         this.J.add(new BiomeMeta(EntityGhast.class, 10,1,1));
         this.J.add(new BiomeMeta(EntityAncientBoneLord.class, 10,1,1));
+        this.J.add(new BiomeMeta(EntityZombieLord.class, 1,1, 1));
     }
 
     @Marker

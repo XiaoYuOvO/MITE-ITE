@@ -20,17 +20,17 @@ public class EntityIronGolemTrans extends EntityGolem {
 
     @Override
     public boolean onEntityRightClicked(EntityHuman player, ItemStack item_stack) {
-        if (!this.getWorld().I) {
-            if (MITEITEMod.CONFIG.get(Config.ConfigEntry.CAN_BOOST_IRON_GOLEM)){
-                if (!this.isBoosted() && item_stack != null && item_stack.isBlock() && item_stack.getItemAsBlock().getBlock() == Block.blockMithril) {
-                    this.a(1.9F, 3.5F);
-                    this.setEntityAttribute(GenericAttributes.a, this.getEntityAttributeValue(GenericAttributes.a) + 20);
-                    this.setEntityAttribute(GenericAttributes.e, this.getEntityAttributeValue(GenericAttributes.e) + 3);
-                    this.g((float) this.getEntityAttributeValue(GenericAttributes.a));
-                    this.ah.b(DATA_OBJ_IS_BOOSTED, (byte) 1);
+        if (MITEITEMod.CONFIG.get(Config.ConfigEntry.CAN_BOOST_IRON_GOLEM)) {
+            if (!this.isBoosted() && item_stack != null && item_stack.isBlock() && item_stack.getItemAsBlock().getBlock() == Block.blockMithril) {
+                this.a(1.9F, 3.5F);
+                this.setEntityAttribute(GenericAttributes.a, this.getEntityAttributeValue(GenericAttributes.a) + 20);
+                this.setEntityAttribute(GenericAttributes.e, this.getEntityAttributeValue(GenericAttributes.e) + 3);
+                this.g((float) this.getEntityAttributeValue(GenericAttributes.a));
+                this.ah.b(DATA_OBJ_IS_BOOSTED, (byte) 1);
+                if (!this.getWorld().I) {
                     player.convertOneOfHeldItem(null);
-                    return true;
                 }
+                return true;
             }
         }
         return super.onEntityRightClicked(player, item_stack);
@@ -73,7 +73,7 @@ public class EntityIronGolemTrans extends EntityGolem {
             this.ah.b(DATA_OBJ_IS_BOOSTED,(byte)(par1NBTTagCompound.n("Boosted") ? 1 : 0));
         }
         this.i(par1NBTTagCompound.n("PlayerCreated"));
-        if (this.ah.a(DATA_OBJ_IS_BOOSTED) != 0){
+        if (this.isBoosted()){
             this.a(1.9F, 3F);
         }
     }

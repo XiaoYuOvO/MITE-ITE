@@ -100,7 +100,7 @@ public class ItemTrans{
     }
 
     public int getCookTime(){
-        if (this.cv == ingotMithril.cv){
+        if (this.cv == Block.blockMithril.cF){
             return MITEITEMod.CONFIG.get(MITHRIL_TO_ADAMANTIUM_COOK_TIME);
         }else if (this.cv == Block.an.cF){
             return MITEITEMod.CONFIG.get(IRON_TO_MITHRIL_COOK_TIME);

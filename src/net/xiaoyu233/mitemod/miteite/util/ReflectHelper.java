@@ -26,7 +26,7 @@ public class ReflectHelper {
         }
     }
 
-    public static <T> T createInstance(Class<T> tClass,Class[] types,Object... args){
+    public static <T> T createInstance(Class<T> tClass,Class<?>[] types,Object... args){
         try {
             Constructor<T> ctor = tClass.getDeclaredConstructor(types);
             ctor.setAccessible(true);

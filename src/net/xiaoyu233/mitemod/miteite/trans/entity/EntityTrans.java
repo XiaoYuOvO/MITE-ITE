@@ -7,7 +7,10 @@ import net.minecraft.World;
 import net.xiaoyu233.fml.asm.annotations.Marker;
 import net.xiaoyu233.fml.asm.annotations.Transform;
 import net.xiaoyu233.mitemod.miteite.MITEITEMod;
+import net.xiaoyu233.mitemod.miteite.entity.EntityZombieLord;
 import net.xiaoyu233.mitemod.miteite.util.Config;
+
+import static net.xiaoyu233.fml.util.ReflectHelper.dyCast;
 
 @Transform(Entity.class)
 public class EntityTrans extends Entity {
@@ -24,8 +27,8 @@ public class EntityTrans extends Entity {
     }
 
     public boolean isInFire() {
-        if (this.q.isTheNether() && MITEITEMod.CONFIG.get(Config.ConfigEntry.NETHERRACK_DAMAGE) &&  this.q
-                .doesBoundingBoxContainBlock(this.E.b(0.001D, 0.005D, 0.001D), Block.bg.cF, -1)){
+        if (this.q.isTheNether() && MITEITEMod.CONFIG.get(Config.ConfigEntry.NETHERRACK_DAMAGE) && !(dyCast(this) instanceof EntityZombieLord) &&
+        this.q.doesBoundingBoxContainBlock(this.E.b(0.001D, 0.005D, 0.001D), Block.bg.cF, -1)){
             netherrackWalkTime++;
             if (netherrackWalkTime > 20){
                 this.netherrackWalkTime = 0;

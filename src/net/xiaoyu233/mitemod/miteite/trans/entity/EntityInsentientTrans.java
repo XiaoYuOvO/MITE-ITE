@@ -55,6 +55,10 @@ public class EntityInsentientTrans extends EntityLiving{
         super.onMeleeAttacked(attacker, result);
     }
 
+    public boolean canBeDisarmed(){
+        return true;
+    }
+
     public boolean isCame_from_spawner() {
         return came_from_spawner;
     }

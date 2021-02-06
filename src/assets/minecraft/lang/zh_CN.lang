@@ -37,3 +37,4 @@ enchantment.defence=格挡
 enchantment.crit=暴击
 enchantment.extend=扩展
 enchantment.emergency=紧急守备
+entity.EntityZombieLord.name=僵尸领主

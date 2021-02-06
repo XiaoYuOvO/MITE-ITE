@@ -102,9 +102,6 @@ public class EntitySkeletonTrans extends EntityMonster implements IRangedEntity{
 
     @Override
     public EntityDamageResult attackEntityAsMob(Entity target) {
-        if (this.getHeldItemStack() != null){
-            this.bT();
-        }
         return super.attackEntityAsMob(target);
     }
 
@@ -146,6 +143,14 @@ public class EntitySkeletonTrans extends EntityMonster implements IRangedEntity{
         }
 
         return par1EntityLivingData;
+    }
+
+
+    public void c(int par1, ItemStack par2ItemStack) {
+        super.c(par1, par2ItemStack);
+        if (this.getHeldItemStack() != null){
+            this.bT();
+        }
     }
 
     public int getRandomSkeletonType(World world) {

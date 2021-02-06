@@ -14,19 +14,19 @@ import static net.xiaoyu233.fml.util.ReflectHelper.dyCast;
 @Transform(EntityLivestock.class)
 public abstract class EntityLivestockTrans extends EntityAnimal {
     @Link
-    private int last_trampled_x;
+    public int last_trampled_x;
     @Link
-    private int last_trampled_y;
+    public int last_trampled_y;
     @Link
-    private int last_trampled_z;
+    public int last_trampled_z;
     @Link
-    private int manure_countdown;
+    public int manure_countdown;
     @Link
-    private int manure_period;
+    public int manure_period;
     @Link
-    private int production_counter;
+    public int production_counter;
     @Link
-    private long spooked_until;
+    public long spooked_until;
     @Link
     private boolean has_been_spooked_by_other_animal;
     private int illnessToDeathCounter;

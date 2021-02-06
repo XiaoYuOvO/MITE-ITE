@@ -154,6 +154,6 @@ public class EntityZombiePigmanTrans extends EntityZombie implements IRangedEnti
     }
 
     public boolean randomUseBow() {
-        return this.ab.nextInt(10) > 2;
+        return this.ab.nextInt(10) > 8;
     }
 }

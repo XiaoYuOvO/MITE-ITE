@@ -15,7 +15,7 @@ import net.xiaoyu233.mitemod.miteite.util.ReflectHelper;
 import java.util.*;
 
 import static net.minecraft.EntityHuman.y_offset_on_client_and_eye_height_on_server;
-import static net.xiaoyu233.mitemod.miteite.util.Config.ConfigEntry.STEPPED_MOB_DAMAGE;
+import static net.xiaoyu233.mitemod.miteite.util.Config.ConfigEntry.*;
 import static net.xiaoyu233.mitemod.miteite.util.ReflectHelper.dyCast;
 
 @Transform(EntityHuman.class)
@@ -75,6 +75,9 @@ public abstract class EntityHumanTrans extends EntityLiving implements ICommandL
     public long block_placement_tick;
     private int underworldRandomTeleportTime;
     private int underworldDebuffTime;
+    private int netherDebuffTime;
+    private int inRainCounter;
+    private int emergencyCooldown;
     private final Map<Entity,Integer> attackCountMap = new HashMap<>();
 
 
@@ -138,6 +141,9 @@ public abstract class EntityHumanTrans extends EntityLiving implements ICommandL
         }
         this.underworldRandomTeleportTime = par1NBTTagCompound.e("UnderWorldTeleportTime");
         this.underworldDebuffTime = par1NBTTagCompound.e("UnderWorldDebuffTime");
+        this.netherDebuffTime = par1NBTTagCompound.e("NetherDebuffTime");
+        this.inRainCounter = par1NBTTagCompound.e("InRainCounter");
+        this.emergencyCooldown = par1NBTTagCompound.e("EmergencyCooldown");
         this.vision_dimming = par1NBTTagCompound.g("vision_dimming");
     }
 
@@ -159,6 +165,9 @@ public abstract class EntityHumanTrans extends EntityLiving implements ICommandL
         par1NBTTagCompound.a("EnderItems", this.a.h());
         par1NBTTagCompound.a("UnderWorldTeleportTime",this.underworldRandomTeleportTime);
         par1NBTTagCompound.a("UnderWorldDebuffTime",this.underworldDebuffTime);
+        par1NBTTagCompound.a("NetherDebuffTime",this.netherDebuffTime);
+        par1NBTTagCompound.a("InRainCounter",this.inRainCounter);
+        par1NBTTagCompound.a("EmergencyCooldown",this.emergencyCooldown);
         par1NBTTagCompound.a("vision_dimming", this.vision_dimming);
     }
 
@@ -195,6 +204,16 @@ public abstract class EntityHumanTrans extends EntityLiving implements ICommandL
         }
 
         if (!this.q.I ){
+            if (this.isInRain()) {
+                if (this.inRainCounter < MITEITEMod.CONFIG.get(Config.ConfigEntry.IN_RAIN_DEBUFF_TIME)) {
+                    this.inRainCounter++;
+                } else {
+                    //Weakness
+                    this.c(new MobEffect(18, 10 * 20, 0));
+                }
+            } else if (this.inRainCounter > 0){
+                this.inRainCounter--;
+            }
             if (this.q.isUnderworld()) {
                 if (Config.ConfigEntry.UNDERWORLD_DEBUFF.getFrom(MITEITEMod.CONFIG)){
                     this.underworldDebuffTime++;
@@ -240,6 +259,22 @@ public abstract class EntityHumanTrans extends EntityLiving implements ICommandL
                     this.underworldRandomTeleportTime--;
                 }
             } else {
+                if (this.q.isTheNether()){
+                    if (MITEITEMod.CONFIG.get(NETHER_DEBUFF)){
+                        int debuff_time = MITEITEMod.CONFIG.get(NETHER_DEBUFF_TIME);
+                        if (this.netherDebuffTime > debuff_time){
+                            this.c(new MobEffect(4, 180 * 20, 1));
+                        }else if (this.netherDebuffTime == debuff_time){
+                            this.a(ChatMessage.e("---你在下界中感到疲惫---").a(EnumChatFormat.e));
+                        }
+                    }
+                }else {
+                    if (this.netherDebuffTime > 0){
+                        this.netherDebuffTime--;
+                    }else if (netherDebuffTime == 1){
+                        this.a(ChatMessage.e("---你已从地狱的疲惫中恢复---").a(EnumChatFormat.c));
+                    }
+                }
                 if (this.underworldRandomTeleportTime > 0) {
                     this.underworldRandomTeleportTime--;
                 }
@@ -248,6 +283,9 @@ public abstract class EntityHumanTrans extends EntityLiving implements ICommandL
                 }else if (this.underworldDebuffTime == 1){
                     this.a(ChatMessage.e("---你已从地底世界的疲惫中恢复---").a(EnumChatFormat.c));
                 }
+            }
+            if (this.emergencyCooldown > 0){
+                this.emergencyCooldown--;
             }
         }
 
@@ -309,17 +347,30 @@ public abstract class EntityHumanTrans extends EntityLiving implements ICommandL
             if (damage.isExplosion()) {
                 damage.scaleAmount(1.5F);
             }
-            if (MITEITEMod.CONFIG.get(STEPPED_MOB_DAMAGE)){
+            double factor = MITEITEMod.CONFIG.get(STEPPED_MOB_DAMAGE_FACTOR);
+            if (factor != 0){
                 Entity responsibleEntity = damage.getSource().getResponsibleEntity();
                 if (this.attackCountMap.containsKey(responsibleEntity)) {
                     this.attackCountMap.put(responsibleEntity, this.attackCountMap.get(responsibleEntity) + 1);
-                    damage.scaleAmount(1 + this.attackCountMap.get(responsibleEntity) * 0.1f);
+                    damage.scaleAmount(1 + this.attackCountMap.get(responsibleEntity) * (float)factor);
                 }else {
                     this.attackCountMap.put(responsibleEntity, 1);
                 }
             }
-
-            return super.attackEntityFrom(damage);
+            EntityDamageResult entityDamageResult = super.attackEntityFrom(damage);
+            if (this.emergencyCooldown <= 0 && this.getHealthFraction() <= 0.3){
+                for (ItemStack wornItem : this.getWornItems()) {
+                    if (wornItem != null && wornItem.hasEnchantment(Enchantments.EMERGENCY,false)){
+                        this.c(new MobEffect(11,3 * 20,1));
+                        this.entityFX(EnumEntityFX.smoke_and_steam);
+                        this.makeSound("fireworks.largeBlast",2,0.75f);
+                        this.makeSound("random.anvil_land",0.4f,0.4f);
+                        this.emergencyCooldown = MITEITEMod.CONFIG.get(EMERGENCY_COOLDOWN);
+                        break;
+                    }
+                }
+            }
+            return entityDamageResult;
         }
     }
 
@@ -479,6 +530,7 @@ public abstract class EntityHumanTrans extends EntityLiving implements ICommandL
         return new int[]{x, 64, z};
     }
 
+    //AttackEntityAsMob
     public void q(Entity target) {
         if (!this.isImmuneByGrace()) {
             if (target.aq()) {

@@ -126,9 +126,9 @@ public class EntityZombiePigmanTrans extends EntityZombie implements IRangedEnti
         super.az();
         int day = this.getWorld() != null ? Math.max(this.getWorld().getDayOfWorld() - 64, 0) : 0;
         this.setEntityAttribute(GenericAttributes.a, 50.0D + day / 12D);
-        this.setEntityAttribute(GenericAttributes.b, 40.0D);
+        this.setEntityAttribute(GenericAttributes.b, 64D);
         this.setEntityAttribute(GenericAttributes.d, 0.25F);
-        this.setEntityAttribute(GenericAttributes.e, 8.0D + day / 48D);
+        this.setEntityAttribute(GenericAttributes.e, 10D + day / 48D);
         this.setEntityAttribute(EntityZombie.bp, this.ab.nextDouble() * (double) 0.1F);
     }
 

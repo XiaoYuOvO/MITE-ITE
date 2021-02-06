@@ -66,13 +66,15 @@ public enum  ToolModifierTypes implements ItemModifierTypes{
         for (ToolModifierTypes modifierTypes : p1801660) {
             totalWeight += modifierTypes.weight;
         }
-        int currentWeight = rand.nextInt(totalWeight);
-        int x = 0;
-        for(int j = p1801660.size(); x < j; ++x) {
-            ToolModifierTypes t = p1801660.get(x);
-            currentWeight -= t.weight;
-            if (currentWeight < 0) {
-                return t;
+        if (totalWeight > 0){
+            int currentWeight = rand.nextInt(totalWeight);
+            int x = 0;
+            for(int j = p1801660.size(); x < j; ++x) {
+                ToolModifierTypes t = p1801660.get(x);
+                currentWeight -= t.weight;
+                if (currentWeight < 0) {
+                    return t;
+                }
             }
         }
 

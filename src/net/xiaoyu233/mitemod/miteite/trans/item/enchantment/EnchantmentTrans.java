@@ -50,10 +50,12 @@ public class EnchantmentTrans {
         return false;
     }
 
-    public static void registerEnchantmentsUnsafe(Enchantment enchantments){
+    public static void registerEnchantmentsUnsafe(Enchantment... enchantments){
         for (int i = 0, bLength = b.length; i < bLength; i++) {
             if (b[i] == null){
-                b[i] = enchantments;
+                for (int j = 0, enchantmentsLength = enchantments.length; j < enchantmentsLength; j++) {
+                    b[i+j] = enchantments[j];
+                }
                 break;
             }
         }

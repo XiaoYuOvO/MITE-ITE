@@ -27,7 +27,6 @@ public class EntityAncientBoneLordTrans extends EntityBoneLord {
 
     @Override
     protected void addRandomEquipment() {
-        System.out.println("---Bone Lord Spawned--- : " + this.getFootPos().toString());
         this.addRandomWeapon();
         int day = this.getWorld() != null ? Math.max(this.getWorld().getDayOfWorld() - 64,0) : 0;
         if (day < 192) {

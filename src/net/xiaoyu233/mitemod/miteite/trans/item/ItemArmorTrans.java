@@ -141,15 +141,14 @@ public class ItemArmorTrans extends Item implements IDamageableItem {
             int toolLevel = itemStack.q().e("tool_level");
             if (itemStack.q().b("tool_level")) {
                 if (this.isMaxToolLevel(itemStack)) {
-                    info.add("装备等级:§6已达到最高级");
+                    info.add("装备等级:§6已达到最高级" + toolLevel);
                 }else{
                     info.add("装备等级:" + toolLevel);
+                    if (itemStack.q().b("tool_exp")) {
+                        info.add("装备经验" + EnumChatFormat.p + itemStack.q().e("tool_exp") + "/" + this.getExpReqForLevel(
+                                toolLevel+ 1,slotIndex,dyCast(this)));
+                    }
                 }
-            }
-
-            if (itemStack.q().b("tool_exp")) {
-                info.add("装备经验" + EnumChatFormat.p + itemStack.q().e("tool_exp") + "/" + this.getExpReqForLevel(
-                         toolLevel+ 1,slotIndex,dyCast(this)));
             }
             if (extended_info) {
                 NBTTagCompound compound = itemStack.e.l("modifiers");

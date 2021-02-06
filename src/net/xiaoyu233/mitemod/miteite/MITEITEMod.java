@@ -29,7 +29,7 @@ public class MITEITEMod extends AbstractMod {
         if (modLoaderNum < MOD_LOADER_MIN_VER_NUM){
             JFrame diaFrame = new JFrame();
             diaFrame.setAlwaysOnTop(true);
-            JOptionPane.showMessageDialog(diaFrame,"MITE-ITE加载错误: 模组加载器版本过低,FishModLoader模组加载器需要" + MOD_LOADER_MIN_VER_STRING + "\n当前版本:" + modLoader.getModVerStr(),"错误", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(diaFrame,"MITE-ITE加载错误: 模组加载器版本过低\nFishModLoader模组加载器需要至少" + MOD_LOADER_MIN_VER_STRING + "版本 \n当前版本:" + modLoader.getModVerStr(),"错误", JOptionPane.ERROR_MESSAGE);
             System.exit(1);
         }
         EventListeners.registerAllEvents();

@@ -12,6 +12,8 @@ import java.util.Calendar;
 
 @Transform(EntitySkeleton.class)
 public class EntitySkeletonTrans extends EntityMonster implements IRangedEntity{
+    private static final int DATA_OBJ_ID_SKELETON_TYPE = 13;
+    private static final int WITHER_SKELETON_ID = 1;
     @Link
     private final PathfinderGoalArrowAttack bp = new PathfinderGoalArrowAttack((this), 1.0D, 20, 60, 15.0F);
     @Link
@@ -22,6 +24,7 @@ public class EntitySkeletonTrans extends EntityMonster implements IRangedEntity{
     private int data_object_id_is_frenzied_by_bone_lord;
     private int DATA_OBJ_ID_CAN_USE_FIRE_ARROW;
     private int DATA_OBJ_ID_CAN_USE_TRIPLE_ARROW;
+    private int DATA_OBJ_ID_COMPRESSED;
 
     public EntitySkeletonTrans(World par1World) {
         super(par1World);
@@ -38,6 +41,30 @@ public class EntitySkeletonTrans extends EntityMonster implements IRangedEntity{
             this.bT();
         }
 
+    }
+
+    //On Death
+    @Override
+    public void a(DamageSource par1DamageSource) {
+        if (!this.q.I){
+            if (this.isCompressed()){
+                for (int integer = 0; integer < (MITEITEMod.CONFIG.get(Config.ConfigEntry.COMPRESSED_SKELETON_EXPAND_COUNT)); integer++) {
+                    EntitySkeleton skeleton = new EntitySkeleton(this.q);
+                    skeleton.a((double) this.getBlockPosX(),this.getFootBlockPosY(),this.getBlockPosZ());
+                    skeleton.forced_skeleton_type = skeleton.getRandomSkeletonType(this.q);
+                    skeleton.refreshDespawnCounter(-9600);
+                    this.q.d(skeleton);
+                    skeleton.a((GroupDataEntity)null);
+                    skeleton.d(this.getTarget());
+                    skeleton.entityFX(EnumEntityFX.summoned);
+                }
+            }
+        }
+        super.a(par1DamageSource);
+    }
+
+    private boolean isCompressed(){
+        return this.ah.a(this.DATA_OBJ_ID_COMPRESSED) != 0;
     }
 
     public void bT() {
@@ -66,10 +93,11 @@ public class EntitySkeletonTrans extends EntityMonster implements IRangedEntity{
 
     protected void a() {
         super.a();
-        this.ah.addObject(13, (byte) 0);
+        this.ah.addObject(DATA_OBJ_ID_SKELETON_TYPE, (byte) 0);
         this.data_object_id_is_frenzied_by_bone_lord = this.ah.addObject(this.ah.getNextAvailableId(), (byte) 0);
         this.DATA_OBJ_ID_CAN_USE_FIRE_ARROW = this.ah.addObject(this.ah.getNextAvailableId(), (byte)0);
         this.DATA_OBJ_ID_CAN_USE_TRIPLE_ARROW = this.ah.addObject(this.ah.getNextAvailableId(), (byte)0);
+        this.DATA_OBJ_ID_COMPRESSED = this.ah.addObject(this.ah.getNextAvailableId(), (byte)0);
     }
 
     @Override
@@ -83,6 +111,9 @@ public class EntitySkeletonTrans extends EntityMonster implements IRangedEntity{
     public GroupDataEntity a(GroupDataEntity par1EntityLivingData) {
         par1EntityLivingData = super.a(par1EntityLivingData);
         int skeleton_type = this.forced_skeleton_type >= 0 ? this.forced_skeleton_type : this.getRandomSkeletonType(super.q);
+        if (MITEITEMod.CONFIG.get(Config.ConfigEntry.COMPRESSED_SKELETON)){
+            this.ah.b(DATA_OBJ_ID_COMPRESSED,(byte) (this.ab.nextInt(50) == 0 ? 1 : 0));
+        }
         if (skeleton_type == 1) {
             this.c.a(4, this.bq);
             this.a(1);
@@ -206,6 +237,7 @@ public class EntitySkeletonTrans extends EntityMonster implements IRangedEntity{
 
 
     @Marker
+    //Get skeleton_type
     public int bV() {
         return this.ah.a(13);
     }
@@ -213,9 +245,49 @@ public class EntitySkeletonTrans extends EntityMonster implements IRangedEntity{
     protected void az() {
         super.az();
         int day = this.getWorld() != null ? Math.max(this.getWorld().getDayOfWorld() - 64,0) : 0;
-        this.setEntityAttribute(GenericAttributes.a,(this.bV() == 1 ? 28d : 15d) + day / 14D);
-        this.setEntityAttribute(GenericAttributes.d, 0.3F);
         this.setEntityAttribute(GenericAttributes.b, 64D);
-        this.setEntityAttribute(GenericAttributes.e, this.getEntityAttributeValue(GenericAttributes.e) * 3.6d);
+        if (this.bV() == WITHER_SKELETON_ID){
+            this.setEntityAttribute(GenericAttributes.a, 50.0D + day / 12D);
+            this.setEntityAttribute(GenericAttributes.d, 0.25F);
+            this.setEntityAttribute(GenericAttributes.e, 10D + day / 48D);
+        }else {
+            this.setEntityAttribute(GenericAttributes.a, 15d + day / 14D);
+            this.setEntityAttribute(GenericAttributes.d, 0.3F);
+            this.setEntityAttribute(GenericAttributes.e, this.getEntityAttributeValue(GenericAttributes.e) * 3.6d);
+        }
+    }
+
+    public void a(NBTTagCompound par1NBTTagCompound) {
+        super.a(par1NBTTagCompound);
+        if (par1NBTTagCompound.b("SkeletonType")) {
+            byte var2 = par1NBTTagCompound.c("SkeletonType");
+            this.a(var2);
+        }
+        if (par1NBTTagCompound.b("TripleShot")){
+            if (par1NBTTagCompound.n("TripleShot")){
+                this.ah.b(DATA_OBJ_ID_CAN_USE_TRIPLE_ARROW,(byte)1);
+            }
+        }
+        if (par1NBTTagCompound.b("FireBow")){
+            if (par1NBTTagCompound.n("FireBow")){
+                this.ah.b(DATA_OBJ_ID_CAN_USE_FIRE_ARROW, (byte) 1);
+            }
+        }
+
+        if (par1NBTTagCompound.b("Compressed")){
+            if (par1NBTTagCompound.n("Compressed")){
+                this.ah.b(DATA_OBJ_ID_COMPRESSED,(byte) 1);
+            }
+        }
+
+        this.bT();
+    }
+
+    public void b(NBTTagCompound par1NBTTagCompound) {
+        super.b(par1NBTTagCompound);
+        par1NBTTagCompound.a("SkeletonType", (byte)this.bV());
+        par1NBTTagCompound.a("TripleShot", this.ah.a(DATA_OBJ_ID_CAN_USE_TRIPLE_ARROW) != 0);
+        par1NBTTagCompound.a("FireBow", this.ah.a(DATA_OBJ_ID_CAN_USE_FIRE_ARROW) != 0);
+        par1NBTTagCompound.a("Compressed", this.isCompressed());
     }
 }

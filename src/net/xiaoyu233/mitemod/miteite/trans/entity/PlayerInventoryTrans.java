@@ -32,7 +32,8 @@ public class PlayerInventoryTrans {
                 while(amount_remaining > 0 && this.d.isWearingDamageableItems(true)) {
                     int armor_index = this.d.aD().nextInt(this.b.length);
                     ItemStack item_stack = this.b[armor_index];
-                    if (item_stack != null && item_stack.b() instanceof ItemArmor) {
+                    Item item;
+                    if (item_stack != null && (item = item_stack.b()) instanceof ItemArmor) {
                         int portion;
                         if (this.getNumberOfArmorPiecesEquipped() == 1) {
                             portion = amount_remaining;
@@ -47,7 +48,9 @@ public class PlayerInventoryTrans {
 
                         result.applyArmorDamageResult(item_stack.tryDamageItem(damage_source, (int) Math.max((1-durability_modifier) * portion,1), this.d));
                         if (damage_source != null && damage_source.getResponsibleEntity() != null) {
-                            item_stack.b().addExpForTool(item_stack, this.d, portion);
+                            if (!item.isMaxToolLevel(item_stack)){
+                                item.addExpForTool(item_stack, this.d, portion);
+                            }
                         }
                         if (item_stack.b == 0) {
                             this.b[armor_index] = null;

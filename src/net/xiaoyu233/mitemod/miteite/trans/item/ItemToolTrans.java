@@ -26,7 +26,7 @@ public class ItemToolTrans extends Item {
     private Material effective_material;
 
     public int getExpReqForLevel(int level,boolean isSword) {
-        return isSword ? (200 * level) : (100 * level);
+        return isSword ? (400 * level) : (200 * level);
     }
 
     public boolean a(ItemStack par1ItemStack, EntityLiving par2EntityLivingBase, EntityLiving par3EntityLivingBase) {
@@ -84,15 +84,16 @@ public class ItemToolTrans extends Item {
         if (item_stack.p()) {
             if (item_stack.q().b("tool_level")) {
                 if (this.isMaxToolLevel(item_stack)) {
-                    info.add("工具等级:§6已达到最高级");
+                    info.add("工具等级:§6已达到最高级" + item_stack.q().e("tool_level"));
                 } else {
                     info.add("工具等级:" + item_stack.q().e("tool_level"));
+                    if (item_stack.q().b("tool_exp")) {
+                        info.add("工具经验" + EnumChatFormat.p + item_stack.q().e("tool_exp") + "/" + getExpReqForLevel(
+                                item_stack.q().e("tool_level") + 1, isWeapon(item_stack.b())));
+                    }
                 }
             }
-            if (item_stack.q().b("tool_exp")) {
-                info.add("工具经验" + EnumChatFormat.p + item_stack.q().e("tool_exp") + "/" + getExpReqForLevel(
-                        item_stack.q().e("tool_level") + 1, isWeapon(item_stack.b())));
-            }
+
             if (extended_info) {
                 NBTTagCompound compound = item_stack.e.l("modifiers");
                 if (!compound.d()) {
@@ -138,7 +139,7 @@ public class ItemToolTrans extends Item {
         if (item_stack.g() && !block.isPortable(info.world, info.getHarvester(), info.x, info.y,
                 info.z) && !info.isResponsiblePlayerInCreativeMode() && info.getBlockHardness() > 0.0F && this.getStrVsBlock(
                 block, info.getMetadata()) > 1.0F) {
-            if (!(item_stack.b() instanceof  ItemSword) && this.isEffectiveAgainstBlock(info.block, info.getMetadata())) {
+            if (!(item_stack.b() instanceof  ItemSword) && this.isEffectiveAgainstBlock(info.block, info.getMetadata()) && !item_stack.b().isMaxToolLevel(item_stack)) {
                 this.addExpForTool(info.getHarvesterItemStack(), info.getResponsiblePlayer(), 1);
             }
             info.getHarvesterItemStack().tryDamageItem(DamageSource.j,

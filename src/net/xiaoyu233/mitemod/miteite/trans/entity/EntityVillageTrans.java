@@ -4,6 +4,8 @@ import net.minecraft.*;
 import net.xiaoyu233.fml.asm.annotations.Link;
 import net.xiaoyu233.fml.asm.annotations.Marker;
 import net.xiaoyu233.fml.asm.annotations.Transform;
+import net.xiaoyu233.mitemod.miteite.MITEITEMod;
+import net.xiaoyu233.mitemod.miteite.util.Config;
 
 import java.util.Collections;
 import java.util.Random;
@@ -151,7 +153,7 @@ public class EntityVillageTrans  extends EntityAgeable implements IMerchant, NPC
 
     private static void forEmeraldShard(MerchantRecipeList par0MerchantRecipeList, int par1, Random par2Random, float par3) {
         if (par2Random.nextFloat() < par3) {
-            par0MerchantRecipeList.add(new MerchantRecipe(a(par1, par2Random), Item.shardEmerald));
+            par0MerchantRecipeList.add(new MerchantRecipe(new ItemStack(par1, MITEITEMod.CONFIG.get(Config.ConfigEntry.VILLAGER_WOOL_TO_EMERALD_SHARD_COUNT)), Item.shardEmerald));
         }
     }
 

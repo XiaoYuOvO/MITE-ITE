@@ -3,6 +3,8 @@ package net.xiaoyu233.mitemod.miteite.trans.item;
 import net.minecraft.*;
 import net.xiaoyu233.fml.asm.annotations.Link;
 import net.xiaoyu233.fml.asm.annotations.Transform;
+import net.xiaoyu233.mitemod.miteite.MITEITEMod;
+import net.xiaoyu233.mitemod.miteite.util.Config;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -23,7 +25,9 @@ public class RecipesFurnaceTrans {
                 if (input_item_id == Block.J.cF) {
                     result_item_stack = (heat_level != 1 || input_item_stack.b >= 4) && input_item_stack.b >= 4 ? new ItemStack(heat_level == 1 ? Block.V : Block.R) : null;
                 } else if (input_item_id == Block.an.cF){
-                    result_item_stack = heat_level == 5 && input_item_stack.b >= 4 ? new ItemStack(Item.ingotMithril) : null;
+                    result_item_stack = heat_level >= 4 && input_item_stack.b >= 4 ? new ItemStack(Item.ingotMithril) : null;
+                }else if (input_item_id == Block.blockMithril.cF){
+                    result_item_stack = heat_level >= 4 && input_item_stack.b >= MITEITEMod.CONFIG.get(Config.ConfigEntry.MITHRIL_BLOCK_COUNT_TO_ADAMANTIUM) ? new ItemStack(Item.ingotMithril) : null;
                 }else {
                     result_item_stack = (ItemStack)this.b.get(input_item_id);
                 }

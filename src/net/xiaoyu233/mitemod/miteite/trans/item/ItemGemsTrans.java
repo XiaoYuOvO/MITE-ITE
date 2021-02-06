@@ -16,7 +16,8 @@ public class ItemGemsTrans extends Item {
             //MODDED
             return 40;
         } else {
-            return item == cb ? 50 : (item == bJ ? 250 : (item == p ? 500 : 0));
+            //Make quartz less
+            return item == cb ? 35 : (item == bJ ? 250 : (item == p ? 500 : 0));
         }
     }
 

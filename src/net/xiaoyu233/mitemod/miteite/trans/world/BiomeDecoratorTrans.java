@@ -11,6 +11,23 @@ import java.util.Random;
 
 @Transform(BiomeDecorator.class)
 public class BiomeDecoratorTrans {
+    private static final int IRON_FREQUENCY_OVERWORLD = MITEITEMod.CONFIG.get(Config.ConfigEntry.IRON_FREQUENCY_OVERWORLD);
+    private static final int SILVER_FREQUENCY_OVERWORLD = MITEITEMod.CONFIG.get(Config.ConfigEntry.SILVER_FREQUENCY_OVERWORLD);
+    private static final int COPPER_FREQUENCY_OVERWORLD = MITEITEMod.CONFIG.get(Config.ConfigEntry.COPPER_FREQUENCY_OVERWORLD);
+    private static final int GOLD_FREQUENCY_OVERWORLD = MITEITEMod.CONFIG.get(Config.ConfigEntry.GOLD_FREQUENCY_OVERWORLD);
+    private static final int MITHRIL_FREQUENCY_OVERWORLD = MITEITEMod.CONFIG.get(Config.ConfigEntry.MITHRIL_FREQUENCY_OVERWORLD);
+    private static final int LAPIS_FREQUENCY_OVERWORLD = MITEITEMod.CONFIG.get(Config.ConfigEntry.LAPIS_FREQUENCY_OVERWORLD);
+    private static final int DIAMOND_FREQUENCY_OVERWORLD = MITEITEMod.CONFIG.get(Config.ConfigEntry.DIAMOND_FREQUENCY_OVERWORLD);
+    private static final int ADAMANTIUM_FREQUENCY_OVERWORLD = MITEITEMod.CONFIG.get(Config.ConfigEntry.ADAMANTIUM_FREQUENCY_OVERWORLD);
+
+    private static final int IRON_FREQUENCY_UNDERWORLD = MITEITEMod.CONFIG.get(Config.ConfigEntry.IRON_FREQUENCY_UNDERWORLD);
+    private static final int SILVER_FREQUENCY_UNDERWORLD = MITEITEMod.CONFIG.get(Config.ConfigEntry.SILVER_FREQUENCY_UNDERWORLD);
+    private static final int COPPER_FREQUENCY_UNDERWORLD = MITEITEMod.CONFIG.get(Config.ConfigEntry.COPPER_FREQUENCY_UNDERWORLD);
+    private static final int GOLD_FREQUENCY_UNDERWORLD = MITEITEMod.CONFIG.get(Config.ConfigEntry.GOLD_FREQUENCY_UNDERWORLD);
+    private static final int MITHRIL_FREQUENCY_UNDERWORLD = MITEITEMod.CONFIG.get(Config.ConfigEntry.MITHRIL_FREQUENCY_UNDERWORLD);
+    private static final int LAPIS_FREQUENCY_UNDERWORLD = MITEITEMod.CONFIG.get(Config.ConfigEntry.LAPIS_FREQUENCY_UNDERWORLD);
+    private static final int DIAMOND_FREQUENCY_UNDERWORLD = MITEITEMod.CONFIG.get(Config.ConfigEntry.DIAMOND_FREQUENCY_UNDERWORLD);
+    private static final int ADAMANTIUM_FREQUENCY_UNDERWORLD = MITEITEMod.CONFIG.get(Config.ConfigEntry.ADAMANTIUM_FREQUENCY_UNDERWORLD);
     @Link
     protected World a;
     @Link
@@ -43,14 +60,15 @@ public class BiomeDecoratorTrans {
     protected WorldGenMinable mithrilGen;
     @Link
     protected WorldGenMinable adamantiteGen;
+
     @Link
-    protected WorldGenMinable m;
+    protected WorldGenMinable m;//Gold
     @Link
-    protected WorldGenMinable n;
+    protected WorldGenMinable n;//Redstone
     @Link
-    protected WorldGenMinable o;
+    protected WorldGenMinable o;//Diamond
     @Link
-    protected WorldGenMinable p;
+    protected WorldGenMinable p;//Lapis
     @Link
     protected WorldGenMinable silverfishGen;
     @Link
@@ -117,8 +135,8 @@ public class BiomeDecoratorTrans {
         this.n = new WorldGenMinable(Block.aS.cF, 5);
         this.o = new WorldGenMinable(Block.aB.cF, 3);
         //Decrease Lapis
-        this.p = new WorldGenMinable(Block.S.cF, 2);
-        this.silverfishGen = new WorldGenMinable(Block.bq.cF, 3);
+        this.p = new WorldGenMinable(Block.S.cF, 3);
+        this.silverfishGen = new WorldGenMinable(Block.bq.cF, 2);
         this.bush_gen = new WorldGenPlants(Block.bush);
     }
 
@@ -137,30 +155,30 @@ public class BiomeDecoratorTrans {
             this.genMinable(200, this.i);
             this.genMinable(200, this.j);
             this.genMinable(50, this.k);
-            this.genMinable(40, this.copperGen, true);
-            this.genMinable(10, this.silverGen, true);
-            this.genMinable(20, this.m, true);
-            this.genMinable(60, this.l, true);
-            this.genMinable(10, this.mithrilGen, true);
+            this.genMinable(COPPER_FREQUENCY_OVERWORLD, this.copperGen, true);
+            this.genMinable(SILVER_FREQUENCY_OVERWORLD, this.silverGen, true);
+            this.genMinable(GOLD_FREQUENCY_OVERWORLD, this.m, true);
+            this.genMinable(IRON_FREQUENCY_OVERWORLD, this.l, true);
+            this.genMinable(MITHRIL_FREQUENCY_OVERWORLD, this.mithrilGen, true);
             this.genMinable(5, this.silverfishGen, true);
             this.genMinable(10, this.n);
-            this.genMinable(5, this.o);
-            this.genMinable(5, this.p);
+            this.genMinable(DIAMOND_FREQUENCY_OVERWORLD, this.o);
+            this.genMinable(LAPIS_FREQUENCY_OVERWORLD, this.p);
             //Add adamantite to overworld
             if (MITEITEMod.CONFIG.get(Config.ConfigEntry.OVERWORLD_ADAMANTITE_ORE)){
-                this.genMinable(1, this.adamantiteGen, false);
+                this.genMinable(ADAMANTIUM_FREQUENCY_OVERWORLD, this.adamantiteGen, false);
             }
         } else if (this.a.isUnderworld()) {
             this.genMinable(300, this.j);
-            this.genMinable(40, this.copperGen, true);
-            this.genMinable(10, this.silverGen, true);
-            this.genMinable(20, this.m, true);
-            this.genMinable(60, this.l, true);
-            this.genMinable(10, this.mithrilGen, true);
-            this.genMinable(5, this.adamantiteGen, true);
+            this.genMinable(COPPER_FREQUENCY_UNDERWORLD, this.copperGen, true);
+            this.genMinable(SILVER_FREQUENCY_UNDERWORLD, this.silverGen, true);
+            this.genMinable(GOLD_FREQUENCY_UNDERWORLD, this.m, true);
+            this.genMinable(IRON_FREQUENCY_UNDERWORLD, this.l, true);
+            this.genMinable(MITHRIL_FREQUENCY_UNDERWORLD, this.mithrilGen, true);
+            this.genMinable(ADAMANTIUM_FREQUENCY_UNDERWORLD, this.adamantiteGen, true);
             this.genMinable(10, this.n);
-            this.genMinable(5, this.o);
-            this.genMinable(5, this.p);
+            this.genMinable(DIAMOND_FREQUENCY_UNDERWORLD, this.o);
+            this.genMinable(LAPIS_FREQUENCY_UNDERWORLD, this.p);
             if (this.a.underworld_y_offset != 0) {
                 this.genMinable(50, this.silverfishGen);
             }

@@ -90,44 +90,50 @@ public class Items extends Item{
                         " S ",
                         " S ",
                         '#',VIBRANIUM_INGOT,
-                        'S',OBSIDIAN_STICK);
+                        'S',OBSIDIAN_STICK,
+                        'A',Items.pickaxeAncientMetal);
         CraftingManagerHelper.registerShapedRecipe(new ItemStack(VIBRANIUM_SHOVEL),true,
                 "#",
-                        "S",
+                        "A",
                         "S",
                         '#',VIBRANIUM_INGOT,
-                        'S',OBSIDIAN_STICK);
+                        'S',OBSIDIAN_STICK,
+                        'A',Items.shovelAncientMetal);
         CraftingManagerHelper.registerShapedRecipe(new ItemStack(VIBRANIUM_SWORD),true,
                 " # ",
                         " # ",
-                        " S ",
+                        " A ",
                         '#',VIBRANIUM_INGOT,
-                        'S',OBSIDIAN_STICK);
+                        'S',OBSIDIAN_STICK,
+                        'A',Items.swordAncientMetal);
         CraftingManagerHelper.registerShapedRecipe(new ItemStack(VIBRANIUM_AXE),true,
                 "##",
-                        "S#",
+                        "A#",
                         "S ",
                         '#',VIBRANIUM_INGOT,
-                        'S',OBSIDIAN_STICK);
+                        'S',OBSIDIAN_STICK,
+                        'A',Items.axeAncientMetal);
         CraftingManagerHelper.registerShapedRecipe(new ItemStack(VIBRANIUM_DAGGER),true,
                 "I",
-                        "S",
+                        "A",
                 'I',Items.VIBRANIUM_INGOT,
-                'S',OBSIDIAN_STICK
+                'A',Items.daggerAncientMetal
                 );
         CraftingManagerHelper.registerShapedRecipe(new ItemStack(VIBRANIUM_WAR_HAMMER),true,
                 "III",
-                        "ISI",
+                        "IAI",
                         " S ",
                 'I',Items.VIBRANIUM_INGOT,
-                'S',OBSIDIAN_STICK
+                'S',OBSIDIAN_STICK,
+                'A',Items.warHammerAncientMetal
         );
         CraftingManagerHelper.registerShapedRecipe(new ItemStack(VIBRANIUM_BATTLE_AXE),true,
                 "I I",
-                        "ISI",
+                        "IAI",
                         " S ",
                 'I',Items.VIBRANIUM_INGOT,
-                'S',OBSIDIAN_STICK
+                'S',OBSIDIAN_STICK,
+                'A',Items.battleAxeAncientMetal
                 );
         CraftingManagerHelper.registerShapelessRecipe(new ItemStack(VIBRANIUM_INGOT,9),true, Blocks.blockVibranium);
         CraftingManagerHelper.registerShapelessRecipe(new ItemStack(Item.p),false, Items.DIAMOND_CHUNK,Items.DIAMOND_CHUNK,Items.DIAMOND_CHUNK,Items.DIAMOND_CHUNK);
@@ -157,7 +163,10 @@ public class Items extends Item{
                 'L',Item.M,
                 'N',Items.VIBRANIUM_NUGGET
                 );
-        RecipesFurnace.a().addSmelting(Block.blockMithril.cF, new ItemStack(Item.ingotAdamantium));
+        CraftingManagerHelper.registerShapedRecipe(new ItemStack(Item.bJ),true,
+            "SS",
+                    "SS",
+                'S',Item.shardEmerald);
     }
     private static Item register(String resourceLocation,Item item,CreativeModeTab tab){
         item.setResourceLocation(item.getResourceLocationPrefix() + resourceLocation);

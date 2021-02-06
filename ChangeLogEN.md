@@ -28,6 +28,7 @@ The types are in square brackets_**
 * ***Players will have progressive damage when they are attacked (when attacked by the same entity multiple times, the damage will increase, each time it increases by 10%)*** `{stepped_mob_damage}[Boolean]`
 * In wall damage *to the player* increased to ***10***`{in_wall_damage_for_player}[Double]`
 * The probability of the player's enchantment to good enchantments is reduced
+* The player stays in the rain for ***3600*** ticks means ***30*** minutes will get SlownessⅠ`{in_rain_debuff_time}[整数]`
 ## GUI
 * Players can see their nutritional value in real time, around their own shortcut bar,X offset***0***,Y offset***0***`{health_bar_x_offset}[Integer] {health_bar_y_offset}[Integer]`
 ## World Generation
@@ -43,6 +44,7 @@ The types are in square brackets_**
     + Four iron blocks can be smelt into a mithril ingot,with the cook time of ***6000***tick means ***5 minutes*** `{iron_to_mithril_cook_time}[Integer]`
     + A mithril block can be smelt into an adamantium ingot ingot,with the cook time of ***9000***tick means ***7.5 minutes*** `{mithril_to_adamantium_cook_time}[Integer]`
 * Now crafting every vibrantium armor requires an ancient metal block(The ancient metal block of the shoe is placed between the vibrantium ingot in the bottom row.The rest are placed in the top space between vibrantium ingots,vibrantium ingots' position remains the same)
+* Each vibrating tool needs a corresponding ancient metal tool to craft, replacing the obsidian rod in the center of the crafting table (If there is only one obsidian rod, it becomes the corresponding ancient metal tool)
 # Blocks
 * ***The monster spawning block will speed up spawning when there are players within the spawning radius (approximately 2 times the speed)*** `{mob_spawner_speed_up_with_players}[Boolean]`
 ## Bug fix

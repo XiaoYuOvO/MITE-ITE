@@ -4,6 +4,8 @@ import net.minecraft.*;
 import net.xiaoyu233.fml.asm.annotations.Link;
 import net.xiaoyu233.fml.asm.annotations.Marker;
 import net.xiaoyu233.fml.asm.annotations.Transform;
+import net.xiaoyu233.mitemod.miteite.MITEITEMod;
+import net.xiaoyu233.mitemod.miteite.util.Config;
 
 @Transform(TileEntityFurnace.class)
 public class TileEntityFurnaceTrans extends TileEntity{
@@ -32,13 +34,15 @@ public class TileEntityFurnaceTrans extends TileEntity{
                 this.g[2].b += var1.b;
             }
 
-            byte consumption;
+            int consumption;
             if (this.getInputItemStack().d == Block.J.cF && var1.d == Block.V.cF) {
                 consumption = 4;
             } else if (this.getInputItemStack().d == Block.J.cF && var1.d == Block.R.cF) {
                 consumption = 4;
             } else if (this.getInputItemStack().d == Block.an.cF && var1.d == Item.ingotMithril.cv){
                 consumption = 4;
+            }else if (this.getInputItemStack().d == Block.blockMithril.cF && var1.d == Item.ingotAdamantium.cv){
+                consumption = MITEITEMod.CONFIG.get(Config.ConfigEntry.MITHRIL_BLOCK_COUNT_TO_ADAMANTIUM);
             }else {
                 consumption = 1;
             }
@@ -72,9 +76,9 @@ public class TileEntityFurnaceTrans extends TileEntity{
     }
 
     public static int getHeatLevelRequired(int item_id) {
-        if (item_id == Block.cE.cF || item_id == Block.an.cF){
+        if (item_id == Block.cE.cF ){
             return 5;
-        }else if (item_id == Block.oreAdamantium.cF) {
+        }else if (item_id == Block.oreAdamantium.cF || item_id == Block.an.cF || item_id == Block.blockMithril.cF) {
             return 4;
         } else if (item_id == Block.oreMithril.cF) {
             return 3;

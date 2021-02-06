@@ -40,7 +40,9 @@ public class EntityInsentientTrans extends EntityLiving{
                     Item item = stack.b();
                     if (attacker instanceof EntityPlayer) {
                         if (item instanceof ItemSword || item instanceof ItemWarHammer || item instanceof ItemBattleAxe) {
-                            item.addExpForTool(stack, ((EntityHuman) attacker), (int) Math.min(this.aT(), result.getAmountOfHealthLost()));
+                            if (!item.isMaxToolLevel(stack)){
+                                item.addExpForTool(stack, ((EntityHuman) attacker), (int) Math.min(this.aT(), result.getAmountOfHealthLost()));
+                            }
                             float slowMdfLvl = ToolModifierTypes.SLOWDOWN_MODIFIER.getModifierValue(stack.q());
                             if (result.entity instanceof EntityLiving && slowMdfLvl >= 1){
                                 ((EntityLiving) result.entity).c(new MobEffect(2,(int) (slowMdfLvl * 20),(int) (slowMdfLvl / 2)));

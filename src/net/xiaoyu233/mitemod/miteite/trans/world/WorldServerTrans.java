@@ -1,15 +1,45 @@
 package net.xiaoyu233.mitemod.miteite.trans.world;
 
 import net.minecraft.*;
+import net.minecraft.server.MinecraftServer;
+import net.xiaoyu233.fml.asm.annotations.Link;
 import net.xiaoyu233.fml.asm.annotations.Marker;
 import net.xiaoyu233.fml.asm.annotations.Transform;
 import net.xiaoyu233.mitemod.miteite.MITEITEMod;
 import net.xiaoyu233.mitemod.miteite.util.Config;
 
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
+
+import static net.xiaoyu233.fml.util.ReflectHelper.dyCast;
+import static net.xiaoyu233.mitemod.miteite.util.Config.ConfigEntry.FIRST_DAY_LONGER_DAY_TIME;
 
 @Transform(WorldServer.class)
 public class WorldServerTrans extends World{
+    @Link
+    private MinecraftServer a;
+    @Link
+    private EntityTracker J;
+    @Link
+    private PlayerChunkMap K;
+    @Link
+    private Set L;
+    @Link
+    private TreeSet M;
+    @Link
+    public ChunkProviderServer b;
+    @Link
+    public boolean c;
+    @Link
+    private PortalTravelAgent P;
+    @Link
+    private SpawnerCreature Q ;
+    @Link
+    public WorldMap world_map;
+    @Link
+    public int no_hostile_mob_spawning_counter;
+    private boolean pushTimeNextTick;
 
     @Marker
     public WorldServerTrans(IDataManager par1ISaveHandler, String par2Str, WorldProvider par3WorldProvider, WorldSettings par4WorldSettings, MethodProfiler par5Profiler, IConsoleLogManager par6ILogAgent, long world_creation_time, long total_world_time) {
@@ -178,4 +208,123 @@ public class WorldServerTrans extends World{
 
         return null;
     }
+    public void b() {
+        if (this.no_hostile_mob_spawning_counter > 0 && Minecraft.inDevMode() && this.no_hostile_mob_spawning_counter % 200 == 0) {
+            System.out.println("no_hostile_mob_spawning_counter=" + this.no_hostile_mob_spawning_counter);
+        }
+
+        this.x.setEarliestAllowableMITERelease(149);
+        super.b();
+        if (!this.x.isValidMITEWorld()) {
+            MinecraftServer.setTreacheryDetected();
+        }
+
+        if (this.t.i == 0 && this.a.isServerSideMappingEnabled() && this.world_map == null) {
+            this.world_map = new WorldMap(dyCast(this));
+        }
+
+        if (this.world_map != null) {
+            this.world_map.writeToFileProgressively(false);
+        }
+
+        this.checkCurses();
+        if (this.N().t() && this.r < 3) {
+            this.r = 3;
+        }
+
+        this.t.e.b();
+        if (this.hasNonGhostPlayers()) {
+            boolean sleeping_prevented = this.isBloodMoon(false) || DedicatedServer.isTournament();
+            if (sleeping_prevented || !this.allPlayersInBedOrDead() || this.getAdjustedTimeOfDay() >= getTimeOfSunrise() - 1000 && this.getAdjustedTimeOfDay() < getTimeOfSleeping()) {
+                this.wakeAllPlayersGently();
+            } else if (this.allPlayersAsleepOrDead()) {
+                if (this.O().b("doDaylightCycle")) {
+                    this.runSleepTicks(this.getTimeTillSunrise());
+                } else {
+                    this.wakeAllPlayersGently();
+                }
+            } else {
+                this.signalAllPlayersToStartFallingAsleep();
+            }
+        }
+
+        this.C.a("mobSpawner");
+        if (this.O().b("doMobSpawning")) {
+            this.Q.performRandomLivingEntitySpawning(dyCast(this));
+        }
+
+        this.C.c("chunkSource");
+        this.v.c();
+        this.tickBlocksInFastForward();
+        this.checkScheduledBlockChanges(false);
+        int var3 = this.a(1.0F);
+        if (var3 != this.j) {
+            this.j = var3;
+        }
+
+        int ticks_progressed = this.shouldTimeProgress() ? 1 : 0;
+        if (MITEITEMod.CONFIG.get(FIRST_DAY_LONGER_DAY_TIME) && this.getDayOfWorld() == 1 && this.I() < 12000){
+            if (pushTimeNextTick){
+                if (ticks_progressed > 0) {
+                    this.advanceTotalWorldTime(ticks_progressed);
+                }
+                pushTimeNextTick = false;
+            }else {
+                pushTimeNextTick = true;
+            }
+        }else if (ticks_progressed > 0) {
+            this.advanceTotalWorldTime(ticks_progressed);
+        }
+        this.C.c("tickPending");
+        this.a(false);
+        this.C.c("tickTiles");
+        this.performQueuedBlockOperations();
+        if (ticks_progressed <= 0) {
+            this.setActivePlayerChunks();
+        } else {
+            this.g();
+        }
+
+        this.C.c("chunkMap");
+        this.K.b();
+        this.C.c("village");
+        this.A.a();
+        this.B.a();
+        this.C.c("portalForcer");
+        this.P.a(this.I());
+        this.C.b();
+        this.aa();
+    }
+    @Marker
+    protected void wakeAllPlayersGently() {}
+
+    @Marker
+    private void performQueuedBlockOperations() {}
+
+    @Marker
+    public boolean shouldTimeProgress() { return false; }
+
+    @Marker
+    public void checkScheduledBlockChanges(boolean flush) {}
+
+    @Marker
+    protected void tickBlocksInFastForward() {}
+
+    @Marker
+    private void signalAllPlayersToStartFallingAsleep() {}
+
+    @Marker
+    public boolean runSleepTicks(int ticks) {return false;}
+
+    @Marker
+    public boolean allPlayersAsleepOrDead() {return false;}
+
+    @Marker
+    private boolean allPlayersInBedOrDead() {return false;}
+
+    @Marker
+    public void checkCurses() {}
+
+    @Marker
+    private void aa() {}
 }

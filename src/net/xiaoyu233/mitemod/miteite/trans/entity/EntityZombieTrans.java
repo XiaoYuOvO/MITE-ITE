@@ -4,12 +4,16 @@ import net.minecraft.*;
 import net.xiaoyu233.fml.asm.annotations.Link;
 import net.xiaoyu233.fml.asm.annotations.Marker;
 import net.xiaoyu233.fml.asm.annotations.Transform;
+import net.xiaoyu233.mitemod.miteite.MITEITEMod;
+import net.xiaoyu233.mitemod.miteite.util.Config;
 
 @Transform(EntityZombie.class)
 class EntityZombieTrans extends EntityAnimalWatcher {
 
     @Link
     protected static IAttribute bp;
+    @Link
+    private boolean is_smart;
 
     @Marker
     public EntityZombieTrans(World world) {
@@ -28,5 +32,22 @@ class EntityZombieTrans extends EntityAnimalWatcher {
         this.setEntityAttribute(GenericAttributes.e, 10D + day / 48D);
         this.setEntityAttribute(GenericAttributes.a, 50.0D + day / 14D);
         this.setEntityAttribute(bp, this.aD().nextDouble() * (double)0.1F);
+    }
+
+    @Override
+    public EntityDamageResult attackEntityFrom(Damage damage) {
+        if (MITEITEMod.CONFIG.get(Config.ConfigEntry.ZOMBIE_DEFENSE)){
+            if (this.getHeldItem() != null && this.ab.nextInt(10) > 8){
+                damage.scaleAmount(0.5f);
+                this.getWorld().a(this,"mob.irongolem.hit",1,1);
+            }
+        }
+        EntityDamageResult result = super.attackEntityFrom(damage);
+        if (result != null && !result.entityWasDestroyed()) {
+            if (result.entityWasNegativelyAffected() && damage.wasCausedByPlayer()) {
+                this.is_smart = true;
+            }
+        }
+        return result;
     }
 }

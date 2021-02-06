@@ -65,6 +65,14 @@ public class EntityLivingTrans extends Entity{
 
     }
 
+    @Marker
+    protected void tryDamageArmor(DamageSource damage_source, float amount, EntityDamageResult result) {
+    }
+
+    public void tryDamageArmorP(DamageSource damage_source, float amount, EntityDamageResult result){
+        this.tryDamageArmor(damage_source, amount, result);
+    }
+
     public void y() {
         this.aD = this.aE;
         super.y();

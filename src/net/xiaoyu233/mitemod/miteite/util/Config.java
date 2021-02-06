@@ -97,7 +97,7 @@ public class Config extends JsonConfig {
         public static final IntConfigEntry IRON_FREQUENCY_OVERWORLD = new IntConfigEntry("iron_frequency_overworld", 40);
         public static final IntConfigEntry GOLD_FREQUENCY_OVERWORLD = new IntConfigEntry("gold_frequency_overworld", 20);
         public static final IntConfigEntry MITHRIL_FREQUENCY_OVERWORLD = new IntConfigEntry("mithril_frequency_overworld", 10);
-        public static final IntConfigEntry LAPIS_FREQUENCY_OVERWORLD = new IntConfigEntry("lapis_frequency_overworld", 5);
+        public static final IntConfigEntry LAPIS_FREQUENCY_OVERWORLD = new IntConfigEntry("lapis_frequency_overworld", 4);
         public static final IntConfigEntry DIAMOND_FREQUENCY_OVERWORLD = new IntConfigEntry("diamond_frequency_overworld", 5);
         public static final IntConfigEntry ADAMANTIUM_FREQUENCY_OVERWORLD = new IntConfigEntry("adamantium_frequency_overworld", 2);
         //Ore gens underworld

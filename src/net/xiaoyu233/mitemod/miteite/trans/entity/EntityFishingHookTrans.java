@@ -79,7 +79,7 @@ public abstract class EntityFishingHookTrans extends Entity {
     }
 
     @Marker
-    private int getFishType() {
-        return 0;
+    private Item getFishType() {
+        return null;
     }
 }

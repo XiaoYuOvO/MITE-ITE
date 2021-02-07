@@ -8,22 +8,23 @@ import net.xiaoyu233.mitemod.miteite.MITEITEMod;
 import net.xiaoyu233.mitemod.miteite.util.Config;
 
 import java.util.List;
+import java.util.UUID;
 
 @Transform(EntityPigZombie.class)
 public class EntityZombiePigmanTrans extends EntityZombie implements IRangedEntity {
     @Link
     protected static IAttribute bp;
+    @Link
+    public static AttributeModifier br;
+    @Link
+    private static final UUID bq = UUID.fromString("49455A49-7EC5-45BA-B886-3B90B23A1718");
     private final PathfinderGoalArrowAttack arrowAttack = new PathfinderGoalArrowAttack((this), 1.0D, 20, 60, 15.0F);
-    private final PathfinderGoalMeleeAttack meleeAttack = new PathfinderGoalMeleeAttack(this, EntityHuman.class, 1.2D, false);
+    private final PathfinderGoalMeleeAttack meleeAttack = new PathfinderGoalMeleeAttack(this, EntityHuman.class, 1D, false);
     private int DATA_OBJ_ID_IS_BOOSTED;
     private int effectCooldown;
 
     public void setHeldItemStack(ItemStack item_stack) {
         super.setHeldItemStack(item_stack);
-        if (this.onServer()) {
-            this.reCalcProfession();
-        }
-
     }
 
     public void reCalcProfession() {
@@ -119,6 +120,7 @@ public class EntityZombiePigmanTrans extends EntityZombie implements IRangedEnti
                 this.c.a(2, meleeAttack);
             }
         }
+        this.reCalcProfession();
         return par1EntityLivingData;
     }
 
@@ -127,7 +129,7 @@ public class EntityZombiePigmanTrans extends EntityZombie implements IRangedEnti
         int day = this.getWorld() != null ? Math.max(this.getWorld().getDayOfWorld() - 64, 0) : 0;
         this.setEntityAttribute(GenericAttributes.a, 50.0D + day / 12D);
         this.setEntityAttribute(GenericAttributes.b, 64D);
-        this.setEntityAttribute(GenericAttributes.d, 0.25F);
+        this.setEntityAttribute(GenericAttributes.d, 0.25D);
         this.setEntityAttribute(GenericAttributes.e, 10D + day / 48D);
         this.setEntityAttribute(EntityZombie.bp, this.ab.nextDouble() * (double) 0.1F);
     }
@@ -151,6 +153,10 @@ public class EntityZombiePigmanTrans extends EntityZombie implements IRangedEnti
                 effectCooldown--;
             }
         }
+    }
+
+    static {
+        br = (new AttributeModifier(bq, "Attacking speed boost", 0.1D, 0)).a(false);
     }
 
     public boolean randomUseBow() {

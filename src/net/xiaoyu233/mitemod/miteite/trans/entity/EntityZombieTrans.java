@@ -37,7 +37,7 @@ class EntityZombieTrans extends EntityAnimalWatcher {
     @Override
     public EntityDamageResult attackEntityFrom(Damage damage) {
         if (MITEITEMod.CONFIG.get(Config.ConfigEntry.ZOMBIE_DEFENSE)){
-            if (this.getHeldItem() != null && this.ab.nextInt(10) > 8){
+            if (damage.getResponsibleEntityP() != null && this.getHeldItem() != null && this.ab.nextInt(10) > 8){
                 damage.scaleAmount(0.5f);
                 this.getWorld().a(this,"mob.irongolem.hit",1,1);
             }

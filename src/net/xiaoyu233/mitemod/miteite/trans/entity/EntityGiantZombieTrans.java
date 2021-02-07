@@ -12,9 +12,9 @@ public class EntityGiantZombieTrans extends EntityMonster {
     public EntityGiantZombieTrans(World var1) {
         super(var1);
         this.N *= 6.0F;
-        this.a(this.O * 2.0f, this.P * 6.0F);
+        this.a(this.O * 2.0f, this.P * 8.0F);
         this.c.a(0, new PathfinderGoalFloat(this));
-        this.c.a(2, new PathfinderGoalMeleeAttack(this, EntityHuman.class, 1.5D, true));
+        this.c.a(2, new PathfinderGoalMeleeAttack(this, EntityHuman.class, 1.1D, true));
         this.c.a(3, new PathfinderGoalMeleeAttack(this, EntityVillager.class, 1.0D, true));
         this.c.a(4, new PathfinderGoalMoveTowardsRestriction(this, 1.0D));
         this.c.a(5, new PathfinderGoalMoveThroughVillage(this, 1.0D, false));
@@ -28,12 +28,52 @@ public class EntityGiantZombieTrans extends EntityMonster {
         this.d.a(3, new PathfinderGoalNearestAttackableTarget(this, EntityAnimal.class, 10, true));
     }
 
+    protected String r() {
+        return "mob.zombie.say";
+    }
+
+    protected String aO() {
+        return "mob.zombie.hurt";
+    }
+
+    protected String aP() {
+        return "mob.zombie.death";
+    }
+
+    protected void a(int par1, int par2, int par3, int par4) {
+        this.makeSound("mob.zombie.step", 0.15F, 1.0F);
+    }
+
+
+    public float getReach() {
+        return super.getReach() * 6.5f;
+    }
+
+    @Override
+    protected boolean bf() {
+        return true;
+    }
+
+    @Override
+    public boolean considerFleeing() {
+        return false;
+    }
+
+    @Override
+    protected EntityHuman findPlayerToAttack(float max_distance) {
+        EntityHuman target = super.findPlayerToAttack(max_distance * 2);
+        if (target != null){
+            this.c(target);
+        }
+        return target;
+    }
+
     protected void az() {
         super.az();
         int day = this.getWorld() != null ? Math.max(this.getWorld().getDayOfWorld() - 64,0) : 0;
-        this.a(GenericAttributes.e).a(20.0D + (double)day / 20D);
+        this.a(GenericAttributes.e).a(30.0D + (double)day / 20D);
         this.a(GenericAttributes.a).a(100.0D + (double)day / 16.0D * 10);
-        this.a(GenericAttributes.d).a(0.5D);
+        this.a(GenericAttributes.d).a(0.3D);
     }
 
     @Override

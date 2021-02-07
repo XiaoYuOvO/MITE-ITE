@@ -21,11 +21,13 @@ public class EntityZombieLord extends EntityZombie {
     @Override
     public void l_() {
         super.l_();
-        if (fx_counter > 0){
-            fx_counter--;
-        }else {
-            this.fx_counter = 60;
-            this.entityFX(EnumEntityFX.summoned);
+        if (!this.getWorld().I){
+            if (fx_counter > 0){
+                fx_counter--;
+            }else {
+                this.fx_counter = 60;
+                this.entityFX(EnumEntityFX.summoned);
+            }
         }
     }
 

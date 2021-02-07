@@ -135,7 +135,7 @@ public class BiomeDecoratorTrans {
         this.n = new WorldGenMinable(Block.aS.cF, 5);
         this.o = new WorldGenMinable(Block.aB.cF, 3);
         //Decrease Lapis
-        this.p = new WorldGenMinable(Block.S.cF, 3);
+        this.p = new WorldGenMinable(Block.S.cF, 2);
         this.silverfishGen = new WorldGenMinable(Block.bq.cF, 2);
         this.bush_gen = new WorldGenPlants(Block.bush);
     }

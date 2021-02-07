@@ -100,11 +100,6 @@ public class EntitySkeletonTrans extends EntityMonster implements IRangedEntity{
         this.DATA_OBJ_ID_COMPRESSED = this.ah.addObject(this.ah.getNextAvailableId(), (byte)0);
     }
 
-    @Override
-    public EntityDamageResult attackEntityAsMob(Entity target) {
-        return super.attackEntityAsMob(target);
-    }
-
     public GroupDataEntity a(GroupDataEntity par1EntityLivingData) {
         par1EntityLivingData = super.a(par1EntityLivingData);
         int skeleton_type = this.forced_skeleton_type >= 0 ? this.forced_skeleton_type : this.getRandomSkeletonType(super.q);
@@ -141,7 +136,7 @@ public class EntitySkeletonTrans extends EntityMonster implements IRangedEntity{
                 super.e[4] = 0.0F;
             }
         }
-
+        this.bT();
         return par1EntityLivingData;
     }
 
@@ -193,7 +188,7 @@ public class EntitySkeletonTrans extends EntityMonster implements IRangedEntity{
             }
         }
 
-
+        this.bT();
         super.c(0, (new ItemStack(this.bV() == 2 ? Item.clubWood : Item.m)).randomizeForMob(this, true));
     }
 

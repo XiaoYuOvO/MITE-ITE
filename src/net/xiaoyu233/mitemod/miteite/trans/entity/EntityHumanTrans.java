@@ -209,7 +209,7 @@ public abstract class EntityHumanTrans extends EntityLiving implements ICommandL
                     this.inRainCounter++;
                 } else {
                     //Weakness
-                    this.c(new MobEffect(18, 10 * 20, 0));
+                    this.c(new MobEffect(18, 180 * 20, 0));
                 }
             } else if (this.inRainCounter > 0){
                 this.inRainCounter--;
@@ -350,11 +350,13 @@ public abstract class EntityHumanTrans extends EntityLiving implements ICommandL
             double factor = MITEITEMod.CONFIG.get(STEPPED_MOB_DAMAGE_FACTOR);
             if (factor != 0){
                 Entity responsibleEntity = damage.getSource().getResponsibleEntity();
-                if (this.attackCountMap.containsKey(responsibleEntity)) {
-                    this.attackCountMap.put(responsibleEntity, this.attackCountMap.get(responsibleEntity) + 1);
-                    damage.scaleAmount(1 + this.attackCountMap.get(responsibleEntity) * (float)factor);
-                }else {
-                    this.attackCountMap.put(responsibleEntity, 1);
+                if (responsibleEntity != null){
+                    if (this.attackCountMap.containsKey(responsibleEntity)) {
+                        this.attackCountMap.put(responsibleEntity, this.attackCountMap.get(responsibleEntity) + 1);
+                        damage.scaleAmount(1 + this.attackCountMap.get(responsibleEntity) * (float)factor);
+                    }else {
+                        this.attackCountMap.put(responsibleEntity, 1);
+                    }
                 }
             }
             EntityDamageResult entityDamageResult = super.attackEntityFrom(damage);

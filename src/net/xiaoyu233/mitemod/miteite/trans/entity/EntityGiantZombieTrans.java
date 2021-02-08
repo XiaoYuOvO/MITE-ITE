@@ -12,7 +12,7 @@ public class EntityGiantZombieTrans extends EntityMonster {
     public EntityGiantZombieTrans(World var1) {
         super(var1);
         this.N *= 6.0F;
-        this.a(this.O * 2.0f, this.P * 8.0F);
+        this.a(this.O * 2.0f, this.P * 6.5F);
         this.c.a(0, new PathfinderGoalFloat(this));
         this.c.a(2, new PathfinderGoalMeleeAttack(this, EntityHuman.class, 1.1D, true));
         this.c.a(3, new PathfinderGoalMeleeAttack(this, EntityVillager.class, 1.0D, true));
@@ -44,9 +44,12 @@ public class EntityGiantZombieTrans extends EntityMonster {
         this.makeSound("mob.zombie.step", 0.15F, 1.0F);
     }
 
+    public EnumMonsterType aY() {
+        return EnumMonsterType.b;
+    }
 
     public float getReach() {
-        return super.getReach() * 6.5f;
+        return super.getReach() * 2f;
     }
 
     @Override
@@ -79,7 +82,7 @@ public class EntityGiantZombieTrans extends EntityMonster {
     @Override
     public boolean getCanSpawnHere(boolean perform_light_check) {
         Vec3D pos = this.getFootPos();
-        return !this.getWorld().anySolidBlockIn(this.E.a(0.0,1.0,0.0)) && this.getWorld().getClosestEntityLivingBase(this,new Class[]{this.getClass()},64,false,false) == null && this.getWorld().getBlock(pos.getBlockX(),pos.getBlockY(),pos.getBlockZ()) != Block.F;
+        return !this.getWorld().anySolidBlockIn(this.E.a(0.0,1.0,0.0)) && this.getWorld().getClosestEntityLivingBase(this,new Class[]{this.getClass()},96,false,false) == null && this.getWorld().getBlock(pos.getBlockX(),pos.getBlockY(),pos.getBlockZ()) != Block.F;
     }
 
     protected void bw() {

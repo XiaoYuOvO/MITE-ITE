@@ -48,6 +48,8 @@ public class EntityLivingTrans extends Entity{
     @Link
     public double bj;
     @Link
+    public int aB;
+    @Link
     private EntityLiving i;
     @Link
     private EntityLiving lastAttackTarget;
@@ -177,6 +179,45 @@ public class EntityLivingTrans extends Entity{
         this.q.C.b();
     }
 
+    protected void aB() {
+        ++this.aB;
+        if (dyCast(this) instanceof EntityShadow || dyCast(this) instanceof EntityFireElemental || dyCast(this) instanceof EntityNightwing) {
+            this.aB = 20;
+        }
+
+        if (this.aB == 20) {
+            int var1;
+            EntityExperienceOrb xp_orb;
+            if (!this.q.I && (this.aT > 0 || this.isEntityPlayer()) && !this.g_() && this.q.O().b("doMobLoot")) {
+                for(var1 = this.getExperienceValue(); var1 > 0; this.q.d(xp_orb)) {
+                    int var2 = EntityExperienceOrb.a(var1);
+                    var1 -= var2;
+                    xp_orb = new EntityExperienceOrb(this.q, this.u, this.v + 0.5D, this.w, Math.max(var2,0));
+                    if (this.isEntityPlayer()) {
+                        EntityHuman player = dyCast(this);
+                        xp_orb.setPlayerThisBelongsTo(player.an());
+                        xp_orb.b = -18000;
+                    }
+                }
+            }
+
+            this.x();
+
+            for(var1 = 0; var1 < 20; ++var1) {
+                double var8 = this.ab.nextGaussian() * 0.02D;
+                double var4 = this.ab.nextGaussian() * 0.02D;
+                double var6 = this.ab.nextGaussian() * 0.02D;
+                this.q.spawnParticle(EnumParticle.explode, this.u + (double)(this.ab.nextFloat() * this.O * 2.0F) - (double)this.O, this.v + (double)(this.ab.nextFloat() * this.P), this.w + (double)(this.ab.nextFloat() * this.O * 2.0F) - (double)this.O, var8, var4, var6);
+            }
+        }
+
+    }
+
+    @Marker
+    public int getExperienceValue() {
+        return 0;
+    }
+
     @Override
     @Marker
     protected void a(NBTTagCompound var1) {
@@ -207,8 +248,6 @@ public class EntityLivingTrans extends Entity{
 
     }
 
-    @Marker
-    protected void aB() {}
     @Marker
     public final float aN() {return 0;}
     @Marker

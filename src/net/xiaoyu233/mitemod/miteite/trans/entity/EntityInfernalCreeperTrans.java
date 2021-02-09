@@ -22,7 +22,7 @@ public class EntityInfernalCreeperTrans extends EntityCreeper {
 
     public float getNaturalDefense(DamageSource damage_source) {
         if(MITEITEMod.CONFIG.get(Config.ConfigEntry.INFERNAL_CREEPER_BOOST)) {
-            return super.getNaturalDefense(damage_source) + (damage_source.bypassesMundaneArmor() ? 0.0F : 2.0F) + (this.getWorld() != null ? this.getWorld().getDayOfWorld() * 0.15f : 0);
+            return super.getNaturalDefense(damage_source) + (damage_source.bypassesMundaneArmor() ? 0.0F : 2.0F) + (this.getWorld() != null ? this.getWorld().getDayOfWorld() * 0.075f : 0);
         }else {
             return super.getNaturalDefense(damage_source) + (damage_source.bypassesMundaneArmor() ? 0.0F : 2.0F);
         }

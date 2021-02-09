@@ -32,6 +32,14 @@ public class EntityGiantZombieTrans extends EntityMonster {
         return "mob.zombie.say";
     }
 
+    @Override
+    protected void dropFewItems(boolean recently_hit_by_player, DamageSource damage_source) {
+        if (recently_hit_by_player && this.getWorld().getDayOfWorld() < 128){
+            this.dropItemStack(new ItemStack(Item.mithrilNugget,this.ab.nextInt(3)));
+        }
+        super.dropFewItems(recently_hit_by_player, damage_source);
+    }
+
     protected String aO() {
         return "mob.zombie.hurt";
     }

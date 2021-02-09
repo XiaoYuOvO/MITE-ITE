@@ -87,7 +87,7 @@ public class Items extends Item{
                 'A',Block.blockAncientMetal);
         CraftingManagerHelper.registerShapedRecipe(new ItemStack(VIBRANIUM_PICKAXE),true,
                 "###",
-                        " S ",
+                        " A ",
                         " S ",
                         '#',VIBRANIUM_INGOT,
                         'S',OBSIDIAN_STICK,
@@ -156,17 +156,19 @@ public class Items extends Item{
         RecipesFurnace.a().addSmelting(Block.cE.cF, new ItemStack(Items.DIAMOND_CHUNK));
         CraftingManagerHelper.registerShapedRecipe(new ItemStack(Items.VIBRANIUM_BOW),true,
                 "NSL",
-                        "SVL",
+                        "AVL",
                         "NSL",
                 'S',Items.OBSIDIAN_STICK,
                 'V',Items.VIBRANIUM_INGOT,
                 'L',Item.M,
-                'N',Items.VIBRANIUM_NUGGET
+                'N',Items.VIBRANIUM_NUGGET,
+                'A',Items.bowAncientMetal
                 );
         CraftingManagerHelper.registerShapedRecipe(new ItemStack(Item.bJ),true,
             "SS",
                     "SS",
                 'S',Item.shardEmerald);
+        CraftingManagerHelper.registerShapelessRecipe(new ItemStack(Item.shardEmerald,4),true,Item.bJ);
     }
     private static Item register(String resourceLocation,Item item,CreativeModeTab tab){
         item.setResourceLocation(item.getResourceLocationPrefix() + resourceLocation);

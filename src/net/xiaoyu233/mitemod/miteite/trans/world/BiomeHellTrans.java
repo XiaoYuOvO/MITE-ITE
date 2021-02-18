@@ -2,7 +2,7 @@ package net.xiaoyu233.mitemod.miteite.trans.world;
 
 import net.minecraft.*;
 import net.xiaoyu233.fml.asm.annotations.Transform;
-import net.xiaoyu233.mitemod.miteite.entity.EntityZombieLord;
+import net.xiaoyu233.mitemod.miteite.entity.EntityZombiePigmanLord;
 
 @Transform(BiomeHell.class)
 public class BiomeHellTrans extends BiomeBase{
@@ -16,6 +16,6 @@ public class BiomeHellTrans extends BiomeBase{
         this.J.add(new BiomeMeta(EntityPigZombie.class, 100, 1, 4));
         this.J.add(new BiomeMeta(EntityMagmaCube.class, 10, 4, 4));
         this.J.add(new BiomeMeta(EntityEarthElemental.class, 40, 1, 1));
-        this.J.add(new BiomeMeta(EntityZombieLord.class, 1, 1, 1));
+        this.J.add(new BiomeMeta(EntityZombiePigmanLord.class, 1, 1, 1));
     }
 }

@@ -8,6 +8,7 @@ import net.xiaoyu233.mitemod.miteite.achievement.Achievements;
 import net.xiaoyu233.mitemod.miteite.block.Blocks;
 import net.xiaoyu233.mitemod.miteite.item.Items;
 import net.xiaoyu233.mitemod.miteite.item.enchantment.Enchantments;
+import net.xiaoyu233.mitemod.miteite.item.recipe.ForgingTableRecipes;
 import net.xiaoyu233.mitemod.miteite.util.RecipeSorter;
 import net.xiaoyu233.mitemod.miteite.util.RecipesArgs;
 import net.xiaoyu233.mitemod.miteite.util.RecipesHelper;
@@ -40,6 +41,7 @@ public class CraftingManagerHelper{
         Items.registerRecipes();
         Achievements.registerAchievements();
         Enchantments.registerEnchantments();
+        ForgingTableRecipes.registerAll();
         try {
             a = CraftingManager.class.getDeclaredConstructor().newInstance();
             addShaped = CraftingManager.class.getDeclaredMethod("addRecipe", ItemStack.class, boolean.class, Object[].class);

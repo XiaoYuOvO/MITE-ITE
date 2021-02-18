@@ -27,6 +27,7 @@ public class Items extends Item{
     public static final Item DIAMOND_CHUNK = createInstance(Item.class,new Class[]{int.class,Material.class,String.class},ItemTrans.getNextItemID(),Material.diamond,"diamond_chunk").setCraftingDifficultyAsComponent(ItemRock.getCraftingDifficultyAsComponent(Material.diamond) /(float)4);
     public static final Item BLAZE_COAL = new ItemBlazeCoal(ItemTrans.getNextItemID());
     public static final ItemBow VIBRANIUM_BOW = new ItemBow(ItemTrans.getNextItemID(),Materials.vibranium);
+    public static final Item ENHANCE_STONE = createInstance(Item.class,new Class[]{int.class,Material.class,String.class},ItemTrans.getNextItemID(),Material.diamond,"forging_stone").setCraftingDifficultyAsComponent(ItemRock.getCraftingDifficultyAsComponent(Material.diamond) * 2f);
     public static void registerItems() {
         register("obsidian_stick",OBSIDIAN_STICK,CreativeModeTab.l);
         register("vibranium", VIBRANIUM_INGOT,CreativeModeTab.l);
@@ -45,6 +46,7 @@ public class Items extends Item{
         register("diamond_chunk",DIAMOND_CHUNK,CreativeModeTab.l);
         register("blaze_coal",BLAZE_COAL,CreativeModeTab.l);
         register("bows/vibranium/",VIBRANIUM_BOW).b("vibranium_bow");
+        register("enhance_stone", ENHANCE_STONE, CreativeModeTab.l);
         Constant.initItemArray();
     }
     public static void registerRecipes(){
@@ -144,15 +146,7 @@ public class Items extends Item{
                 'B',Item.by,
                 'C',Item.o
                 );
-        CraftingManagerHelper.registerShapedRecipe(new ItemStack(Blocks.furnaceVibraniumIdle),true,
-                "VOV",
-                        "DND",
-                        "VOV",
-                'V',VIBRANIUM_INGOT,
-                'O',Block.au,
-                'D',Item.p,
-                'N', Block.furnaceNetherrackIdle
-                );
+
         RecipesFurnace.a().addSmelting(Block.cE.cF, new ItemStack(Items.DIAMOND_CHUNK));
         CraftingManagerHelper.registerShapedRecipe(new ItemStack(Items.VIBRANIUM_BOW),true,
                 "NSL",
@@ -169,6 +163,10 @@ public class Items extends Item{
                     "SS",
                 'S',Item.shardEmerald);
         CraftingManagerHelper.registerShapelessRecipe(new ItemStack(Item.shardEmerald,4),true,Item.bJ);
+        CraftingManagerHelper.registerShapedRecipe(new ItemStack(Items.ENHANCE_STONE),true,
+                "ADA",
+                'A',Item.ingotAdamantium,
+                'D',Item.p);
     }
     private static Item register(String resourceLocation,Item item,CreativeModeTab tab){
         item.setResourceLocation(item.getResourceLocationPrefix() + resourceLocation);

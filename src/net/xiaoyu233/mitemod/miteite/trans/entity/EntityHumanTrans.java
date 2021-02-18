@@ -6,10 +6,12 @@ import net.xiaoyu233.fml.asm.annotations.Marker;
 import net.xiaoyu233.fml.asm.annotations.Transform;
 import net.xiaoyu233.mitemod.miteite.MITEITEMod;
 import net.xiaoyu233.mitemod.miteite.achievement.Achievements;
+import net.xiaoyu233.mitemod.miteite.inventory.container.ForgingTableSlots;
 import net.xiaoyu233.mitemod.miteite.item.ArmorModifierTypes;
 import net.xiaoyu233.mitemod.miteite.item.Materials;
 import net.xiaoyu233.mitemod.miteite.item.enchantment.Enchantments;
 import net.xiaoyu233.mitemod.miteite.util.Config;
+import net.xiaoyu233.mitemod.miteite.util.EnumChatFormats;
 import net.xiaoyu233.mitemod.miteite.util.ReflectHelper;
 
 import java.util.*;
@@ -145,6 +147,17 @@ public abstract class EntityHumanTrans extends EntityLiving implements ICommandL
         this.inRainCounter = par1NBTTagCompound.e("InRainCounter");
         this.emergencyCooldown = par1NBTTagCompound.e("EmergencyCooldown");
         this.vision_dimming = par1NBTTagCompound.g("vision_dimming");
+        if (par1NBTTagCompound.b("AttackCountMap")){
+            NBTTagList attackCountMap = par1NBTTagCompound.m("AttackCountMap");
+            int count = attackCountMap.c();
+            for (int i = 0; i < count; i++) {
+                NBTTagCompound a = ((NBTTagCompound) attackCountMap.b(i));
+                Entity attacker = this.getWorldServer().a(a.e("Attacker"));
+                if (attacker != null){
+                    this.attackCountMap.put(attacker,a.e("Count"));
+                }
+            }
+        }
     }
 
     public void b(NBTTagCompound par1NBTTagCompound) {
@@ -169,6 +182,14 @@ public abstract class EntityHumanTrans extends EntityLiving implements ICommandL
         par1NBTTagCompound.a("InRainCounter",this.inRainCounter);
         par1NBTTagCompound.a("EmergencyCooldown",this.emergencyCooldown);
         par1NBTTagCompound.a("vision_dimming", this.vision_dimming);
+        NBTTagList nbtTagList = new NBTTagList();
+        for (Map.Entry<Entity, Integer> entityIntegerEntry : this.attackCountMap.entrySet()) {
+            NBTTagCompound compound = new NBTTagCompound();
+            compound.a("Attacker",entityIntegerEntry.getKey().k);
+            compound.a("Count",entityIntegerEntry.getValue());
+            nbtTagList.a(compound);
+        }
+        par1NBTTagCompound.a("AttackCountMap",nbtTagList);
     }
 
     public void c() {
@@ -245,6 +266,9 @@ public abstract class EntityHumanTrans extends EntityLiving implements ICommandL
                     double timeToTeleport = randomTeleportTime - this.underworldRandomTeleportTime;
                     if (timeToTeleport == 1200) {
                         this.a(ChatMessage.e("---你将于一分钟后被随机传送,请做好准备!!!---").a(EnumChatFormat.o));
+                    }
+                    if (timeToTeleport == 6000) {
+                        this.a(ChatMessage.e("---你将于五分钟后被随机传送,请做好准备!!!---").a(EnumChatFormats.LIGHT_YELLOW_GREEN));
                     }
                     if (timeToTeleport <= 200 && this.underworldRandomTeleportTime % 20 == 0) {
                         this.a(ChatMessage.e("!!!你将于" + (int) timeToTeleport / 20 + "秒后被随机传送!!!").a(EnumChatFormat.m));
@@ -384,7 +408,7 @@ public abstract class EntityHumanTrans extends EntityLiving implements ICommandL
             float block_reach = 2.75F;
             ItemStack item_stack = this.getHeldItemStack();
             int enchantmentLevel = EnchantmentManager.getEnchantmentLevel(Enchantments.EXTEND, item_stack);
-            return item_stack == null ? block_reach : block_reach + item_stack.b().getReachBonus(block, metadata) + enchantmentLevel * MITEITEMod.CONFIG.get(Config.ConfigEntry.EXTEND_ENCHANTMENT_BOOST_PER_LVL).floatValue();
+            return item_stack == null ? block_reach : block_reach + item_stack.b().getReachBonus(block, metadata) + enchantmentLevel * 0.25f;
         }
     }
 
@@ -411,15 +435,18 @@ public abstract class EntityHumanTrans extends EntityLiving implements ICommandL
             ItemStack item_stack = this.getHeldItemStack();
             if (context == EnumEntityReachContext.FOR_MELEE_ATTACK) {
                 int enchantmentLevel = EnchantmentManager.getEnchantmentLevel(Enchantments.EXTEND, item_stack);
-                return entity.adjustPlayerReachForAttacking(dyCast(this), 1.5F + height_advantage + (item_stack == null ? 0.0F : item_stack.b().getReachBonus())) + enchantmentLevel * 0.5f;
+                return entity.adjustPlayerReachForAttacking(dyCast(this), 1.5F + height_advantage + (item_stack == null ? 0.0F : item_stack.b().getReachBonus())) + enchantmentLevel * 0.25f;
             } else if (context == EnumEntityReachContext.FOR_INTERACTION) {
                 int enchantmentLevel = EnchantmentManager.getEnchantmentLevel(Enchantments.EXTEND, item_stack);
-                return entity.adjustPlayerReachForInteraction(dyCast(this), 2.5F + height_advantage + (item_stack == null ? 0.0F : item_stack.b().getReachBonus(entity)) + enchantmentLevel * 0.5f);
+                return entity.adjustPlayerReachForInteraction(dyCast(this), 2.5F + height_advantage + (item_stack == null ? 0.0F : item_stack.b().getReachBonus(entity)) + enchantmentLevel * 0.25f);
             } else {
                 Minecraft.setErrorMessage("getReach: invalid context");
                 return 0.0F;
             }
         }
+    }
+
+    public void displayGUIForgingTable(int x, int y, int z, ForgingTableSlots slots){
     }
 
     @Marker

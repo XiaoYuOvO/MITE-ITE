@@ -5,6 +5,7 @@ import net.xiaoyu233.fml.asm.annotations.Link;
 import net.xiaoyu233.fml.asm.annotations.Marker;
 import net.xiaoyu233.fml.asm.annotations.Transform;
 import net.xiaoyu233.mitemod.miteite.MITEITEMod;
+import net.xiaoyu233.mitemod.miteite.item.ToolModifierTypes;
 import net.xiaoyu233.mitemod.miteite.util.Config;
 
 import static net.xiaoyu233.fml.util.ReflectHelper.dyCast;
@@ -55,6 +56,10 @@ public class EntityLivingTrans extends Entity{
     private EntityLiving lastAttackTarget;
     @Link
     private int knockback_resistant_ticks;
+    @Link
+    public boolean has_taken_massive_fall_damage;
+    @Link
+    protected int bb;
 
     @Marker
     public EntityLivingTrans(World par1World) {
@@ -211,6 +216,79 @@ public class EntityLivingTrans extends Entity{
             }
         }
 
+    }
+
+    public void a(DamageSource par1DamageSource) {
+        Entity var2 = par1DamageSource.getResponsibleEntity();
+        EntityLiving var3 = this.aS();
+        if (this.bb >= 0 && var3 != null) {
+            var3.b(this, this.bb);
+        }
+
+        if (var2 != null) {
+            var2.a(dyCast(EntityLiving.class,this));
+        }
+
+        if (!this.q.I) {
+            int var4 = 0;
+            if (var2 instanceof EntityHuman) {
+                var4 = EnchantmentManager.g((EntityLiving)var2);
+                float modifierValue = ToolModifierTypes.BEHEADING_MODIFIER.getModifierValue(((EntityHuman) var2).getHeldItemStack().q());
+                if (modifierValue > 0){
+                    boolean dropHead = this.ab.nextInt(100) < modifierValue * 100;
+                    if (dropHead){
+                        EntityLiving thisLiving = dyCast(this);
+                        ItemStack headItemStack = null;
+                        if (thisLiving instanceof EntityCreeper){
+                            headItemStack = new ItemStack(Item.bS,1,4);
+                        }
+                        if (thisLiving instanceof EntityZombie){
+                            headItemStack = new ItemStack(Item.bS,1,2);
+                        }
+                        if (thisLiving instanceof EntitySkeleton){
+                            headItemStack = new ItemStack(Item.bS,1,0);
+                        }
+                        if (thisLiving instanceof EntityHuman){
+                            headItemStack = new ItemStack(Item.bS,1,3);
+                        }
+                        if (headItemStack != null){
+                            this.dropItemStack(headItemStack);
+                        }
+                    }
+                }
+            }
+
+            if (!this.g_() && this.q.O().b("doMobLoot")) {
+                if (!this.has_taken_massive_fall_damage || this.ab.nextFloat() < 0.1F) {
+                    this.dropFewItems(this.aT > 0, par1DamageSource);
+                }
+
+                this.dropContainedItems();
+                this.a(this.aT > 0, var4);
+            }
+        }
+
+        this.q.setEntityState(this, EnumEntityState.dead);
+    }
+
+    @Marker
+    public void a(boolean b, int var4) {
+
+    }
+
+    @Marker
+    public void dropContainedItems() {
+
+    }
+
+    @Marker
+    public void dropFewItems(boolean recentlyHitByPlayer, DamageSource damageSource) {
+
+    }
+
+    @Marker
+    public EntityLiving aS() {
+        return null;
     }
 
     @Marker

@@ -8,6 +8,7 @@ import net.xiaoyu233.fml.asm.annotations.Marker;
 import net.xiaoyu233.fml.asm.annotations.Transform;
 import net.xiaoyu233.mitemod.miteite.item.ArmorModifierTypes;
 import net.xiaoyu233.mitemod.miteite.item.ToolModifierTypes;
+import net.xiaoyu233.mitemod.miteite.util.Constant;
 
 import javax.annotation.Nonnull;
 
@@ -32,7 +33,7 @@ public class ItemStackTrans {
     @Link
     private int subtype;
     @Link
-    private boolean nbtFixed;
+    private boolean toolNbtFixed;
 
 
     public ItemStackTrans(int id, int stack_size, int subtype) {
@@ -45,8 +46,8 @@ public class ItemStackTrans {
     }
 
     public void fixNBT(){
-        if (!this.nbtFixed) {
-            this.nbtFixed = true;
+        if (!this.toolNbtFixed) {
+            this.toolNbtFixed = true;
             if (this.e == null) {
                 this.setTagCompound(new NBTTagCompound());
                 this.e.a("tool_level", 0);
@@ -121,6 +122,22 @@ public class ItemStackTrans {
         return var1;
     }
 
+    public int getForgingGrade(){
+        return this.e != null ? this.e.e("forging_grade") : 0;
+    }
+
+    public double getEnhanceFactor(){
+        return Constant.ENHANCE_FACTORS[this.getForgingGrade()];
+    }
+
+    public void setForgingGrade(int grade){
+        if (this.e == null) {
+            this.e = new NBTTagCompound();
+        }
+        this.e.a("forging_grade",grade);
+    }
+
+    //WriteToNBT
     public NBTTagCompound b(NBTTagCompound par1NBTTagCompound) {
         par1NBTTagCompound.a("id", (short) this.d);
         par1NBTTagCompound.a("Count", (byte) this.b);
@@ -132,13 +149,16 @@ public class ItemStackTrans {
                 effective_stackTagCompound = new NBTTagCompound();
                 effective_stackTagCompound.a("reference_index", ItemReferencedBook.getReferenceIndex(dyCast(this)));
             }
+            if (!effective_stackTagCompound.b("forging_grade")){
+                effective_stackTagCompound.a("forging_grade",0);
+            }
             par1NBTTagCompound.a("tag", effective_stackTagCompound);
-        } else
-            if (this.b().hasExpAndLevel()) {
+        } else if (this.b().hasExpAndLevel()) {
             NBTTagCompound compound = new NBTTagCompound();
             compound.a("tool_level", 0);
             compound.a("tool_exp", 0);
             compound.a("modifiers", new NBTTagCompound());
+            compound.a("forging_grade",0);
             par1NBTTagCompound.a("tag", compound);
         }
 
@@ -160,6 +180,7 @@ public class ItemStackTrans {
         return null;
     }
 
+    //ReadFromNBT
     public void c(NBTTagCompound par1NBTTagCompound) {
         this.d = par1NBTTagCompound.d("id");
         this.b = par1NBTTagCompound.c("Count");
@@ -176,13 +197,13 @@ public class ItemStackTrans {
                 System.out.println("Importing item stack " + this.b() + ", id=" + this.d);
             }
 
-            item = this.b();
             if (this.b().hasExpAndLevel()) {
                 if (this.e == null) {
                     NBTTagCompound tagCompound = new NBTTagCompound();
                     tagCompound.a("tool_level", 0);
                     tagCompound.a("tool_exp", 0);
                     tagCompound.a("modifiers",new NBTTagCompound());
+                    tagCompound.a("forging_grade",0);
                     this.setTagCompound(tagCompound);
                 }
             }

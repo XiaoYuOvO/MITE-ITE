@@ -3,9 +3,9 @@ package net.xiaoyu233.mitemod.miteite.entity;
 import net.minecraft.*;
 import net.xiaoyu233.mitemod.miteite.item.Items;
 
-public class EntityZombieLord extends EntityZombie {
+public class EntityZombiePigmanLord extends EntityPigZombie {
     private int fx_counter;
-    public EntityZombieLord(World par1World) {
+    public EntityZombiePigmanLord(World par1World) {
         super(par1World);
     }
 
@@ -18,6 +18,24 @@ public class EntityZombieLord extends EntityZombie {
         this.setEntityAttribute(GenericAttributes.d, 0.3D);
     }
 
+    private void generateRandomParticles(EnumParticle particle) {
+        for(int var2 = 0; var2 < 5; ++var2) {
+            double var3 = this.ab.nextGaussian() * 0.02D;
+            double var5 = this.ab.nextGaussian() * 0.02D;
+            double var7 = this.ab.nextGaussian() * 0.02D;
+            this.q.spawnParticle(particle, this.u + (double)(this.ab.nextFloat() * this.O * 2.0F) - (double)this.O, this.v + (double)(this.ab.nextFloat() * this.P), this.w + (double)(this.ab.nextFloat() * this.O ) - (double)this.O, var3, var5, var7);
+        }
+
+    }
+
+    @Override
+    public void handleHealthUpdate(EnumEntityState par1) {
+        super.handleHealthUpdate(par1);
+        if (par1 == EnumEntityState.unused0){
+            this.generateRandomParticles(EnumParticle.lava);
+        }
+    }
+
     @Override
     public void l_() {
         super.l_();
@@ -26,7 +44,7 @@ public class EntityZombieLord extends EntityZombie {
                 fx_counter--;
             }else {
                 this.fx_counter = 60;
-                this.entityFX(EnumEntityFX.summoned);
+                this.q.setEntityState(this,EnumEntityState.unused0);
             }
         }
     }
@@ -52,7 +70,7 @@ public class EntityZombieLord extends EntityZombie {
     }
 
     @Override
-    protected void addRandomEquipment() {
+    public void addRandomEquipment() {
         int day = this.getWorld().getDayOfWorld();
         this.c(0,new ItemStack(Items.VIBRANIUM_SWORD,1).randomizeForMob(this,day > 64));
         this.c(1,new ItemStack(Items.VIBRANIUM_HELMET,1).randomizeForMob(this,day > 64));

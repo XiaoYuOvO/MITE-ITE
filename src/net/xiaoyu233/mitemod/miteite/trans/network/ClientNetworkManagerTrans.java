@@ -3,6 +3,9 @@ package net.xiaoyu233.mitemod.miteite.trans.network;
 import net.minecraft.*;
 import net.xiaoyu233.fml.asm.annotations.Link;
 import net.xiaoyu233.fml.asm.annotations.Transform;
+import net.xiaoyu233.mitemod.miteite.gui.GuiForgingTable;
+import net.xiaoyu233.mitemod.miteite.network.SPacketFinishForging;
+import net.xiaoyu233.mitemod.miteite.network.SPacketForgingTableInfo;
 
 @Transform(bcw.class)
 public class ClientNetworkManagerTrans {
@@ -55,6 +58,25 @@ public class ClientNetworkManagerTrans {
             this.i.a(par1Packet24MobSpawn.entity_id, var10);
         }else {
             Minecraft.MITE_log.b("Bad mob spawning packet with entity_id:" + par1Packet24MobSpawn.b);
+        }
+    }
+
+    public void processFinishForgingPacket(SPacketFinishForging packet){
+        awe openingGUI = this.h.n;
+        if (openingGUI instanceof GuiForgingTable){
+            ((GuiForgingTable) openingGUI).enableButton();
+        }
+    }
+
+    public void processForgingTableInfoPacket(SPacketForgingTableInfo packet){
+        awe openingGUI = this.h.n;
+        if (openingGUI instanceof GuiForgingTable){
+            if (packet.getInfo() instanceof SPacketForgingTableInfo.EnhanceInfo){
+                SPacketForgingTableInfo.EnhanceInfo info = (SPacketForgingTableInfo.EnhanceInfo) packet.getInfo();
+                ((GuiForgingTable) openingGUI).setEnhanceInfo(info.getChanceOfFailure(),info.getFailFeedback(),info.getFailData(),info.getDuration(),info.getHammerDurabilityCost(),info.getAxeDurabilityCost());
+            }else {
+                ((GuiForgingTable) openingGUI).setInfo(packet.getInfo().asString(),packet.getInfo().getColor());
+            }
         }
     }
 }

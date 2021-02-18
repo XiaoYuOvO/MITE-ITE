@@ -40,6 +40,7 @@ public class EnumChatFormats {
     public static final EnumChatFormat LIGHT_ORANGE = newEnumChatFormat("DARK_GREY",'v',234,158,50);
     public static final EnumChatFormat DARK_RED = newEnumChatFormat("DARK_RED",'w',134,45,45);
     public static final EnumChatFormat SILVER = newEnumChatFormat("SILVER",'x', 209,236,246);
+    public static final EnumChatFormat DEAR_GREEN = newEnumChatFormat("DARK_GREEN",'y',16,87,75);
     private static EnumChatFormat newEnumChatFormat(String name,char c, int r, int g, int b){
         try {
             EnumChatFormat format =  (EnumChatFormat) constructorAccessor.newInstance(new Object[]{name,ordinary++,c,r,g,b});

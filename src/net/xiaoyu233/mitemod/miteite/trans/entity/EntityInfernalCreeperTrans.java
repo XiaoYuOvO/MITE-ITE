@@ -14,8 +14,11 @@ public class EntityInfernalCreeperTrans extends EntityCreeper {
         super(world);
         this.a(this.O * getScale(), this.P * getScale());
         if(MITEITEMod.CONFIG.get(Config.ConfigEntry.INFERNAL_CREEPER_BOOST)){
-            this.bs *= 3.0F;
             int day = this.getWorld() != null ? this.getWorld().getDayOfWorld() : 0;
+            this.bs *= 3.0F;
+            if (day > 256){
+                this.bs *=2;
+            }
             this.setExplosionTime(Math.max(this.getExplosionTime() * 3 - (int)( day * 0.3),20) );
         }
     }

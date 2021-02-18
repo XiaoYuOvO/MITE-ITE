@@ -72,7 +72,6 @@ public class Config extends JsonConfig {
         public static final ConfigEntry<Double> STEPPED_MOB_DAMAGE_FACTOR = new ConfigEntry<>("stepped_mob_damage_factor", 0.1);
         public static final ConfigEntry<Boolean> INFERNAL_CREEPER_BOOST = new ConfigEntry<>("infernal_creeper_boost", true);
         public static final ConfigEntry<Boolean> ZOMBIE_PIGMAN_USE_BOW = new ConfigEntry<>("zombie_pigman_use_bow", true);
-        public static final ConfigEntry<Double> EXTEND_ENCHANTMENT_BOOST_PER_LVL = new ConfigEntry<>("extend_enchantment_boost_per_lvl",0.5d);
         public static final IntConfigEntry CRIT_ENCHANTMENT_CHANCE_BOOST_PER_LVL = new IntConfigEntry("crit_enchantment_chance_boost_per_lvl",2);
         public static final ConfigEntry<Double> CRIT_ENCHANTMENT_DAMAGE_BOOST_PER_LVL = new ConfigEntry<>("crit_enchantment_damage_boost_per_lvl",0.4d);
         public static final IntConfigEntry IN_RAIN_DEBUFF_TIME = new IntConfigEntry("in_rain_debuff_time", 3600);
@@ -110,6 +109,8 @@ public class Config extends JsonConfig {
         public static final IntConfigEntry LAPIS_FREQUENCY_UNDERWORLD = new IntConfigEntry("lapis_frequency_underworld", 5);
         public static final IntConfigEntry DIAMOND_FREQUENCY_UNDERWORLD = new IntConfigEntry("diamond_frequency_underworld", 5);
         public static final IntConfigEntry ADAMANTIUM_FREQUENCY_UNDERWORLD = new IntConfigEntry("adamantium_frequency_underworld", 5);
+        public static final IntConfigEntry GIANT_ZOMBIE_SPAWN_ZOMBIE_COOLDOWN = new IntConfigEntry("giant_zombie_spawn_zombie_cooldown",1200);
+        public static final ConfigEntry<Boolean> SKELETON_FORCE_MELEE_ATTACK = new ConfigEntry<>("skeleton_force_melee_attack", true);
         public final String cfgName;
         public final T defaultValue;
         final BiLazyValue<Config,T> getter ;

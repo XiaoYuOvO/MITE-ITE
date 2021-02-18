@@ -93,6 +93,14 @@ public class ItemToolTrans extends Item {
                     }
                 }
             }
+            int forgingGrade;
+            if (item_stack.q().b("forging_grade") && ((forgingGrade = item_stack.q().e("forging_grade")) != 0)){
+                info.add("§5强化等级:§6" +  LocaleI18n.a("enchantment.level." + forgingGrade));
+                if (extended_info){
+                    info.add("  §7耐久增加:§a" + 10 * forgingGrade + "%");
+                    info.add("  §9攻击力增加:§6" + ItemStack.a.format(this.getEnhancedDamage(item_stack)));
+                }
+            }
 
             if (extended_info) {
                 NBTTagCompound compound = item_stack.e.l("modifiers");
@@ -107,6 +115,15 @@ public class ItemToolTrans extends Item {
                 }
             }
         }
+    }
+
+    private float getEnhancedDamage(ItemStack itemStack){
+        return (float) (itemStack.getEnhanceFactor() * this.getCombinedDamageVsEntity());
+    }
+
+    @Override
+    public int getMaxDamage(ItemStack item_stack) {
+        return Math.round(super.getMaxDamage(item_stack) * (1 + 0.1f*item_stack.getForgingGrade()));
     }
 
     @Override
@@ -154,13 +171,13 @@ public class ItemToolTrans extends Item {
     public Multimap<String, AttributeModifier> getAttrModifiers(ItemStack stack) {
         Multimap<String, AttributeModifier> var1 = super.getAttrModifiers(stack);
         var1.put(GenericAttributes.e.a(),
-                new AttributeModifier(Item.e, "Tool modifier", (double) this.d + this.getAttackDamageBounce(stack), 0));
+                new AttributeModifier(Item.e, "Tool modifier", (double) this.d + this.getAttackDamageBounce(stack) + this.getEnhancedDamage(stack), 0));
         return var1;
     }
 
     @Override
     public float getMeleeDamageBonus(ItemStack stack) {
-        return this.getCombinedDamageVsEntity() + ToolModifierTypes.DAMAGE_MODIFIER.getModifierValue(stack.e);
+        return this.getCombinedDamageVsEntity() + ToolModifierTypes.DAMAGE_MODIFIER.getModifierValue(stack.e) + this.getEnhancedDamage(stack);
     }
 
     @Override
@@ -235,7 +252,18 @@ public class ItemToolTrans extends Item {
     }
 
     public final float getMultipliedHarvestEfficiency(Block block, ItemStack itemStack,EntityHuman player) {
-        return this.getBaseHarvestEfficiency(block) * (this.getMaterialHarvestEfficiency() + ToolModifierTypes.EFFICIENCY_MODIFIER.getModifierValue(itemStack.q()) + ((player.H() || player.isInRain()) ? ToolModifierTypes.AQUADYNAMIC_MODIFIER.getModifierValue(itemStack.q()):0.0f));
+        float commonModifierValue = ToolModifierTypes.EFFICIENCY_MODIFIER.getModifierValue(itemStack.q());
+        float unnaturalModifierValue = ToolModifierTypes.UNNATURAL_MODIFIER.getModifierValue(itemStack.q());
+        if (unnaturalModifierValue > 0){
+            int deltaLevel = itemStack.b().getMaterialForRepairs().getMinHarvestLevel() - block.cU.getMinHarvestLevel();
+            if (deltaLevel > 0){
+                commonModifierValue += deltaLevel * unnaturalModifierValue;
+            }
+        }
+        if (player.H() || player.isInRain()) {
+            return this.getBaseHarvestEfficiency(block) * (this.getMaterialHarvestEfficiency() + commonModifierValue + ToolModifierTypes.AQUADYNAMIC_MODIFIER.getModifierValue(itemStack.q()));
+        }
+        return this.getBaseHarvestEfficiency(block) * (this.getMaterialHarvestEfficiency() + commonModifierValue);
     }
 
     public final int getToolDecayFromAttackingEntity(ItemStack item_stack, EntityLiving entity_living_base) {

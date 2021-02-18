@@ -31,7 +31,7 @@ import java.util.function.Predicate;
 //  自然祝福 - 每挖掘一个方块都有概率恢复饱食度.有时在挖掘一定数量的方块后,有概率对玩家进行治疗。
 //  圣盾 - 当这个工具在你手中时,你将被赋予抗火效果.此外,损害减少,但耐久也会随之减低。
 //  不动如山 - 格挡时可以减少更多的伤害
-//  超自然 - 工具的挖掘等级比目标方块越大,挖掘速度越快
+//  超自然 - 工具的挖掘等级比目标方块越大,挖掘速度越快 √DONE!
 //  自动冶炼 - 自动烧制挖掘等级比此属性级数小的目标方块
 // }
 @SuppressWarnings("Convert2MethodRef")
@@ -41,7 +41,9 @@ public enum  ToolModifierTypes implements ItemModifierTypes{
     AQUADYNAMIC_MODIFIER(1.25F,"喜水",EnumChatFormats.LIGHT_YELLOW_GREEN,5, (stack -> !ItemToolTrans.isWeapon(stack)),5),
     DURABILITY_MODIFIER(0.1F,"耐久",EnumChatFormat.f,20,(stack -> true),10),
     DAMAGE_MODIFIER(1.0F,"锋利", EnumChatFormat.p,10, stack -> ItemToolTrans.isWeapon(stack),5),
-    SLOWDOWN_MODIFIER(1.0F,"织网",EnumChatFormats.LIGHT_BLUE,5, stack -> ItemToolTrans.isWeapon(stack),5);
+    SLOWDOWN_MODIFIER(1.0F,"织网",EnumChatFormats.LIGHT_BLUE,5, stack -> ItemToolTrans.isWeapon(stack),5),
+    UNNATURAL_MODIFIER(0.1f,"超自然",EnumChatFormat.LIGHT_GRAY,2, itemStack -> !ItemToolTrans.isWeapon(itemStack),5),
+    BEHEADING_MODIFIER(0.02f,"斩首",EnumChatFormats.DEAR_GREEN,1, itemStack -> ItemToolTrans.isWeapon(itemStack), 5);
     public final String nbtName;
     public final float levelAddition;
     public final String displayName;

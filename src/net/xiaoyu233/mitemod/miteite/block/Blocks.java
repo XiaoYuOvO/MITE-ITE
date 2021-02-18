@@ -10,6 +10,8 @@ import net.xiaoyu233.mitemod.miteite.util.ReflectHelper;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 
+import static net.xiaoyu233.mitemod.miteite.item.Items.VIBRANIUM_INGOT;
+
 public class Blocks {
     static {
         try {
@@ -40,6 +42,7 @@ public class Blocks {
             new BlockFurnaceVibranium(getNextBlockID(),false).a(CreativeModeTab.c).setBlockHardness(8.0F).setExplosionResistance(0.875f).setStepSound(Block.k);
     public static final Block furnaceVibraniumBurning =
             new BlockFurnaceVibranium(getNextBlockID(), true).setBlockHardness(8.0F).setExplosionResistance(0.875f).setStepSound(Block.k);
+    public static final Block blockForgingTable = new BlockForgingTable(getNextBlockID()).setBlockHardness(8.0F).setExplosionResistance(0.875f).setStepSound(Block.k);
     public static void registerBlocks(){
 
         registerBlock(anvilVibranium,"anvil_vibranium");
@@ -48,6 +51,7 @@ public class Blocks {
         Item.g[Item.getNextItemID()] = new ItemAnvil(anvilVibranium).b("anvil_vibranium");
         registerItemBlock(furnaceVibraniumIdle,"furnace_vibranium_idle");
         registerItemBlock(furnaceVibraniumBurning,"furnace_vibranium_burning");
+        registerItemBlock(blockForgingTable,"block_forging_table");
     }
     public static int getNextBlockID() {
         return Constant.nextBlockID++;
@@ -70,16 +74,37 @@ public class Blocks {
         CraftingManagerHelper.registerShapedRecipe(new ItemStack(anvilVibranium),true,
                 "AVA",
                         " I ",
-                        "ISI",
-                        'A', Block.blockAdamantium,
+                        "IaI",
+                        'A', Item.ingotAdamantium,
                         'V', blockVibranium,
-                        'I', Items.VIBRANIUM_INGOT,
-                        'S', Item.bU
+                        'I', VIBRANIUM_INGOT,
+                        'a', Block.anvilAncientMetal
         );
         CraftingManagerHelper.registerShapelessRecipe(new ItemStack(blockVibranium),true,
-                        Items.VIBRANIUM_INGOT,Items.VIBRANIUM_INGOT,Items.VIBRANIUM_INGOT,
-                        Items.VIBRANIUM_INGOT,Items.VIBRANIUM_INGOT,Items.VIBRANIUM_INGOT,
-                        Items.VIBRANIUM_INGOT,Items.VIBRANIUM_INGOT,Items.VIBRANIUM_INGOT
+                        VIBRANIUM_INGOT, VIBRANIUM_INGOT, VIBRANIUM_INGOT,
+                        VIBRANIUM_INGOT, VIBRANIUM_INGOT, VIBRANIUM_INGOT,
+                        VIBRANIUM_INGOT, VIBRANIUM_INGOT, VIBRANIUM_INGOT
         );
+        CraftingManagerHelper.registerShapedRecipe(new ItemStack(Blocks.furnaceVibraniumIdle),true,
+                "VOA",
+                        "DND",
+                        "AOV",
+                        'V',VIBRANIUM_INGOT,
+                        'O',Block.au,
+                        'D',Item.p,
+                        'A',Item.ingotAdamantium,
+                        'N', Block.furnaceNetherrackIdle
+        );
+        CraftingManagerHelper.registerShapedRecipe(new ItemStack(Blocks.blockForgingTable),true,
+                "MAM",
+                        "HVI",
+                        "wWw",
+                        'M',Block.blockMithril,
+                        'A',Block.blockAdamantium,
+                        'H',Items.warHammerMithril,
+                        'V', VIBRANIUM_INGOT,
+                        'I',Item.j,
+                        'W',Block.blockAncientMetal,
+                        'w',Items.ingotAncientMetal);
     }
 }

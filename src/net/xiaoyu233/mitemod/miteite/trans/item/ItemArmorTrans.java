@@ -105,8 +105,12 @@ public class ItemArmorTrans extends Item implements IDamageableItem {
         return protection;
     }
 
+    private float getRawProtection(){
+        return (float)(this.getNumComponentsForDurability() * this.getMaterialProtection()) / 24.0F;
+    }
+
     public float getMultipliedProtection(ItemStack item_stack) {
-        float multiplied_protection = (float)(this.getNumComponentsForDurability() * this.getMaterialProtection()) / 24.0F;
+        float multiplied_protection = this.getRawProtection();
         if (item_stack != null && item_stack.hasEnchantment(Enchantment.d, false)) {
             multiplied_protection += multiplied_protection * item_stack.getEnchantmentLevelFraction(Enchantment.d) * 0.5F;
         }
@@ -116,7 +120,14 @@ public class ItemArmorTrans extends Item implements IDamageableItem {
                 multiplied_protection += protection_modifier;
             }
         }
+        if (item_stack.getForgingGrade() != 0){
+            multiplied_protection += this.getEnhancedProtection(item_stack);
+        }
         return multiplied_protection;
+    }
+
+    private float getEnhancedProtection(ItemStack itemStack){
+        return (float) ( itemStack.getEnhanceFactor() * this.getRawProtection() * 0.68f + itemStack.getForgingGrade() / 3f) ;
     }
 
     @Override
@@ -131,12 +142,6 @@ public class ItemArmorTrans extends Item implements IDamageableItem {
     }
 
     public void addInformation(ItemStack itemStack, EntityHuman player, List info, boolean extended_info, Slot slot) {
-        if (extended_info) {
-            info.add("");
-            float protection = this.getProtectionAfterDamageFactor(itemStack, player);
-            int decimalPlaces = protection < 1.0F ? 2 : 1;
-            info.add(EnumChatFormat.j + Translator.getFormatted("item.tooltip.protectionBonus", new Object[]{StringHelper.formatFloat(protection, decimalPlaces, decimalPlaces)}));
-        }
         if (itemStack.p()) {
             int toolLevel = itemStack.q().e("tool_level");
             if (itemStack.q().b("tool_level")) {
@@ -150,6 +155,16 @@ public class ItemArmorTrans extends Item implements IDamageableItem {
                     }
                 }
             }
+
+            int forgingGrade;
+            if (itemStack.q().b("forging_grade") && ((forgingGrade = itemStack.q().e("forging_grade")) != 0)){
+                info.add("§5强化等级:§6" +  LocaleI18n.a("enchantment.level." + forgingGrade));
+                if (extended_info){
+                    info.add("  §7耐久增加:§a" + 10 * forgingGrade + "%");
+                    info.add("  §9护甲增加:§6" + ItemStack.a.format(this.getEnhancedProtection(itemStack)));
+                }
+            }
+
             if (extended_info) {
                 NBTTagCompound compound = itemStack.e.l("modifiers");
                 if (!compound.d()) {
@@ -162,6 +177,12 @@ public class ItemArmorTrans extends Item implements IDamageableItem {
                     }
                 }
             }
+        }
+        if (extended_info) {
+            info.add("");
+            float protection = this.getProtectionAfterDamageFactor(itemStack, player);
+            int decimalPlaces = protection < 1.0F ? 2 : 1;
+            info.add(EnumChatFormat.j + Translator.getFormatted("item.tooltip.protectionBonus", new Object[]{StringHelper.formatFloat(protection, decimalPlaces, decimalPlaces)}));
         }
     }
 
@@ -179,6 +200,11 @@ public class ItemArmorTrans extends Item implements IDamageableItem {
                 return 64 * tool_level;
         }
 
+    }
+
+    @Override
+    public int getMaxDamage(ItemStack item_stack) {
+        return Math.round(super.getMaxDamage(item_stack) * (1 + 0.1f * item_stack.getForgingGrade()));
     }
 
     @Override

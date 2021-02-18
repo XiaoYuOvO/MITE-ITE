@@ -5,11 +5,16 @@ import net.minecraft.server.MinecraftServer;
 import net.xiaoyu233.fml.asm.annotations.Link;
 import net.xiaoyu233.fml.asm.annotations.Marker;
 import net.xiaoyu233.fml.asm.annotations.Transform;
+import net.xiaoyu233.mitemod.miteite.inventory.container.ContainerForgingTable;
+import net.xiaoyu233.mitemod.miteite.inventory.container.ForgingTableSlots;
+import net.xiaoyu233.mitemod.miteite.trans.network.PacketOpenWindowTrans;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+
+import static net.xiaoyu233.fml.util.ReflectHelper.dyCast;
 
 @Transform(EntityPlayer.class)
 public class ServerPlayerTrans extends EntityHuman implements ICrafting{
@@ -52,6 +57,8 @@ public class ServerPlayerTrans extends EntityHuman implements ICrafting{
     @Link
     public boolean j;
     private int last_phytonutrients,last_protein;
+    @Link
+    private int bY;
     @Marker
     public ServerPlayerTrans(World par1World, String par2Str) {
         super(par1World, par2Str);
@@ -149,5 +156,19 @@ public class ServerPlayerTrans extends EntityHuman implements ICrafting{
             this.a(var3);
             throw new ReportedException(var2);
         }
+    }
+
+    @Marker
+    private void bN() {}
+
+    public void displayGUIForgingTable(int x, int y, int z, ForgingTableSlots slots){
+        this.bN();
+        TileEntity tile_entity = this.q.r(x, y, z);
+        this.a.b((new Packet100OpenWindow(this.bY, PacketOpenWindowTrans.TYPE_FORGING_TABLE, tile_entity.getCustomInvName(), 9, tile_entity.hasCustomName())).setCoords(x, y, z));
+        this.bp = new ContainerForgingTable(slots,this, x, y, z);
+        this.bp.d = this.bY;
+        (dyCast(EntityPlayer.class,this)).a(this.bp, ((ContainerForgingTable) this.bp).getInventory());
+        this.bp.a((EntityHuman) dyCast(EntityPlayer.class,this));
+        this.bp.a((ICrafting) dyCast(EntityPlayer.class,this));
     }
 }

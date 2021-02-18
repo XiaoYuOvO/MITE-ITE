@@ -108,6 +108,17 @@ public class MITEITEEvents {
                 }
                 event.setExecuteSuccess(true);
             }
+
+            if (par2Str.startsWith("forging_grade set")){
+                ItemStack itemStack = player.getHeldItemStack();
+                if (itemStack.e != null) {
+                    NBTTagCompound compound = itemStack.e;
+                    if (compound.b("forging_grade")) {
+                        compound.a("forging_grade", Integer.parseInt(par2Str.substring(18)));
+                        event.setExecuteSuccess(true);
+                    }
+                }
+            }
         }
     }
 }

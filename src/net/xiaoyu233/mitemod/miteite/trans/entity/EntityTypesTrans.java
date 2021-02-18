@@ -7,6 +7,7 @@ import net.xiaoyu233.fml.asm.annotations.Transform;
 import net.xiaoyu233.mitemod.miteite.entity.EntityAncientDragon;
 import net.xiaoyu233.mitemod.miteite.entity.EntityRideMarker;
 import net.xiaoyu233.mitemod.miteite.entity.EntityZombieLord;
+import net.xiaoyu233.mitemod.miteite.entity.EntityZombiePigmanLord;
 
 import java.util.*;
 
@@ -127,5 +128,6 @@ public class EntityTypesTrans {
         a(EntityAncientDragon.class, "EntityTest", 201);
         a(EntityRideMarker.class, "EntityMarker", 202);
         a(EntityZombieLord.class,"EntityZombieLord",203);
+        a(EntityZombiePigmanLord.class,"EntityZombiePigmanLord",204);
     }
 }

@@ -6,6 +6,7 @@ import net.xiaoyu233.fml.asm.annotations.Link;
 import net.xiaoyu233.fml.asm.annotations.Marker;
 import net.xiaoyu233.fml.asm.annotations.Transform;
 import net.xiaoyu233.mitemod.miteite.MITEITEMod;
+import net.xiaoyu233.mitemod.miteite.item.ToolModifierTypes;
 import net.xiaoyu233.mitemod.miteite.util.Config;
 
 import java.util.Calendar;
@@ -43,6 +44,58 @@ public class EntitySkeletonTrans extends EntityMonster implements IRangedEntity{
 
     }
 
+    protected void dropFewItems(boolean recently_hit_by_player, DamageSource damage_source) {
+        int looting = damage_source.getLootingModifier();
+        int num_drops;
+        int i;
+        if (this.bV() == 1) {
+            num_drops = this.ab.nextInt(3 + looting) - 1;
+            if (num_drops > 0 && !recently_hit_by_player) {
+                num_drops -= this.ab.nextInt(num_drops + 1);
+            }
+            boolean dropHead = false;
+            Entity responsibleEntity = damage_source.getResponsibleEntity();
+            if (responsibleEntity instanceof EntityPlayer) {
+                float modifierValue = ToolModifierTypes.BEHEADING_MODIFIER.getModifierValue(((EntityHuman) responsibleEntity).getHeldItemStack().q());
+                if (modifierValue > 0) {
+                    dropHead = this.ab.nextInt(100) < modifierValue * 100;
+                }
+            }
+
+            for(i = 0; i < num_drops; ++i) {
+                this.b(Item.o.cv, 1);
+            }
+
+            if (recently_hit_by_player && !this.has_taken_massive_fall_damage && (this.ab.nextInt(this.getBaseChanceOfRareDrop()) < 5 + looting * 2 || dropHead)) {
+                this.dropItemStack(new ItemStack(Item.bS.cv, 1, 1), 0.0F);
+            }
+        } else if (this.bV() != 2) {
+            num_drops = this.ab.nextInt(2 + looting);
+            if (num_drops > 0 && !recently_hit_by_player) {
+                num_drops -= this.ab.nextInt(num_drops + 1);
+            }
+
+            if (this.isLongdead() && num_drops > 0) {
+                num_drops = this.ab.nextInt(3) == 0 ? 1 : 0;
+            }
+
+            for(i = 0; i < num_drops; ++i) {
+                this.b(this.isLongdead() ? Item.arrowAncientMetal.cv : Item.arrowRustedIron.cv, 1);
+            }
+        }
+
+        num_drops = this.ab.nextInt(3);
+        if (num_drops > 0 && !recently_hit_by_player) {
+            num_drops -= this.ab.nextInt(num_drops + 1);
+        }
+
+        for(i = 0; i < num_drops; ++i) {
+            this.b(Item.aZ.cv, 1);
+        }
+
+    }
+
+
     //On Death
     @Override
     public void a(DamageSource par1DamageSource) {
@@ -71,9 +124,9 @@ public class EntitySkeletonTrans extends EntityMonster implements IRangedEntity{
         this.c.a(this.bq);
         this.c.a(this.bp);
         ItemStack var1 = this.getHeldItemStack();
-        if (var1 != null && var1.b() instanceof ItemBow) {
+        boolean forceMeleeAttack = MITEITEMod.CONFIG.get(Config.ConfigEntry.SKELETON_FORCE_MELEE_ATTACK) && this.ab.nextInt(10) < 2;
+        if (var1 != null && var1.b() instanceof ItemBow && !forceMeleeAttack) {
             this.c.a(4, this.bp);
-
             this.c.a(1, new EntityAISeekFiringPosition(this, 1.0F, true));
         } else {
             this.c.a(4, this.bq);

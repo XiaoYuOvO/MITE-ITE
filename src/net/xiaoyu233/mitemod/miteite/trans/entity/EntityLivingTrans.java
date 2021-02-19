@@ -233,26 +233,29 @@ public class EntityLivingTrans extends Entity{
             int var4 = 0;
             if (var2 instanceof EntityHuman) {
                 var4 = EnchantmentManager.g((EntityLiving)var2);
-                float modifierValue = ToolModifierTypes.BEHEADING_MODIFIER.getModifierValue(((EntityHuman) var2).getHeldItemStack().q());
-                if (modifierValue > 0){
-                    boolean dropHead = this.ab.nextInt(100) < modifierValue * 100;
-                    if (dropHead){
-                        EntityLiving thisLiving = dyCast(this);
-                        ItemStack headItemStack = null;
-                        if (thisLiving instanceof EntityCreeper){
-                            headItemStack = new ItemStack(Item.bS,1,4);
-                        }
-                        if (thisLiving instanceof EntityZombie){
-                            headItemStack = new ItemStack(Item.bS,1,2);
-                        }
-                        if (thisLiving instanceof EntitySkeleton){
-                            headItemStack = new ItemStack(Item.bS,1,0);
-                        }
-                        if (thisLiving instanceof EntityHuman){
-                            headItemStack = new ItemStack(Item.bS,1,3);
-                        }
-                        if (headItemStack != null){
-                            this.dropItemStack(headItemStack);
+                ItemStack heldItemStack = ((EntityHuman) var2).getHeldItemStack();
+                if (heldItemStack != null){
+                    float modifierValue = ToolModifierTypes.BEHEADING_MODIFIER.getModifierValue(heldItemStack.q());
+                    if (modifierValue > 0){
+                        boolean dropHead = this.ab.nextInt(100) < modifierValue * 100;
+                        if (dropHead){
+                            EntityLiving thisLiving = dyCast(this);
+                            ItemStack headItemStack = null;
+                            if (thisLiving instanceof EntityCreeper){
+                                headItemStack = new ItemStack(Item.bS,1,4);
+                            }
+                            if (thisLiving instanceof EntityZombie){
+                                headItemStack = new ItemStack(Item.bS,1,2);
+                            }
+                            if (thisLiving instanceof EntitySkeleton){
+                                headItemStack = new ItemStack(Item.bS,1,0);
+                            }
+                            if (thisLiving instanceof EntityHuman){
+                                headItemStack = new ItemStack(Item.bS,1,3);
+                            }
+                            if (headItemStack != null){
+                                this.dropItemStack(headItemStack);
+                            }
                         }
                     }
                 }

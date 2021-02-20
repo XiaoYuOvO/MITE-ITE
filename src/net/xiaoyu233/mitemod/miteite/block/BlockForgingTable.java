@@ -80,8 +80,10 @@ public class BlockForgingTable extends Block implements IContainer {
         } else {
             if (player.onServer()) {
                 TileEntityForgingTable tile_entity = (TileEntityForgingTable)world.r(x, y, z);
-                if (tile_entity != null) {
+                if (tile_entity != null && !tile_entity.isUsing()) {
                     player.displayGUIForgingTable(x, y, z,tile_entity.getSlots());
+                }else {
+                    return false;
                 }
             }
 

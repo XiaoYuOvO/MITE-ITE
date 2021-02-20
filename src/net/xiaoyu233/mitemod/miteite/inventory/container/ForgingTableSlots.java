@@ -85,6 +85,9 @@ public class ForgingTableSlots extends InventorySubcontainer {
         forgingTable.addSlot(axe);
         forgingTable.addSlot(hammer);
         forgingTable.addSlot(output);
+        if (this.tileEntityForgingTable != null){
+            this.tileEntityForgingTable.k_();
+        }
         this.container = forgingTable;
     }
 

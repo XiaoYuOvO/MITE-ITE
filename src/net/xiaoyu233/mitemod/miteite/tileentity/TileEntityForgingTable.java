@@ -18,6 +18,7 @@ public class TileEntityForgingTable extends TileEntity implements IInventory {
     private ForgingRecipe usedRecipe;
     private int maxTime;
     private boolean isForging;
+    private boolean isUsing;
 
     public void setItem(int index,ItemStack itemStack) {
         this.items[index] = itemStack;
@@ -176,12 +177,14 @@ public class TileEntityForgingTable extends TileEntity implements IInventory {
     @Override
     //onContainerOpened
     public void k_() {
+        this.isUsing = true;
     }
 
     @Override
     //onContainerClosed
     public void g() {
         this.finishForging();
+        this.isUsing = false;
     }
 
     @Override
@@ -231,5 +234,9 @@ public class TileEntityForgingTable extends TileEntity implements IInventory {
             return true;
         }
         return false;
+    }
+
+    public boolean isUsing() {
+        return this.isUsing;
     }
 }

@@ -10,8 +10,9 @@ import net.xiaoyu233.mitemod.miteite.inventory.container.ForgingTableSlots;
 import net.xiaoyu233.mitemod.miteite.item.ArmorModifierTypes;
 import net.xiaoyu233.mitemod.miteite.item.Materials;
 import net.xiaoyu233.mitemod.miteite.item.enchantment.Enchantments;
+import net.xiaoyu233.mitemod.miteite.network.CPacketSyncItems;
+import net.xiaoyu233.mitemod.miteite.network.SPacketOverlayMessage;
 import net.xiaoyu233.mitemod.miteite.util.Config;
-import net.xiaoyu233.mitemod.miteite.util.EnumChatFormats;
 import net.xiaoyu233.mitemod.miteite.util.ReflectHelper;
 
 import java.util.*;
@@ -81,8 +82,10 @@ public abstract class EntityHumanTrans extends EntityLiving implements ICommandL
     private int inRainCounter;
     private int emergencyCooldown;
     private final Map<Entity,Integer> attackCountMap = new HashMap<>();
+    private volatile boolean waitForItemSync;
 
-
+    @Marker
+    public void sendPacket(Packet packet) {}
     public EntityHumanTrans(World par1World, String par2Str) {
         super(par1World);
         this.conscious_state = EnumConsciousState.fully_awake;
@@ -105,6 +108,20 @@ public abstract class EntityHumanTrans extends EntityLiving implements ICommandL
     @Override
     @Marker
     public void c(int i, ItemStack itemStack) {
+
+    }
+
+    public void syncItemsAndWait(){
+        this.sendPacket(new CPacketSyncItems());
+        this.waitForItemSync = true;
+        while (this.waitForItemSync){ }
+    }
+
+    public void itemsSynced(){
+        this.waitForItemSync = false;
+    }
+
+    public void displayGUIChestForMinecartEntity(EntityMinecartChest par1IInventory) {
 
     }
 
@@ -243,19 +260,19 @@ public abstract class EntityHumanTrans extends EntityLiving implements ICommandL
                     int period3 = Config.ConfigEntry.UNDERWORLD_DEBUFF_PERIOD3.getFrom(MITEITEMod.CONFIG);
                     if (underworldDebuffTime > period1 && underworldDebuffTime < period2){
                         if (underworldDebuffTime == period1+1){
-                            this.a(ChatMessage.e("---你在地底世界中感到有些疲惫---").a(EnumChatFormat.h));
+                            this.sendPacket(new SPacketOverlayMessage("§l---你在地底世界中感到有些疲惫---",EnumChatFormat.h.rgb,400));
                         }
                         this.c(new MobEffect(2, 60 * 20, 0));
 
                     }else if (underworldDebuffTime > period2 && underworldDebuffTime < period3){
                         if (underworldDebuffTime == period2+1){
-                            this.a(ChatMessage.e("---你在地底世界中感到更加疲惫---").a(EnumChatFormat.o));
+                            this.sendPacket(new SPacketOverlayMessage("§l---你在地底世界中感到更加疲惫---",EnumChatFormat.o.rgb,400));
                         }
                         this.c(new MobEffect(2, 120 * 20, 1));
 
                     }else if (underworldDebuffTime > period3){
                         if (underworldDebuffTime == period3 + 1) {
-                            this.a(ChatMessage.e("---你在地底世界中感到非常疲惫---").a(EnumChatFormat.e));
+                            this.sendPacket(new SPacketOverlayMessage("§l§n---你在地底世界中感到非常疲惫---",EnumChatFormat.e.rgb,400));
                         }
                         this.c(new MobEffect(2, 180 * 20, 2));
                     }
@@ -265,13 +282,13 @@ public abstract class EntityHumanTrans extends EntityLiving implements ICommandL
                     this.underworldRandomTeleportTime++;
                     double timeToTeleport = randomTeleportTime - this.underworldRandomTeleportTime;
                     if (timeToTeleport == 1200) {
-                        this.a(ChatMessage.e("---你将于一分钟后被随机传送,请做好准备!!!---").a(EnumChatFormat.o));
+                        this.sendPacket(new SPacketOverlayMessage("§l---你将于一分钟后被随机传送,请做好准备!!!---",EnumChatFormat.o.rgb,400));
                     }
                     if (timeToTeleport == 6000) {
-                        this.a(ChatMessage.e("---你将于五分钟后被随机传送,请做好准备!!!---").a(EnumChatFormats.LIGHT_YELLOW_GREEN));
+                        this.sendPacket(new SPacketOverlayMessage("§l---你将于五分钟后被随机传送,请做好准备!!!---",EnumChatFormat.d.rgb,400));
                     }
                     if (timeToTeleport <= 200 && this.underworldRandomTeleportTime % 20 == 0) {
-                        this.a(ChatMessage.e("!!!你将于" + (int) timeToTeleport / 20 + "秒后被随机传送!!!").a(EnumChatFormat.m));
+                        this.sendPacket(new SPacketOverlayMessage("§l§n!!!你将于" + (int) timeToTeleport / 20 + "秒后被随机传送!!!",EnumChatFormat.m.rgb,200));
                     }
                     if (this.underworldRandomTeleportTime > randomTeleportTime) {
                         if (ReflectHelper.dyCast(EntityHuman.class, this) instanceof EntityPlayer) {
@@ -289,14 +306,14 @@ public abstract class EntityHumanTrans extends EntityLiving implements ICommandL
                         if (this.netherDebuffTime > debuff_time){
                             this.c(new MobEffect(4, 180 * 20, 1));
                         }else if (this.netherDebuffTime == debuff_time){
-                            this.a(ChatMessage.e("---你在下界中感到疲惫---").a(EnumChatFormat.e));
+                            this.sendPacket(new SPacketOverlayMessage("§n---你在下界中感到疲惫---",EnumChatFormat.e.rgb,200));
                         }
                     }
                 }else {
                     if (this.netherDebuffTime > 0){
                         this.netherDebuffTime--;
                     }else if (netherDebuffTime == 1){
-                        this.a(ChatMessage.e("---你已从地狱的疲惫中恢复---").a(EnumChatFormat.c));
+                        this.sendPacket(new SPacketOverlayMessage("§n---你已从地狱的疲惫中恢复---",EnumChatFormat.c.rgb,200));
                     }
                 }
                 if (this.underworldRandomTeleportTime > 0) {
@@ -305,7 +322,7 @@ public abstract class EntityHumanTrans extends EntityLiving implements ICommandL
                 if (this.underworldDebuffTime > 0){
                     this.underworldDebuffTime--;
                 }else if (this.underworldDebuffTime == 1){
-                    this.a(ChatMessage.e("---你已从地底世界的疲惫中恢复---").a(EnumChatFormat.c));
+                    this.sendPacket(new SPacketOverlayMessage("§n---你已从地底世界的疲惫中恢复---",EnumChatFormat.c.rgb,200));
                 }
             }
             if (this.emergencyCooldown > 0){

@@ -109,7 +109,7 @@ public class EntityZombiePigmanTrans extends EntityZombie implements IRangedEnti
     public GroupDataEntity a(GroupDataEntity par1EntityLivingData) {
         super.a(par1EntityLivingData);
         this.setVillager(false, 0);
-        this.ah.b(DATA_OBJ_ID_IS_BOOSTED, (byte) ((this.ab.nextInt(10) < 1) ? 1 : 0));
+        this.ah.b(DATA_OBJ_ID_IS_BOOSTED, (byte) ((this.ab.nextFloat() < MITEITEMod.CONFIG.get(Config.ConfigEntry.ZOMBIE_PIGMAN_BOOST_CHANCE)) ? 1 : 0));
         if (this.getWorld() != null && !this.getWorld().I) {
             if (this.randomUseBow() && MITEITEMod.CONFIG.get(Config.ConfigEntry.ZOMBIE_PIGMAN_USE_BOW)) {
                 this.c.a(4, this.arrowAttack);

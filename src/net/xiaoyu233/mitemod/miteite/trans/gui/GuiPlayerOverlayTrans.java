@@ -20,6 +20,33 @@ public class GuiPlayerOverlayTrans extends avk{
     private Minecraft g;
     @Link
     private int i;
+    @Link
+    protected static bjo MITE_icons;
+    @Link
+    private static bjo b;
+    @Link
+    private static bjo c;
+    @Link
+    private static bjo d;
+    @Link
+    public int curse_notification_counter;
+    @Link
+    private int q;
+    @Link
+    private ItemStack r;
+    @Link
+    private String last_highlighting_item_stack_text;
+    @Link
+    private int o;
+    @Link
+    private boolean p;
+    @Link
+    private String j;
+    @Link
+    private auu h;
+    private String overlayMsg;
+    private int overlayMsgDisplayTime;
+    private int overlayMsgColor;
 
     private void a(int par1, int par2) {
         boolean var3 = this.g.h.af / 3 % 2 == 1;
@@ -29,7 +56,7 @@ public class GuiPlayerOverlayTrans extends avk{
 
         int var4 = MathHelper.f(this.g.h.aN());
         int var5 = MathHelper.f(this.g.h.ax);
-        this.f.setSeed(this.i * 312871);
+        this.f.setSeed(this.i * 312871L);
         FoodMetaData foodMetaData = this.g.h.bI();
         int foodLevel = foodMetaData.getNutrition();
 //        AttributeInstance var10 = this.g.h.a(GenericAttributes.a);
@@ -152,9 +179,8 @@ public class GuiPlayerOverlayTrans extends avk{
 
                     for(int var30 = 0; var30 < var29; ++var30) {
                         byte var31 = 52;
-                        byte var32 = 0;
                         int var33 = var12 - var30 * 8 - 9;
-                        this.b(var33, var27, var31 + var32 * 9, 9, 9, 9);
+                        this.b(var33, var27, var31, 9, 9, 9);
                         if (var30 * 2 + 1 + var39 < var35) {
                             this.b(var33, var27, var31 + 36, 9, 9, 9);
                         }
@@ -234,13 +260,54 @@ public class GuiPlayerOverlayTrans extends avk{
                 }
             }
         }
+        avi var8 = this.g.l;
+        if (this.overlayMsgDisplayTime > 0) {
+            this.g.C.a("overlayMessage");
+            awf window = new awf(this.g.u, this.g.d, this.g.e);
+            int var6 = window.a();
+            int var7 = window.b();
+            GL11.glPushMatrix();
+            GL11.glTranslatef((float)(var6 / 2), (float)(var7 - 68), 0.0F);
+            GL11.glEnable(3042);
+            GL11.glBlendFunc(770, 771);
+            var8.b(this.overlayMsg, -var8.a(this.overlayMsg) / 2, -4, this.overlayMsgColor);
+            GL11.glDisable(3042);
+            GL11.glPopMatrix();
+            this.g.C.b();
+            this.overlayMsgDisplayTime--;
+        }
 
         this.g.C.b();
     }
+
+    public void setOverlayMsg(String overlayMsg,int displayTime,int color){
+        this.overlayMsg = overlayMsg;
+        this.overlayMsgColor = color;
+        this.overlayMsgDisplayTime = displayTime;
+    }
+    @Marker
+    private void a(float par1, int par2, int par3) {}
+    @Marker
+    private void renderVisionDim(int par1, int par2, float vision_dimming) {}
+    @Marker
+    private void renderRunegateEffect(int par1, int par2) {}
+    @Marker
+    private void b(int par1, int par2) {}
+    @Marker
+    private void d() {}
+    @Marker
+    private void a(int par1, int par2, int par3, float par4) {}
+    @Marker
+    private void drawTournamentScore(int row, int col, avi var8) {}
+    @Marker
+    private void drawAllottedTime(int row, int col, avi var8) {}
 
     //blit()
     @Marker
     public void b(int x, int y, int textureX, int textureY, int width, int height) {
 
     }
+
+    @Marker
+    private void a(ScoreboardObjective par1ScoreObjective, int par2, int par3, avi par4FontRenderer) {}
 }

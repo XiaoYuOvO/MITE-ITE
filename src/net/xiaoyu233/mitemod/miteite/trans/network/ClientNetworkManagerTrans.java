@@ -6,6 +6,7 @@ import net.xiaoyu233.fml.asm.annotations.Transform;
 import net.xiaoyu233.mitemod.miteite.gui.GuiForgingTable;
 import net.xiaoyu233.mitemod.miteite.network.SPacketFinishForging;
 import net.xiaoyu233.mitemod.miteite.network.SPacketForgingTableInfo;
+import net.xiaoyu233.mitemod.miteite.network.SPacketOverlayMessage;
 
 @Transform(bcw.class)
 public class ClientNetworkManagerTrans {
@@ -24,6 +25,16 @@ public class ClientNetworkManagerTrans {
             this.h.h.vision_dimming = par1Packet8UpdateHealth.vision_dimming;
         }
 
+    }
+
+    public void a(Packet104WindowItems par1Packet104WindowItems) {
+        bdi var2 = this.h.h;
+        if (par1Packet104WindowItems.a == 0) {
+            var2.bo.a(par1Packet104WindowItems.b);
+        } else if (par1Packet104WindowItems.a == var2.bp.d) {
+            var2.bp.a(par1Packet104WindowItems.b);
+        }
+        this.h.h.itemsSynced();
     }
 
     public void a(Packet24MobSpawn par1Packet24MobSpawn) {
@@ -78,5 +89,9 @@ public class ClientNetworkManagerTrans {
                 ((GuiForgingTable) openingGUI).setInfo(packet.getInfo().asString(),packet.getInfo().getColor());
             }
         }
+    }
+
+    public void handleOverlayMessage(SPacketOverlayMessage packet){
+        this.h.r.setOverlayMsg(packet.getMsg(),packet.getTime(),packet.getColor());
     }
 }

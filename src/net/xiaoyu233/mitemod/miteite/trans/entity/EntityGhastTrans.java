@@ -100,8 +100,12 @@ public class EntityGhastTrans extends EntityFlying implements IMonster {
                     target_center.e = this.bq.getPredictedPosZ(lead);
                     super.q.a(null, 1008, (int)super.u, (int)super.v, (int)super.w, 0);
                     for(int i = 3; i > 0;i--){
-                        EntityLargeFirebal var17 = new EntityLargeFirebal(super.q, this, target_center, 4.0F + i * 2);
-                        var17.e = this.bs;
+                        EntityLargeFirebal var17 = new EntityLargeFireballNB(super.q, this, target_center, 4.0F + i * 2);
+                        if (this.q.isOverworld()){
+                            var17.e = Math.round((float)this.bs * 1.5f);
+                        }else {
+                            var17.e = this.bs;
+                        }
                         super.q.d(var17);
                     }
                     this.bp = -35;
@@ -146,5 +150,24 @@ public class EntityGhastTrans extends EntityFlying implements IMonster {
     @Marker
     public boolean canSpawnInShallowWater() {
         return false;
+    }
+    public static class EntityLargeFireballNB extends EntityLargeFirebal{
+
+        @Marker
+        public EntityLargeFireballNB(World world, EntityLiving shooter, Vec3D target, float initial_distance) {
+            super(world, shooter, target, initial_distance);
+        }
+
+        protected void onImpact(RaycastCollision rc) {
+            if (!this.q.I) {
+                if (rc.isEntity()) {
+                    rc.getEntityHit().attackEntityFrom(new Damage(DamageSource.a(this, this.a), 6.0F));
+                }
+
+                this.q.newExplosion(this, this.u, this.v, this.w, (float)this.e, (float)this.e, true, this.getWorld().isTheNether());
+                this.x();
+            }
+
+        }
     }
 }

@@ -162,6 +162,38 @@ public class EntityInsentientTrans extends EntityLiving{
 
         }
     }
+
+    @Override
+    //Read
+    public void a(NBTTagCompound par1NBTTagCompound) {
+        super.a(par1NBTTagCompound);
+        if (par1NBTTagCompound.b("picked_up_held_items")){
+            if (this.picked_up_a_held_item_array == null){
+                this.picked_up_a_held_item_array = new boolean[5];
+            }
+            byte[] picked_up_held_items = par1NBTTagCompound.j("picked_up_held_items");
+            for (int i = 0, jLength = picked_up_held_items.length; i < jLength; i++) {
+                if (picked_up_held_items[i] == 1) {
+                    this.picked_up_a_held_item_array[i] = true;
+                }
+            }
+        }
+    }
+
+    @Override
+    //Write
+    public void b(NBTTagCompound par1NBTTagCompound) {
+        super.b(par1NBTTagCompound);
+        byte[] picked_up_held_items = new byte[this.picked_up_a_held_item_array.length];
+        boolean[] pickedUpAHeldItemArray = this.picked_up_a_held_item_array;
+        for (int i = 0; i < pickedUpAHeldItemArray.length; i++) {
+            if (pickedUpAHeldItemArray[i]) {
+                picked_up_held_items[i] = 1;
+            }
+        }
+        par1NBTTagCompound.a("picked_up_held_items",picked_up_held_items);
+    }
+
     @Marker
     private boolean bD() {
         return false;

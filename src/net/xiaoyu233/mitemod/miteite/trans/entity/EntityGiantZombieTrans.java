@@ -50,17 +50,19 @@ public class EntityGiantZombieTrans extends EntityMonster {
     @Override
     public void c() {
         super.c();
-        if (this.spawnCounter < MITEITEMod.CONFIG.get(Config.ConfigEntry.GIANT_ZOMBIE_SPAWN_ZOMBIE_COOLDOWN)){
-            this.spawnCounter++;
-        }else {
-            EntityZombie zombie = new EntityZombie(this.q);
-            zombie.a((double) this.getBlockPosX(), this.getFootBlockPosY(), this.getBlockPosZ());
-            zombie.refreshDespawnCounter(-9600);
-            this.q.d(zombie);
-            zombie.a((GroupDataEntity) null);
-            zombie.d(this.getTarget());
-            zombie.entityFX(EnumEntityFX.summoned);
-            this.spawnCounter = 0;
+        if (!this.q.I){
+            if (this.spawnCounter < MITEITEMod.CONFIG.get(Config.ConfigEntry.GIANT_ZOMBIE_SPAWN_ZOMBIE_COOLDOWN)){
+                this.spawnCounter++;
+            }else {
+                EntityZombie zombie = new EntityZombie(this.q);
+                zombie.a((double) this.getBlockPosX(), this.getFootBlockPosY(), this.getBlockPosZ());
+                zombie.refreshDespawnCounter(-9600);
+                this.q.d(zombie);
+                zombie.a((GroupDataEntity) null);
+                zombie.d(this.getTarget());
+                zombie.entityFX(EnumEntityFX.summoned);
+                this.spawnCounter = 0;
+            }
         }
     }
 

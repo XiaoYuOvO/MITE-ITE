@@ -76,6 +76,7 @@ public class Config extends JsonConfig {
         public static final ConfigEntry<Double> CRIT_ENCHANTMENT_DAMAGE_BOOST_PER_LVL = new ConfigEntry<>("crit_enchantment_damage_boost_per_lvl",0.4d);
         public static final IntConfigEntry IN_RAIN_DEBUFF_TIME = new IntConfigEntry("in_rain_debuff_time", 3600);
         public static final IntConfigEntry VILLAGER_WOOL_TO_EMERALD_SHARD_COUNT = new IntConfigEntry("villager_wool_to_emerald_shard_count", 4);
+        public static final IntConfigEntry VILLAGER_WOOL_TO_EMERALD_SHARD_SHARD_COUNT = new IntConfigEntry("villager_wool_to_emerald_shard_shard_count", 1);
         public static final IntConfigEntry BREED_XP_CHICKEN = new IntConfigEntry("breed_xp_chicken", 3);
         public static final IntConfigEntry BREED_XP_SHEEP = new IntConfigEntry("breed_xp_sheep", 5);
         public static final IntConfigEntry BREED_XP_PIG = new IntConfigEntry("breed_xp_pig", 15);
@@ -110,7 +111,9 @@ public class Config extends JsonConfig {
         public static final IntConfigEntry DIAMOND_FREQUENCY_UNDERWORLD = new IntConfigEntry("diamond_frequency_underworld", 5);
         public static final IntConfigEntry ADAMANTIUM_FREQUENCY_UNDERWORLD = new IntConfigEntry("adamantium_frequency_underworld", 5);
         public static final IntConfigEntry GIANT_ZOMBIE_SPAWN_ZOMBIE_COOLDOWN = new IntConfigEntry("giant_zombie_spawn_zombie_cooldown",1200);
+
         public static final ConfigEntry<Boolean> SKELETON_FORCE_MELEE_ATTACK = new ConfigEntry<>("skeleton_force_melee_attack", true);
+        public static final ConfigEntry<Double> ZOMBIE_PIGMAN_BOOST_CHANCE = new ConfigEntry<>("zombie_pigman_boost_chance",0.025);
         public final String cfgName;
         public final T defaultValue;
         final BiLazyValue<Config,T> getter ;

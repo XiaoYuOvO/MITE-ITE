@@ -6,6 +6,7 @@ import net.xiaoyu233.fml.reload.event.HandleChatCommandEvent;
 import net.xiaoyu233.fml.reload.event.PlayerLoggedInEvent;
 import net.xiaoyu233.mitemod.miteite.item.ArmorModifierTypes;
 import net.xiaoyu233.mitemod.miteite.item.ToolModifierTypes;
+import net.xiaoyu233.mitemod.miteite.network.SPacketOverlayMessage;
 import net.xiaoyu233.mitemod.miteite.util.Constant;
 
 public class MITEITEEvents {
@@ -117,6 +118,17 @@ public class MITEITEEvents {
                         compound.a("forging_grade", Integer.parseInt(par2Str.substring(18)));
                         event.setExecuteSuccess(true);
                     }
+                }
+            }
+            if (par2Str.startsWith("overlayMsg")){
+                String msg = par2Str.substring("overlayMsg".length());
+                player.sendPacket(new SPacketOverlayMessage(msg,0xffffff,100));
+                event.setExecuteSuccess(true);
+            }
+            if (par2Str.startsWith("emptyItem")){
+                Item item = Item.g[Integer.parseInt(par2Str.substring("overlayMsg".length()))];
+                if (item != null){
+                    player.setHeldItemStack(new ItemStack(item,0,0));
                 }
             }
         }

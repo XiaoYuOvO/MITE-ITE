@@ -11,14 +11,14 @@ import java.util.Collections;
 import java.util.Random;
 
 @Transform(EntityVillager.class)
-public class EntityVillageTrans  extends EntityAgeable implements IMerchant, NPC {
+public class EntityVillagerTrans extends EntityAgeable implements IMerchant, NPC {
     @Link
     private float bA;
     @Link
     private MerchantRecipeList bu;
 
     @Marker
-    public EntityVillageTrans(World par1World) {
+    public EntityVillagerTrans(World par1World) {
         super(par1World);
     }
 
@@ -153,7 +153,7 @@ public class EntityVillageTrans  extends EntityAgeable implements IMerchant, NPC
 
     private static void forEmeraldShard(MerchantRecipeList par0MerchantRecipeList, int par1, Random par2Random, float par3) {
         if (par2Random.nextFloat() < par3) {
-            par0MerchantRecipeList.add(new MerchantRecipe(new ItemStack(par1, MITEITEMod.CONFIG.get(Config.ConfigEntry.VILLAGER_WOOL_TO_EMERALD_SHARD_COUNT)), Item.shardEmerald));
+            par0MerchantRecipeList.add(new MerchantRecipe(new ItemStack(par1, MITEITEMod.CONFIG.get(Config.ConfigEntry.VILLAGER_WOOL_TO_EMERALD_SHARD_COUNT)), new ItemStack(Item.shardEmerald,MITEITEMod.CONFIG.get(Config.ConfigEntry.VILLAGER_WOOL_TO_EMERALD_SHARD_SHARD_COUNT))));
         }
     }
 

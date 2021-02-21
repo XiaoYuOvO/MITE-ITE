@@ -5,6 +5,7 @@ import net.minecraft.server.MinecraftServer;
 import net.xiaoyu233.fml.asm.annotations.Link;
 import net.xiaoyu233.fml.asm.annotations.Marker;
 import net.xiaoyu233.fml.asm.annotations.Transform;
+import net.xiaoyu233.mitemod.miteite.inventory.container.ContainerChestMinecart;
 import net.xiaoyu233.mitemod.miteite.inventory.container.ContainerForgingTable;
 import net.xiaoyu233.mitemod.miteite.inventory.container.ForgingTableSlots;
 import net.xiaoyu233.mitemod.miteite.trans.network.PacketOpenWindowTrans;
@@ -168,7 +169,20 @@ public class ServerPlayerTrans extends EntityHuman implements ICrafting{
         this.bp = new ContainerForgingTable(slots,this, x, y, z);
         this.bp.d = this.bY;
         (dyCast(EntityPlayer.class,this)).a(this.bp, ((ContainerForgingTable) this.bp).getInventory());
-        this.bp.a((EntityHuman) dyCast(EntityPlayer.class,this));
-        this.bp.a((ICrafting) dyCast(EntityPlayer.class,this));
+        this.bp.a((EntityHuman) (this));
+        this.bp.a((ICrafting) (this));
+    }
+
+    public void displayGUIChestForMinecartEntity(EntityMinecartChest par1IInventory) {
+        if (this.bp != this.bo) {
+            this.i();
+        }
+
+        this.bN();
+        this.a.b(new Packet100OpenWindow(this.bY, 12, par1IInventory.getCustomNameOrUnlocalized(), par1IInventory.j_(), par1IInventory.hasCustomName()));
+        this.bp = new ContainerChestMinecart(this, par1IInventory);
+        this.bp.d = this.bY;
+        this.bp.a((EntityHuman)(this));
+        this.bp.a((ICrafting) (this));
     }
 }

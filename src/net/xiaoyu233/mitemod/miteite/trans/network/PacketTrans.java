@@ -4,9 +4,7 @@ import net.minecraft.*;
 import net.xiaoyu233.fml.asm.annotations.Link;
 import net.xiaoyu233.fml.asm.annotations.Marker;
 import net.xiaoyu233.fml.asm.annotations.Transform;
-import net.xiaoyu233.mitemod.miteite.network.CPacketStartForging;
-import net.xiaoyu233.mitemod.miteite.network.SPacketFinishForging;
-import net.xiaoyu233.mitemod.miteite.network.SPacketForgingTableInfo;
+import net.xiaoyu233.mitemod.miteite.network.*;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -108,6 +106,8 @@ public class PacketTrans {
         a(134, /*ClientProcess*/false, /*ServerProcess*/true, CPacketStartForging.class);
         a(135, /*ClientProcess*/true, /*ServerProcess*/false, SPacketFinishForging.class);
         a(136, /*ClientProcess*/true, /*ServerProcess*/false, SPacketForgingTableInfo.class);
+        a(137, /*ClientProcess*/true, /*ServerProcess*/false, SPacketOverlayMessage.class);
+        a(138, /*ClientProcess*/false, /*ServerProcess*/true, CPacketSyncItems.class);
         a(200, true, false, Packet200Statistic.class);
         a(201, true, false, Packet201PlayerInfo.class);
         a(202, true, true, Packet202Abilities.class);

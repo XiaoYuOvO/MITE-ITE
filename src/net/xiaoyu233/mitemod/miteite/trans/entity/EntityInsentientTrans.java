@@ -25,6 +25,48 @@ public class EntityInsentientTrans extends EntityLiving{
     protected boolean came_from_spawner;
     @Link
     protected boolean came_from_spawn_block;
+    @Link
+    private boolean bs;
+    @Link
+    private boolean bt;
+    @Link
+    protected float f;
+    @Link
+    private Entity bu;
+    @Link
+    protected int g;
+    @Link
+    private boolean bv;
+    @Link
+    private Entity bw;
+    @Link
+    private NBTTagCompound bx;
+    @Link
+    public int food_or_repair_item_pickup_cooldown;
+    @Link
+    protected long spooked_until;
+    @Link
+    private boolean is_decoy;
+    @Link
+    private int spawn_block_x;
+    @Link
+    private int spawn_block_y;
+    @Link
+    private int spawn_block_z;
+    @Link
+    public int ticks_disarmed;
+    @Link
+    private String target_unique_id_string;
+    @Link
+    public EntityLiving AI_retarget;
+    @Link
+    public int increased_chance_of_spreading_fire_countdown;
+    @Link
+    public EntityItem target_entity_item;
+    @Link
+    public long last_tick_harmed_by_cactus;
+    @Link
+    private ItemStack[] br;
 
     @Marker
     public EntityInsentientTrans(World par1World) {
@@ -163,8 +205,132 @@ public class EntityInsentientTrans extends EntityLiving{
         }
     }
 
-    @Override
-    //Read
+//    @Override
+//    //Read
+//    public void a(NBTTagCompound par1NBTTagCompound) {
+//        super.a(par1NBTTagCompound);
+
+//    }
+//
+//    @Override
+//    //Write
+//    public void b(NBTTagCompound par1NBTTagCompound) {
+//        super.b(par1NBTTagCompound);
+
+//    }
+
+    @Marker
+    public String bA() {
+        return "";
+    }
+
+    @Marker
+    public boolean bC() {
+        return false;
+    }
+
+    public void b(NBTTagCompound par1NBTTagCompound) {
+        super.b(par1NBTTagCompound);
+        byte[] picked_up_held_items = new byte[this.picked_up_a_held_item_array.length];
+        boolean[] pickedUpAHeldItemArray = this.picked_up_a_held_item_array;
+        for (int i = 0; i < pickedUpAHeldItemArray.length; i++) {
+            if (pickedUpAHeldItemArray[i]) {
+                picked_up_held_items[i] = 1;
+            }
+        }
+        par1NBTTagCompound.a("picked_up_held_items",picked_up_held_items);
+        par1NBTTagCompound.a("CanPickUpLoot", this.bD());
+        par1NBTTagCompound.a("PersistenceRequired", this.bt);
+        NBTTagCompound var4;
+        NBTTagList var2;
+        int var3;
+        if (this.hasEquipment()) {
+            var2 = new NBTTagList();
+
+            for(var3 = 0; var3 < this.br.length; ++var3) {
+                var4 = new NBTTagCompound();
+                if (this.br[var3] != null) {
+                    this.br[var3].b(var4);
+                }
+
+                var2.a(var4);
+            }
+
+            par1NBTTagCompound.a("Equipment", var2);
+        }
+
+        var2 = new NBTTagList();
+
+        for(var3 = 0; var3 < this.e.length; ++var3) {
+            var2.a(new NBTTagFloat(var3 + "", this.e[var3]));
+        }
+
+        par1NBTTagCompound.a("DropChances", var2);
+        par1NBTTagCompound.a("CustomName", this.bA());
+        par1NBTTagCompound.a("CustomNameVisible", this.bC());
+        par1NBTTagCompound.a("Leashed", this.bv);
+        if (this.bw != null) {
+            var4 = new NBTTagCompound("Leash");
+            if (this.bw instanceof EntityLiving) {
+                var4.a("UUIDMost", this.bw.aw().getMostSignificantBits());
+                var4.a("UUIDLeast", this.bw.aw().getLeastSignificantBits());
+            } else if (this.bw instanceof EntityHanging) {
+                EntityHanging var5 = (EntityHanging)this.bw;
+                var4.a("X", var5.b);
+                var4.a("Y", var5.c);
+                var4.a("Z", var5.d);
+            }
+
+            par1NBTTagCompound.a("Leash", var4);
+        }
+
+        par1NBTTagCompound.a("picked_up_a_held_item", this.picked_up_a_held_item);
+        par1NBTTagCompound.a("spooked_until", this.spooked_until);
+        if (this.is_decoy) {
+            par1NBTTagCompound.a("is_decoy", this.is_decoy);
+        }
+
+        if (this.came_from_spawner) {
+            par1NBTTagCompound.a("came_from_spawner", true);
+        }
+
+        if (this.came_from_spawn_block) {
+            par1NBTTagCompound.a("came_from_spawn_block", true);
+            par1NBTTagCompound.a("spawn_block_x", this.spawn_block_x);
+            par1NBTTagCompound.a("spawn_block_y", this.spawn_block_y);
+            par1NBTTagCompound.a("spawn_block_z", this.spawn_block_z);
+        }
+
+        if (this.ticks_disarmed > 0) {
+            par1NBTTagCompound.a("ticks_disarmed", this.ticks_disarmed);
+        }
+
+        EntityLiving target = this.getTarget();
+        if (target != null) {
+            par1NBTTagCompound.a("target_unique_id_string", target.aw().toString());
+        }
+
+    }
+
+    @Marker
+    public final EntityLiving getTarget(){
+        return null;
+    }
+
+    @Marker
+    public boolean hasEquipment() {
+        return false;
+    }
+
+    @Marker
+    public void a(String par1Str) {}
+
+    @Marker
+    public void g(boolean par1) {}
+
+    @Marker
+    public void h(boolean par1) { }
+
     public void a(NBTTagCompound par1NBTTagCompound) {
         super.a(par1NBTTagCompound);
         if (par1NBTTagCompound.b("picked_up_held_items")){
@@ -178,20 +344,67 @@ public class EntityInsentientTrans extends EntityLiving{
                 }
             }
         }
-    }
+        this.h(par1NBTTagCompound.n("CanPickUpLoot"));
+        this.bt = par1NBTTagCompound.n("PersistenceRequired");
+        if (par1NBTTagCompound.b("CustomName") && par1NBTTagCompound.i("CustomName").length() > 0) {
+            this.a(par1NBTTagCompound.i("CustomName"));
+        }
 
-    @Override
-    //Write
-    public void b(NBTTagCompound par1NBTTagCompound) {
-        super.b(par1NBTTagCompound);
-        byte[] picked_up_held_items = new byte[this.picked_up_a_held_item_array.length];
-        boolean[] pickedUpAHeldItemArray = this.picked_up_a_held_item_array;
-        for (int i = 0; i < pickedUpAHeldItemArray.length; i++) {
-            if (pickedUpAHeldItemArray[i]) {
-                picked_up_held_items[i] = 1;
+        this.g(par1NBTTagCompound.n("CustomNameVisible"));
+        NBTTagList var2;
+        int var3;
+        if (par1NBTTagCompound.b("Equipment")) {
+            var2 = par1NBTTagCompound.m("Equipment");
+
+            for(var3 = 0; var3 < this.br.length; ++var3) {
+                this.br[var3] = ItemStack.a((NBTTagCompound)var2.b(var3));
             }
         }
-        par1NBTTagCompound.a("picked_up_held_items",picked_up_held_items);
+
+        if (par1NBTTagCompound.b("DropChances")) {
+            var2 = par1NBTTagCompound.m("DropChances");
+
+            for(var3 = 0; var3 < var2.c(); ++var3) {
+                this.e[var3] = ((NBTTagFloat)var2.b(var3)).a;
+            }
+        }
+
+        this.bv = par1NBTTagCompound.n("Leashed");
+        if (this.bv && par1NBTTagCompound.b("Leash")) {
+            this.bx = par1NBTTagCompound.l("Leash");
+        }
+
+        if (par1NBTTagCompound.b("picked_up_a_held_item")) {
+            this.picked_up_a_held_item = par1NBTTagCompound.n("picked_up_a_held_item");
+        }
+
+        if (par1NBTTagCompound.b("spooked_until")) {
+            this.spooked_until = par1NBTTagCompound.f("spooked_until");
+        }
+
+        this.is_decoy = par1NBTTagCompound.n("is_decoy");
+        if (par1NBTTagCompound.b("came_from_spawner")) {
+            this.came_from_spawner = true;
+        }
+
+        if (par1NBTTagCompound.b("came_from_spawn_block")) {
+            this.came_from_spawn_block = true;
+            this.spawn_block_x = par1NBTTagCompound.e("spawn_block_x");
+            this.spawn_block_y = par1NBTTagCompound.e("spawn_block_y");
+            this.spawn_block_z = par1NBTTagCompound.e("spawn_block_z");
+        }
+
+        if (par1NBTTagCompound.b("ticks_disarmed")) {
+            this.ticks_disarmed = par1NBTTagCompound.e("ticks_disarmed");
+        }
+
+        if (par1NBTTagCompound.b("target_unique_id_string")) {
+            this.target_unique_id_string = par1NBTTagCompound.i("target_unique_id_string");
+            if (this.target_unique_id_string.isEmpty()) {
+                this.target_unique_id_string = null;
+            }
+        }
+
     }
 
     @Marker

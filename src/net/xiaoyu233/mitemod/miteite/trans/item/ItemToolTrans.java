@@ -8,6 +8,7 @@ import net.xiaoyu233.fml.asm.annotations.Transform;
 import net.xiaoyu233.mitemod.miteite.item.Materials;
 import net.xiaoyu233.mitemod.miteite.item.ToolModifierTypes;
 import net.xiaoyu233.mitemod.miteite.item.enchantment.Enchantments;
+import net.xiaoyu233.mitemod.miteite.util.StringUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -95,7 +96,7 @@ public class ItemToolTrans extends Item {
             }
             int forgingGrade;
             if (item_stack.q().b("forging_grade") && ((forgingGrade = item_stack.q().e("forging_grade")) != 0)){
-                info.add("§5强化等级:§6" +  LocaleI18n.a("enchantment.level." + forgingGrade));
+                info.add("§5强化等级:§6" +  StringUtil.intToRoman(forgingGrade));
                 if (extended_info){
                     info.add("  §7耐久增加:§a" + 10 * forgingGrade + "%");
                     info.add("  §9攻击力增加:§6" + ItemStack.a.format(this.getEnhancedDamage(item_stack)));
@@ -108,8 +109,7 @@ public class ItemToolTrans extends Item {
                     info.add("工具强化:");
                     for (ToolModifierTypes value : ToolModifierTypes.values()) {
                         if (compound.b(value.nbtName)) {
-                            info.add("  " + value.color.toString() + value.displayName + "§r " + LocaleI18n.a(
-                                    "enchantment.level." + compound.e(value.nbtName)));
+                            info.add("  " + value.color.toString() + value.displayName + "§r " + StringUtil.intToRoman(compound.e(value.nbtName)));
                         }
                     }
                 }

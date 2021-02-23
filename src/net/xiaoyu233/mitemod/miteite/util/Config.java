@@ -114,6 +114,8 @@ public class Config extends JsonConfig {
 
         public static final ConfigEntry<Boolean> SKELETON_FORCE_MELEE_ATTACK = new ConfigEntry<>("skeleton_force_melee_attack", true);
         public static final ConfigEntry<Double> ZOMBIE_PIGMAN_BOOST_CHANCE = new ConfigEntry<>("zombie_pigman_boost_chance",0.025);
+        public static final ConfigEntry<Double> GHAST_OVERWORLD_BOOST = new ConfigEntry<>("ghast_overworld_boost",1.25);
+        public static final ConfigEntry<Boolean> LOG_PLAYERS_INTERACT_WITH_PORTAL = new ConfigEntry<>("log_players_interact_with_portal",true);
         public final String cfgName;
         public final T defaultValue;
         final BiLazyValue<Config,T> getter ;

@@ -3,8 +3,8 @@ package net.xiaoyu233.mitemod.miteite.item;
 import com.google.common.collect.Lists;
 import net.minecraft.EnumChatFormat;
 import net.minecraft.ItemStack;
+import net.minecraft.ItemTool;
 import net.minecraft.NBTTagCompound;
-import net.xiaoyu233.mitemod.miteite.trans.item.ItemToolTrans;
 import net.xiaoyu233.mitemod.miteite.util.EnumChatFormats;
 
 import javax.annotation.Nullable;
@@ -34,16 +34,16 @@ import java.util.function.Predicate;
 //  超自然 - 工具的挖掘等级比目标方块越大,挖掘速度越快 √DONE!
 //  自动冶炼 - 自动烧制挖掘等级比此属性级数小的目标方块
 // }
-@SuppressWarnings("Convert2MethodRef")
+
 public enum  ToolModifierTypes implements ItemModifierTypes{
     //Tool Modifiers
-    EFFICIENCY_MODIFIER(0.25F,"急速",EnumChatFormat.e,10, (stack -> !ItemToolTrans.isWeapon(stack)),10),
-    AQUADYNAMIC_MODIFIER(1.25F,"喜水",EnumChatFormats.LIGHT_YELLOW_GREEN,5, (stack -> !ItemToolTrans.isWeapon(stack)),5),
+    EFFICIENCY_MODIFIER(0.25F,"急速",EnumChatFormat.e,10, (stack -> !ItemTool.isWeapon(stack)),10),
+    AQUADYNAMIC_MODIFIER(1.25F,"喜水",EnumChatFormats.LIGHT_YELLOW_GREEN,5, (stack -> !ItemTool.isWeapon(stack)),5),
     DURABILITY_MODIFIER(0.1F,"耐久",EnumChatFormat.f,20,(stack -> true),10),
-    DAMAGE_MODIFIER(1.0F,"锋利", EnumChatFormat.p,10, stack -> ItemToolTrans.isWeapon(stack),5),
-    SLOWDOWN_MODIFIER(1.0F,"织网",EnumChatFormats.LIGHT_BLUE,5, stack -> ItemToolTrans.isWeapon(stack),5),
-    UNNATURAL_MODIFIER(0.1f,"超自然",EnumChatFormat.LIGHT_GRAY,2, itemStack -> !ItemToolTrans.isWeapon(itemStack),5),
-    BEHEADING_MODIFIER(0.02f,"斩首",EnumChatFormats.DEAR_GREEN,1, itemStack -> ItemToolTrans.isWeapon(itemStack), 5);
+    DAMAGE_MODIFIER(1.0F,"锋利", EnumChatFormat.p,10, ItemTool::isWeapon,5),
+    SLOWDOWN_MODIFIER(1.0F,"织网",EnumChatFormats.LIGHT_BLUE,5, ItemTool::isWeapon,5),
+    UNNATURAL_MODIFIER(0.1f,"超自然",EnumChatFormat.LIGHT_GRAY,2, itemStack -> !ItemTool.isWeapon(itemStack),5),
+    BEHEADING_MODIFIER(0.02f,"斩首",EnumChatFormats.DEAR_GREEN,1, ItemTool::isWeapon, 5);
     public final String nbtName;
     public final float levelAddition;
     public final String displayName;

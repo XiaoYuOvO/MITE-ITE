@@ -60,6 +60,14 @@ public class EntityLivingTrans extends Entity{
     public boolean has_taken_massive_fall_damage;
     @Link
     protected int bb;
+    @Link
+    public float aA;
+    @Link
+    public float aF;
+    @Link
+    public float aG;
+    @Link
+    public int aI;
 
     @Marker
     public EntityLivingTrans(World par1World) {
@@ -326,6 +334,140 @@ public class EntityLivingTrans extends Entity{
 
     @Marker
     private void b(EntityLiving entityLiving) {
+
+    }
+    @Marker
+    public boolean a(MobEffectList par1Potion){
+        return false;
+    }
+
+    public EntityDamageResult attackEntityFrom(Damage damage) {
+        EntityDamageResult result = super.attackEntityFrom(damage);
+        if (result != null && !result.entityWasDestroyed()) {
+            if (this.aN() <= 0.0F) {
+                return null;
+            } else if (damage.isFireDamage() && this.a(MobEffectList.n)) {
+                return null;
+            } else {
+                if (damage.isAnvil() || damage.isFallingBlock()) {
+                    ItemStack head_armor = this.getHelmet();
+                    if (head_armor != null) {
+                        result.applyArmorDamageResult(head_armor.tryDamageItem(damage.getSource(), (int)(damage.getAmount() * 4.0F + this.ab.nextFloat() * damage.getAmount() * 2.0F), dyCast(this)));
+                        damage.scaleAmount(0.75F);
+                    }
+                }
+
+                if (damage.isNil()) {
+                    return result;
+                } else {
+                    if (damage.isLessThanHalfAHeart()) {
+                        damage.setAmount(1.0F);
+                    }
+
+                    boolean treat_as_completely_new_attack = this.af * 2 <= this.aI;
+                    this.attackEntityFromHelper(damage, result);
+                    this.checkForAfterDamage(damage,result);
+                    boolean make_death_sound = result.entityWasDestroyed();
+                    boolean make_hurt_sound = !make_death_sound && (result.entityWasKnockedBack() || result.entityLostHealth());
+                    if (result.entityWasNegativelyAffected()) {
+                        if (treat_as_completely_new_attack) {
+                            boolean refresh_red_tint = result.entityLostHealth();
+                            if (refresh_red_tint && damage.isSunlight() && (dyCast(this) instanceof EntityShadow || dyCast(this) instanceof EntityNightwing)) {
+                                refresh_red_tint = false;
+                            }
+
+                            this.q.setEntityState(this, refresh_red_tint ? EnumEntityState.hurt_with_red_tint_refreshed : EnumEntityState.hurt_without_red_tint_refreshed);
+                            if (make_death_sound) {
+                                this.makeSound(this.aP());
+                            } else if (make_hurt_sound) {
+                                this.makeSound(this.aO());
+                            }
+                        }
+
+                        if (!damage.isDrowning()) {
+                            this.K();
+                        }
+
+                        this.aG = 1.5F;
+                        this.aA = 0.0F;
+                        Entity responsible_entity = damage.getSource().getResponsibleEntity();
+                        if (responsible_entity == null) {
+                            this.aA = (float)((int)(Math.random() * 2.0D) * 180);
+                        } else {
+                            this.refreshDespawnCounter(-1200);
+                            responsible_entity.refreshDespawnCounter(-1200);
+                            if (responsible_entity instanceof EntityLiving) {
+                                this.b((EntityLiving)responsible_entity);
+                                this.setLastHarmingEntity(responsible_entity);
+                                this.considerFleeing();
+                            }
+
+                            if (!(responsible_entity instanceof EntityHuman)) {
+                                if (responsible_entity instanceof EntityWolf) {
+                                    EntityWolf var5 = (EntityWolf)responsible_entity;
+                                    if (var5.bT()) {
+                                        this.aT = 100;
+                                        this.aS = null;
+                                    }
+                                }
+                            } else {
+                                if (!(damage.getSource().getImmediateEntity() instanceof EntitySnowball) || this.canTakeDamageFromPlayerThrownSnowballs()) {
+                                    this.aT = 100;
+                                }
+
+                                this.aS = (EntityHuman)responsible_entity;
+                                this.refreshDespawnCounter(-9600);
+                            }
+                        }
+
+                        if (result.entityWasDestroyed()) {
+                            this.a(damage.getSource());
+                        }
+                    }
+
+                    return result;
+                }
+            }
+        } else {
+            return result;
+        }
+    }
+
+    protected void checkForAfterDamage(Damage damage, EntityDamageResult result) {
+
+    }
+
+    @Marker
+    protected String aO() {
+        return "damage.hit";
+    }
+
+    @Marker
+    protected String aP() {
+        return "damage.hit";
+    }
+
+
+    @Marker
+    private EntityDamageResult attackEntityFromHelper(Damage damage, EntityDamageResult result){
+        return null;
+    }
+    @Marker
+    public void makeSound(String sound) {
+
+    }
+    @Marker
+    public boolean considerFleeing() {
+        return false;
+    }
+
+    @Marker
+    public ItemStack getHelmet() {
+        return null;
+    }
+
+    @Marker
+    public void setLastHarmingEntity(Entity entity){
 
     }
 

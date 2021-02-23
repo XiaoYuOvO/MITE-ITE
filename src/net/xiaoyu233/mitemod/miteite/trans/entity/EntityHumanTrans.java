@@ -11,10 +11,13 @@ import net.xiaoyu233.mitemod.miteite.item.ArmorModifierTypes;
 import net.xiaoyu233.mitemod.miteite.item.Materials;
 import net.xiaoyu233.mitemod.miteite.item.enchantment.Enchantments;
 import net.xiaoyu233.mitemod.miteite.network.CPacketSyncItems;
+import net.xiaoyu233.mitemod.miteite.network.SPacketCraftingBoost;
 import net.xiaoyu233.mitemod.miteite.network.SPacketOverlayMessage;
+import net.xiaoyu233.mitemod.miteite.util.BlockPos;
 import net.xiaoyu233.mitemod.miteite.util.Config;
 import net.xiaoyu233.mitemod.miteite.util.ReflectHelper;
 
+import javax.annotation.Nullable;
 import java.util.*;
 
 import static net.minecraft.EntityHuman.y_offset_on_client_and_eye_height_on_server;
@@ -83,6 +86,9 @@ public abstract class EntityHumanTrans extends EntityLiving implements ICommandL
     private int emergencyCooldown;
     private final Map<Entity,Integer> attackCountMap = new HashMap<>();
     private volatile boolean waitForItemSync;
+    private float craftingBoostFactor;
+    private int craftingBoostTimer;
+    private BlockPos currentEffectedBeaconPos;
 
     @Marker
     public void sendPacket(Packet packet) {}
@@ -109,6 +115,36 @@ public abstract class EntityHumanTrans extends EntityLiving implements ICommandL
     @Marker
     public void c(int i, ItemStack itemStack) {
 
+    }
+
+    public float getCraftingBoostFactor() {
+        return craftingBoostFactor;
+    }
+
+    public void setCraftingBoostFactor(float craftingBoostFactor,@Nullable BlockPos currentEffectedBeaconPos) {
+        if (!this.q.I) {
+            float result = 0;
+            if (currentEffectedBeaconPos != null){
+                if (currentEffectedBeaconPos.equals(this.currentEffectedBeaconPos)){
+                    result = craftingBoostFactor;
+                }else {
+                    result= Math.max(craftingBoostFactor, this.craftingBoostFactor);
+                    if (result != this.craftingBoostFactor) {
+                        this.currentEffectedBeaconPos = currentEffectedBeaconPos;
+                    }
+                }
+            }
+            if (result != this.craftingBoostFactor) {
+                this.craftingBoostFactor = result;
+                this.sendPacket(new SPacketCraftingBoost(this.craftingBoostFactor));
+            }
+        }else {
+            this.craftingBoostFactor = craftingBoostFactor;
+        }
+    }
+
+    public void setCraftingBoostTimer(int craftingBoostTimer) {
+        this.craftingBoostTimer = craftingBoostTimer;
     }
 
     public void syncItemsAndWait(){
@@ -219,6 +255,17 @@ public abstract class EntityHumanTrans extends EntityLiving implements ICommandL
                 this.vision_dimming -= 0.01F;
             }
         }
+
+        if (!this.q.I) {
+            if (this.craftingBoostTimer > 0) {
+                this.craftingBoostTimer--;
+            } else if (this.craftingBoostTimer == 0) {
+                this.craftingBoostFactor = 0;
+                this.sendPacket(new SPacketCraftingBoost(this.craftingBoostTimer));
+                this.craftingBoostTimer = -1;
+            }
+        }
+
 
         if (this.br > 0) {
             --this.br;
@@ -401,14 +448,10 @@ public abstract class EntityHumanTrans extends EntityLiving implements ICommandL
                 }
             }
             EntityDamageResult entityDamageResult = super.attackEntityFrom(damage);
-            if (this.emergencyCooldown <= 0 && this.getHealthFraction() <= 0.3){
+            if (this.emergencyCooldown <= 0 && (this.getHealthFraction() <= 0.3 ) && !entityDamageResult.entityWasDestroyed()){
                 for (ItemStack wornItem : this.getWornItems()) {
                     if (wornItem != null && wornItem.hasEnchantment(Enchantments.EMERGENCY,false)){
-                        this.c(new MobEffect(11,3 * 20,1));
-                        this.entityFX(EnumEntityFX.smoke_and_steam);
-                        this.makeSound("fireworks.largeBlast",2,0.75f);
-                        this.makeSound("random.anvil_land",0.4f,0.4f);
-                        this.emergencyCooldown = MITEITEMod.CONFIG.get(EMERGENCY_COOLDOWN);
+                        this.activeEmergency();
                         break;
                     }
                 }
@@ -417,6 +460,29 @@ public abstract class EntityHumanTrans extends EntityLiving implements ICommandL
         }
     }
 
+    private void activeEmergency(){
+        this.c(new MobEffect(11,3 * 20,1));
+        this.entityFX(EnumEntityFX.smoke_and_steam);
+        this.makeSound("fireworks.largeBlast",2,0.75f);
+        this.makeSound("random.anvil_land",0.4f,0.4f);
+        this.emergencyCooldown = MITEITEMod.CONFIG.get(EMERGENCY_COOLDOWN);
+    }
+
+    @Override
+    protected void checkForAfterDamage(Damage damage, EntityDamageResult result) {
+        if (this.emergencyCooldown <= 0 && (result.entityWasDestroyed())){
+            for (ItemStack wornItem : this.getWornItems()) {
+                if (wornItem != null && wornItem.hasEnchantment(Enchantments.EMERGENCY,false)){
+                    if (result.entityWasDestroyed()){
+                        result.setEntity_was_destroyed(false);
+                        this.setHealth(this.aT() * 0.2f,true,this.getHealFX());
+                    }
+                    this.activeEmergency();
+                    break;
+                }
+            }
+        }
+    }
 
     public final float getReach(Block block, int metadata) {
         if (this.hasExtendedReach()) {

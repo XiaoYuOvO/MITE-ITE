@@ -9,6 +9,8 @@ import net.xiaoyu233.mitemod.miteite.item.ToolModifierTypes;
 import net.xiaoyu233.mitemod.miteite.network.SPacketOverlayMessage;
 import net.xiaoyu233.mitemod.miteite.util.Constant;
 
+import static net.minecraft.EnumChatFormat.c;
+
 public class MITEITEEvents {
     @Subscribe
     public void onPlayerLoggedIn(PlayerLoggedInEvent event){
@@ -23,8 +25,8 @@ public class MITEITEEvents {
     public void handleChatCommand(HandleChatCommandEvent event){
         String par2Str = event.getCommand();
         EntityPlayer player = event.getPlayer();
+        ICommandListener commandListener = event.getListener();
         if (Minecraft.inDevMode()) {
-            ICommandListener par1ICommandSender = event.getListener();
             World world = event.getWorld();
             if (par2Str.startsWith("itemlevel setLevel")) {
                 ItemStack itemStack = player.getHeldItemStack();
@@ -103,9 +105,9 @@ public class MITEITEEvents {
                         ((EntityInsentient) entity).a((GroupDataEntity) null);
                     }
                     world.d(entity);
-                    par1ICommandSender.a(ChatMessage.d("已生成实体 " + entity.toString()).a(EnumChatFormat.LIGHT_GRAY));
+                    commandListener.a(ChatMessage.d("已生成实体 " + entity.toString()).a(EnumChatFormat.LIGHT_GRAY));
                 } else {
-                    par1ICommandSender.a(ChatMessage.d("无法生成实体:ID为 " + id + " 的实体不存在!").a(EnumChatFormat.e));
+                    commandListener.a(ChatMessage.d("无法生成实体:ID为 " + id + " 的实体不存在!").a(EnumChatFormat.e));
                 }
                 event.setExecuteSuccess(true);
             }
@@ -131,6 +133,23 @@ public class MITEITEEvents {
                     player.setHeldItemStack(new ItemStack(item,0,0));
                 }
             }
+        }
+        if (par2Str.startsWith("sleep")){
+            StringBuilder notSleepingPlayers = new StringBuilder();
+            boolean allSlept = true;
+            for (Object o : player.getWorldServer().p().af().a) {
+                EntityPlayer currentPlayer = ((EntityPlayer)o);
+                if (!currentPlayer.inBed()){
+                    allSlept = false;
+                    notSleepingPlayers.append(currentPlayer.an()).append(",");
+                }
+            }
+            if (allSlept){
+                commandListener.a(ChatMessage.e("command.sleep_check.none").a(c));
+            }else {
+                commandListener.a(ChatMessage.e("command.sleep_check.msg").a(notSleepingPlayers.substring(0,notSleepingPlayers.length()-1)).a(EnumChatFormat.o));
+            }
+            event.setExecuteSuccess(true);
         }
     }
 }

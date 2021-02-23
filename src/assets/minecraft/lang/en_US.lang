@@ -55,3 +55,7 @@ gui.forgingTable.hammerCost=Hammer durability cost
 gui.forgingTable.needAxe=Need an axe
 gui.forgingTable.needHammer=Need a war hammer
 tile.block_forging_table.name=Forging Table
+gameplay.portal_door.interact=§nPlayer %s is entering portal door
+command.sleep_check.msg=The following players are not sleeping:
+command.sleep_check.none=All players are sleeping now
+container.workbench.boost=Crafting speed boost:

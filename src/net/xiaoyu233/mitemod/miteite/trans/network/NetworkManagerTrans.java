@@ -25,4 +25,6 @@ public class NetworkManagerTrans {
     public void handleSyncItems(CPacketSyncItems packet){
 
     }
+
+    public void handleCraftingBoost(SPacketCraftingBoost packet){}
 }

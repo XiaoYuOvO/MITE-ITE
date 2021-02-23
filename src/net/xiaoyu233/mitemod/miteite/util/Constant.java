@@ -12,8 +12,8 @@ public class Constant {
     public static int nextBlockID = 160;
     public static int nextEnchantmentID = 96;
     public static int nextAchievementID = 136;
-    public static final String MITE_ITE_VERSION = "B0.4.0-pre13";
-    public static final int MITE_ITE_VER_NUM = 412;
+    public static final String MITE_ITE_VERSION = "B0.4.0-pre14";
+    public static final int MITE_ITE_VER_NUM = 413;
     public static ItemArmor[] HELMETS = null;
     public static ItemArmor[] CHESTPLATES = null;
     public static ItemArmor[] LEGGINGS = null;

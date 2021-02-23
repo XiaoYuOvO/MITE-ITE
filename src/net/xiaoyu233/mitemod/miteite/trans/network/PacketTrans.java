@@ -108,6 +108,7 @@ public class PacketTrans {
         a(136, /*ClientProcess*/true, /*ServerProcess*/false, SPacketForgingTableInfo.class);
         a(137, /*ClientProcess*/true, /*ServerProcess*/false, SPacketOverlayMessage.class);
         a(138, /*ClientProcess*/false, /*ServerProcess*/true, CPacketSyncItems.class);
+        a(139, /*ClientProcess*/true, /*ServerProcess*/false, SPacketCraftingBoost.class);
         a(200, true, false, Packet200Statistic.class);
         a(201, true, false, Packet201PlayerInfo.class);
         a(202, true, true, Packet202Abilities.class);

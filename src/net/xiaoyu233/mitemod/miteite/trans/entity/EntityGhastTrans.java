@@ -100,9 +100,9 @@ public class EntityGhastTrans extends EntityFlying implements IMonster {
                     target_center.e = this.bq.getPredictedPosZ(lead);
                     super.q.a(null, 1008, (int)super.u, (int)super.v, (int)super.w, 0);
                     for(int i = 3; i > 0;i--){
-                        EntityLargeFirebal var17 = new EntityLargeFireballNB(super.q, this, target_center, 4.0F + i * 2);
+                        EntityLargeFirebal var17 = new EntityLargeFireballNB(super.q, this, target_center, 4.0F + i * 2.5f);
                         if (this.q.isOverworld()){
-                            var17.e = Math.round((float)this.bs * 1.5f);
+                            var17.e = Math.round((float)this.bs * MITEITEMod.CONFIG.get(Config.ConfigEntry.GHAST_OVERWORLD_BOOST).floatValue());
                         }else {
                             var17.e = this.bs;
                         }

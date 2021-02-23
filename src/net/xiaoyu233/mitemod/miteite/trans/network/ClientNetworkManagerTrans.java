@@ -4,6 +4,7 @@ import net.minecraft.*;
 import net.xiaoyu233.fml.asm.annotations.Link;
 import net.xiaoyu233.fml.asm.annotations.Transform;
 import net.xiaoyu233.mitemod.miteite.gui.GuiForgingTable;
+import net.xiaoyu233.mitemod.miteite.network.SPacketCraftingBoost;
 import net.xiaoyu233.mitemod.miteite.network.SPacketFinishForging;
 import net.xiaoyu233.mitemod.miteite.network.SPacketForgingTableInfo;
 import net.xiaoyu233.mitemod.miteite.network.SPacketOverlayMessage;
@@ -93,5 +94,9 @@ public class ClientNetworkManagerTrans {
 
     public void handleOverlayMessage(SPacketOverlayMessage packet){
         this.h.r.setOverlayMsg(packet.getMsg(),packet.getTime(),packet.getColor());
+    }
+
+    public void handleCraftingBoost(SPacketCraftingBoost packet){
+        this.h.h.setCraftingBoostFactor(packet.getFactor(),null);
     }
 }

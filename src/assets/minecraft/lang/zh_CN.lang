@@ -55,3 +55,7 @@ gui.forgingTable.hammerCost=战锤耐久消耗
 gui.forgingTable.needAxe=§l§o需要斧子
 gui.forgingTable.needHammer=§l§o需要战锤
 tile.block_forging_table.name=锻造台
+gameplay.portal_door.interact=玩家§n%s正在通过传送门
+command.sleep_check.msg=还有以下玩家未睡觉:
+command.sleep_check.none=所有玩家均已躺下
+container.workbench.boost=合成速度提升:

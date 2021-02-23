@@ -6,6 +6,7 @@ import net.xiaoyu233.fml.asm.annotations.Marker;
 import net.xiaoyu233.fml.asm.annotations.Transform;
 import net.xiaoyu233.mitemod.miteite.item.ArmorModifierTypes;
 import net.xiaoyu233.mitemod.miteite.item.Materials;
+import net.xiaoyu233.mitemod.miteite.util.StringUtil;
 
 import java.util.List;
 
@@ -158,7 +159,7 @@ public class ItemArmorTrans extends Item implements IDamageableItem {
 
             int forgingGrade;
             if (itemStack.q().b("forging_grade") && ((forgingGrade = itemStack.q().e("forging_grade")) != 0)){
-                info.add("§5强化等级:§6" +  LocaleI18n.a("enchantment.level." + forgingGrade));
+                info.add("§5强化等级:§6" +  StringUtil.intToRoman(forgingGrade));
                 if (extended_info){
                     info.add("  §7耐久增加:§a" + 10 * forgingGrade + "%");
                     info.add("  §9护甲增加:§6" + ItemStack.a.format(this.getEnhancedProtection(itemStack)));
@@ -171,8 +172,7 @@ public class ItemArmorTrans extends Item implements IDamageableItem {
                     info.add("装备强化:");
                     for (ArmorModifierTypes value : ArmorModifierTypes.values()) {
                         if (compound.b(value.nbtName)) {
-                            info.add("  " + value.color.toString() + value.displayName + "§r " + LocaleI18n.a(
-                                    "enchantment.level." + compound.e(value.nbtName)));
+                            info.add("  " + value.color.toString() + value.displayName + "§r " + StringUtil.intToRoman(compound.e(value.nbtName)));
                         }
                     }
                 }

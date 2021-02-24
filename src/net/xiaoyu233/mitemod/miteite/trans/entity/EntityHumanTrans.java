@@ -438,7 +438,7 @@ public abstract class EntityHumanTrans extends EntityLiving implements ICommandL
             double factor = MITEITEMod.CONFIG.get(STEPPED_MOB_DAMAGE_FACTOR);
             if (factor != 0){
                 Entity responsibleEntity = damage.getSource().getResponsibleEntity();
-                if (responsibleEntity != null){
+                if (responsibleEntity != null && !(responsibleEntity instanceof EntityEnderDragon)){
                     if (this.attackCountMap.containsKey(responsibleEntity)) {
                         this.attackCountMap.put(responsibleEntity, this.attackCountMap.get(responsibleEntity) + 1);
                         damage.scaleAmount(1 + this.attackCountMap.get(responsibleEntity) * (float)factor);
@@ -448,11 +448,13 @@ public abstract class EntityHumanTrans extends EntityLiving implements ICommandL
                 }
             }
             EntityDamageResult entityDamageResult = super.attackEntityFrom(damage);
-            if (this.emergencyCooldown <= 0 && (this.getHealthFraction() <= 0.3 ) && !entityDamageResult.entityWasDestroyed()){
-                for (ItemStack wornItem : this.getWornItems()) {
-                    if (wornItem != null && wornItem.hasEnchantment(Enchantments.EMERGENCY,false)){
-                        this.activeEmergency();
-                        break;
+            if (entityDamageResult != null) {
+                if (this.emergencyCooldown <= 0 && (this.getHealthFraction() <= 0.3 ) && !entityDamageResult.entityWasDestroyed()){
+                    for (ItemStack wornItem : this.getWornItems()) {
+                        if (wornItem != null && wornItem.hasEnchantment(Enchantments.EMERGENCY,false)){
+                            this.activeEmergency();
+                            break;
+                        }
                     }
                 }
             }

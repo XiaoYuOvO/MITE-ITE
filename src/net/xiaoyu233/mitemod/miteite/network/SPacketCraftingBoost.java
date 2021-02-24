@@ -11,7 +11,6 @@ public class SPacketCraftingBoost extends Packet {
     private float factor;
     public SPacketCraftingBoost(){}
     public SPacketCraftingBoost(float factor){
-        System.out.println(factor);
         this.factor = factor;
     }
     @Override

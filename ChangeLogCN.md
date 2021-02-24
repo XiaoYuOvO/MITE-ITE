@@ -1,4 +1,4 @@
-哦[English](https://github.com/XiaoYuOvO/MITE-ITE/blob/master/ChangeLogEN.md) \
+[English](https://github.com/XiaoYuOvO/MITE-ITE/blob/master/ChangeLogEN.md) \
 **_注:本更新日志中斜体加粗的地方全都可以通过配置文件修改,本次更新日志里面的都是默认值,如:192,\
 后方大括号括起来的是对应的配置文件里的属性名,\
 再后面方括号里的是类型_**

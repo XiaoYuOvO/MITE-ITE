@@ -2,187 +2,183 @@ package net.xiaoyu233.mitemod.miteite.trans.entity;
 
 import net.minecraft.*;
 import net.minecraft.server.MinecraftServer;
-import net.xiaoyu233.fml.asm.annotations.Link;
-import net.xiaoyu233.fml.asm.annotations.Marker;
-import net.xiaoyu233.fml.asm.annotations.Transform;
+import net.xiaoyu233.fml.util.ReflectHelper;
 import net.xiaoyu233.mitemod.miteite.inventory.container.ContainerChestMinecart;
 import net.xiaoyu233.mitemod.miteite.inventory.container.ContainerForgingTable;
 import net.xiaoyu233.mitemod.miteite.inventory.container.ForgingTableSlots;
-import net.xiaoyu233.mitemod.miteite.trans.network.PacketOpenWindowTrans;
+import org.spongepowered.asm.mixin.Final;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Overwrite;
+import org.spongepowered.asm.mixin.Shadow;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 
-import static net.xiaoyu233.fml.util.ReflectHelper.dyCast;
+@Mixin(ServerPlayer.class)
+public abstract class ServerPlayerTrans extends EntityPlayer implements ICrafting {
+   @Shadow
+   @Final
+   public List destroyedItemsNetCache;
+   @Shadow
+   @Final
+   public List loadedChunks;
+   @Shadow
+   public double managedPosX;
+   @Shadow
+   public double managedPosZ;
+   @Shadow
+   public MinecraftServer mcServer;
+   @Shadow
+   public PlayerConnection playerNetServerHandler;
+   @Shadow
+   public PlayerInteractManager theItemInWorldManager;
+   @Shadow
+   private int currentWindowId;
+   @Shadow
+   private float field_130068_bO;
+   @Shadow
+   private float lastHealth;
+   @Shadow
+   private int last_experience;
+   @Shadow
+   private int last_nutrition;
+   private int last_phytonutrients;
+   private int last_protein;
+   @Shadow
+   private int last_satiation;
+   @Shadow
+   private int phytonutrients;
+   @Shadow
+   private int protein;
+   public ServerPlayerTrans(World par1World, String par2Str) {
+      super(par1World, par2Str);
+   }
 
-@Transform(EntityPlayer.class)
-public class ServerPlayerTrans extends EntityHuman implements ICrafting{
-    @Link
-    private String bN ;
-    @Link
-    public PlayerConnection a;
-    @Link
-    public MinecraftServer b;
-    @Link
-    public PlayerInteractManager c;
-    @Link
-    public double d;
-    @Link
-    public double e;
-    @Link
-    public  List f;
-    @Link
-    public  List g ;
-    @Link
-    private float bO ;
-    @Link
-    private float bP ;
-    @Link
-    private int last_satiation ;
-    @Link
-    private int last_nutrition ;
-    @Link
-    private int protein;
-    @Link
-    private int phytonutrients;
-    @Link
-    private int last_experience ;
-    @Link
-    private int bT;
-    @Link
-    public boolean h;
-    @Link
-    public int i;
-    @Link
-    public boolean j;
-    private int last_phytonutrients,last_protein;
-    @Link
-    private int bY;
-    @Marker
-    public ServerPlayerTrans(World par1World, String par2Str) {
-        super(par1World, par2Str);
-    }
+   @Override
+   @Shadow
+   public boolean canCommandSenderUseCommand(int i, String s) {
+      return false;
+   }
 
-    @Override
-    @Marker
-    public void a(ChatMessage chatMessage) {
+   public void displayGUIChestForMinecartEntity(EntityMinecartChest par1IInventory) {
+      if (this.openContainer != this.inventoryContainer) {
+         this.closeScreen();
+      }
 
-    }
+      this.getNextWindowId();
+      this.playerNetServerHandler.sendPacket(new Packet100OpenWindow(this.currentWindowId, 12, par1IInventory.getCustomNameOrUnlocalized(), par1IInventory.getSizeInventory(), par1IInventory.hasCustomName()));
+      this.openContainer = new ContainerChestMinecart(this, par1IInventory);
+      this.openContainer.windowId = this.currentWindowId;
+//      this.openContainer.a(this);
+      this.openContainer.onCraftGuiOpened(this);
+   }
 
-    @Override
-    @Marker
-    public boolean a(int i, String s) {
-        return false;
-    }
+   public void displayGUIForgingTable(int x, int y, int z, ForgingTableSlots slots) {
+      this.getNextWindowId();
+      TileEntity tile_entity = this.worldObj.getBlockTileEntity(x, y, z);
+      this.playerNetServerHandler.sendPacket((new Packet100OpenWindow(this.currentWindowId, 14, tile_entity.getCustomInvName(), 9, tile_entity.hasCustomName())).setCoords(x, y, z));
+      this.openContainer = new ContainerForgingTable(slots, this, x, y, z);
+      this.openContainer.windowId = this.currentWindowId;
+      ReflectHelper.dyCast(ServerPlayer.class, this).updateCraftingInventory(this.openContainer, ((ContainerForgingTable)this.openContainer).getInventory());
+//      this.openContainer.a(this);
+      this.openContainer.onCraftGuiOpened(this);
+   }
 
-    @Override
-    @Marker
-    public void a(Container container, List list) {
+   @Override
+   @Shadow
+   public ChunkCoordinates getCommandSenderPosition() {
+      return null;
+   }
 
-    }
+   @Shadow
+   public INetworkManager getNetManager() {
+      return null;
+   }
 
-    @Marker
-    @Override
-    public void a(Container container, int i, ItemStack itemStack) {
+   @Shadow protected abstract void getNextWindowId();
 
-    }
+   @Shadow public abstract int getPhytonutrients();
 
-    @Override
-    @Marker
-    public void a(Container container, int i, int i1) {
+   @Shadow public abstract int getProtein();
 
-    }
+   @Overwrite
+   public void onUpdateEntity() {
+      try {
+         super.onUpdate();
 
-    @Override
-    @Marker
-    public ChunkCoordinates b() {
-        return null;
-    }
-
-    @Override
-    @Marker
-    public INetworkManager getNetManager() {
-        return null;
-    }
-
-    public void h() {
-        try {
-            super.l_();
-
-            for(int var1 = 0; var1 < this.bn.j_(); ++var1) {
-                ItemStack var6 = this.bn.a(var1);
-                if (var6 != null && Item.g[var6.d].f() && this.a.f() <= 5) {
-                    Packet var8 = ((ItemWorldMapBase)Item.g[var6.d]).c(var6, this.q, this);
-                    if (var8 != null) {
-                        this.a.b(var8);
-                    }
-                }
+         for(int var1 = 0; var1 < this.inventory.getSizeInventory(); ++var1) {
+            ItemStack var6 = this.inventory.getStackInSlot(var1);
+            if (var6 != null && Item.itemsList[var6.itemID].isMap() && this.playerNetServerHandler.getNumChunkDataPackets() <= 5) {
+               Packet var8 = ((ItemWorldMapBase)Item.itemsList[var6.itemID]).getUpdatePacket(var6, this.worldObj, this);
+               if (var8 != null) {
+                  this.playerNetServerHandler.sendPacket(var8);
+               }
             }
+         }
 
-            float health = this.aN();
-            int satiation = this.getSatiation();
-            int nutrition = this.getNutrition();
-            float hunger = this.bq.getHunger();
-            if (health != this.bP || satiation != this.last_satiation || nutrition != this.last_nutrition || this.vision_dimming > 0.0F || this.last_protein != this.protein || this.last_phytonutrients != this.phytonutrients) {
-                this.a.b(new Packet8UpdateHealth(health, satiation, nutrition,this.protein,this.phytonutrients, this.vision_dimming));
-                this.bP = health;
-                this.last_satiation = satiation;
-                this.last_nutrition = nutrition;
-                this.last_phytonutrients = phytonutrients;
-                this.last_protein = protein;
-                this.vision_dimming = 0.0F;
+         float health = this.getHealth();
+         int satiation = this.getSatiation();
+         int nutrition = this.getNutrition();
+         float hunger = this.foodStats.getHunger();
+         if (health != this.lastHealth || satiation != this.last_satiation || nutrition != this.last_nutrition || this.vision_dimming > 0.0F || this.phytonutrients != this.last_phytonutrients || this.protein != this.last_protein) {
+            Packet8UpdateHealth par1Packet = new Packet8UpdateHealth(health, satiation, nutrition, this.vision_dimming
+                    //TODO
+//                    ,protein,phytonutrients
+            );
+            par1Packet.setPhytonutrients(this.phytonutrients);
+            par1Packet.setProtein(this.protein);
+            this.playerNetServerHandler.sendPacket(par1Packet);
+            this.lastHealth = health;
+            this.last_satiation = satiation;
+            this.last_nutrition = nutrition;
+            this.vision_dimming = 0.0F;
+            this.last_phytonutrients = phytonutrients;
+            this.last_protein = protein;
+         }
+
+         if (this.getHealth() + this.getAbsorptionAmount() != this.field_130068_bO) {
+            this.field_130068_bO = this.getHealth() + this.getAbsorptionAmount();
+            Collection var5 = this.getWorldScoreboard().func_96520_a(IScoreboardCriteria.health);
+
+            for (Object o : var5) {
+               ScoreboardObjective var9 = (ScoreboardObjective) o;
+               this.getWorldScoreboard().func_96529_a(this.getEntityName(), var9).func_96651_a(Arrays.asList(this));
             }
+         }
 
-            if (this.aN() + this.bn() != this.bO) {
-                this.bO = this.aN() + this.bn();
-                Collection var5 = this.bM().a(IScoreboardCriteria.f);
-                Iterator var7 = var5.iterator();
+         if (this.experience != this.last_experience) {
+            this.last_experience = this.experience;
+            this.playerNetServerHandler.sendPacket(new Packet43SetExperience(this.experience));
+         }
 
-                while(var7.hasNext()) {
-                    ScoreboardObjective var9 = (ScoreboardObjective)var7.next();
-                    this.bM().a(this.an(), var9).a(Arrays.asList(this));
-                }
-            }
+      } catch (Throwable var8) {
+         CrashReport var2 = CrashReport.makeCrashReport(var8, "Ticking player");
+         CrashReportSystemDetails var3 = var2.makeCategory("Player being ticked");
+         this.addEntityCrashInfo(var3);
+         throw new ReportedException(var2);
+      }
+   }
 
-            if (this.bJ != this.last_experience) {
-                this.last_experience = this.bJ;
-                this.a.b(new Packet43SetExperience(this.bJ));
-            }
+   @Shadow
+   public void sendChatToPlayer(ChatMessage chatMessage) {
+   }
 
-        } catch (Throwable var8) {
-            CrashReport var2 = CrashReport.a(var8, "Ticking player");
-            CrashReportSystemDetails var3 = var2.a("Player being ticked");
-            this.a(var3);
-            throw new ReportedException(var2);
-        }
-    }
+   @Override
+   @Shadow
+   public void sendProgressBarUpdate(Container container, int i, int i1) {
 
-    @Marker
-    private void bN() {}
+   }
 
-    public void displayGUIForgingTable(int x, int y, int z, ForgingTableSlots slots){
-        this.bN();
-        TileEntity tile_entity = this.q.r(x, y, z);
-        this.a.b((new Packet100OpenWindow(this.bY, PacketOpenWindowTrans.TYPE_FORGING_TABLE, tile_entity.getCustomInvName(), 9, tile_entity.hasCustomName())).setCoords(x, y, z));
-        this.bp = new ContainerForgingTable(slots,this, x, y, z);
-        this.bp.d = this.bY;
-        (dyCast(EntityPlayer.class,this)).a(this.bp, ((ContainerForgingTable) this.bp).getInventory());
-        this.bp.a((EntityHuman) (this));
-        this.bp.a((ICrafting) (this));
-    }
+   @Override
+   @Shadow
+   public void sendSlotContents(Container container, int i, ItemStack itemStack) {
 
-    public void displayGUIChestForMinecartEntity(EntityMinecartChest par1IInventory) {
-        if (this.bp != this.bo) {
-            this.i();
-        }
+   }
 
-        this.bN();
-        this.a.b(new Packet100OpenWindow(this.bY, 12, par1IInventory.getCustomNameOrUnlocalized(), par1IInventory.j_(), par1IInventory.hasCustomName()));
-        this.bp = new ContainerChestMinecart(this, par1IInventory);
-        this.bp.d = this.bY;
-        this.bp.a((EntityHuman)(this));
-        this.bp.a((ICrafting) (this));
-    }
+   @Override
+   @Shadow
+   public void updateCraftingInventory(Container container, List list) {
+
+   }
 }

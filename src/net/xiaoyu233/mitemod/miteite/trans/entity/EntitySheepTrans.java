@@ -1,36 +1,19 @@
 package net.xiaoyu233.mitemod.miteite.trans.entity;
 
-import net.minecraft.EntityAgeable;
-import net.minecraft.EntityLivestock;
 import net.minecraft.EntitySheep;
 import net.minecraft.World;
-import net.xiaoyu233.fml.asm.annotations.Marker;
-import net.xiaoyu233.fml.asm.annotations.Transform;
-import net.xiaoyu233.mitemod.miteite.MITEITEMod;
-import net.xiaoyu233.mitemod.miteite.util.Config;
+import net.xiaoyu233.mitemod.miteite.util.Configs;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.SoftOverride;
 
-@Transform(EntitySheep.class)
-public class EntitySheepTrans extends EntityLivestock {
+@Mixin(EntitySheep.class)
+public abstract class EntitySheepTrans extends EntityLivestockTrans {
+   public EntitySheepTrans(World world) {
+      super(world);
+   }
 
-    @Marker
-    public EntitySheepTrans(World world) {
-        super(world);
-    }
-
-    @Override
-    public int getBreedExp() {
-        return MITEITEMod.CONFIG.get(Config.ConfigEntry.BREED_XP_SHEEP);
-    }
-
-    @Marker
-    @Override
-    public EntityAgeable a(EntityAgeable var1) {
-        return null;
-    }
-
-    @Marker
-    @Override
-    public void produceGoods() {
-
-    }
+   @SoftOverride
+   public int getBreedExp() {
+      return Configs.Entities.Animals.BREED_XP_SHEEP.get();
+   }
 }

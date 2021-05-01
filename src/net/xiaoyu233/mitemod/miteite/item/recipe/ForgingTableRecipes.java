@@ -28,7 +28,7 @@ public class ForgingTableRecipes {
                 setHammerDurabilityCost(2048).
                 setTimeReq(1200).
                 setFaultFeedback(DurabilityFeedback.of(DurabilityFeedback.Type.ofPercentage(10))).
-                addMaterials(new ItemStack(Items.br,1),
+                addMaterials(new ItemStack(Items.ghastTear,1),
                         new ItemStack(Items.ingotMithril,1),
                         new ItemStack(Items.ENHANCE_STONE,1)).
                 build(regiseterer);
@@ -38,7 +38,7 @@ public class ForgingTableRecipes {
                 setHammerDurabilityCost(3072).
                 setTimeReq(1800).
                 setFaultFeedback(DurabilityFeedback.of(DurabilityFeedback.Type.ofPercentage(15))).
-                addMaterials(new ItemStack(Items.br,2),
+                addMaterials(new ItemStack(Items.ghastTear,2),
                         new ItemStack(Items.ingotMithril,1),
                         new ItemStack(Items.ENHANCE_STONE,1)).
                 build(regiseterer);
@@ -48,7 +48,7 @@ public class ForgingTableRecipes {
                 setHammerDurabilityCost(3072).
                 setTimeReq(2400).
                 setFaultFeedback(DurabilityFeedback.of(DurabilityFeedback.Type.ofPercentage(20))).
-                addMaterials(new ItemStack(Items.br,2),
+                addMaterials(new ItemStack(Items.ghastTear,2),
                         new ItemStack(Items.ingotMithril,2),
                         new ItemStack(Items.ENHANCE_STONE,1)).
                 build(regiseterer);
@@ -58,7 +58,7 @@ public class ForgingTableRecipes {
                 setHammerDurabilityCost(4096).
                 setTimeReq(3000).
                 setFaultFeedback(DurabilityFeedback.of(DurabilityFeedback.Type.ofPercentage(20))).
-                addMaterials(new ItemStack(Items.br,2),
+                addMaterials(new ItemStack(Items.ghastTear,2),
                         new ItemStack(Items.ingotMithril,2),
                         new ItemStack(Items.ENHANCE_STONE,2)).
                 build(regiseterer);
@@ -68,7 +68,7 @@ public class ForgingTableRecipes {
                 setHammerDurabilityCost(4096).
                 setTimeReq(3600).
                 setFaultFeedback(DowngradeFeedback.of(1)).
-                addMaterials(new ItemStack(Items.br,2),
+                addMaterials(new ItemStack(Items.ghastTear,2),
                         new ItemStack(Items.ingotAdamantium,2),
                         new ItemStack(Items.ENHANCE_STONE,2)).
                 build(regiseterer);
@@ -78,7 +78,7 @@ public class ForgingTableRecipes {
                 setHammerDurabilityCost(6144).
                 setTimeReq(4800).
                 setFaultFeedback(DowngradeFeedback.of(1)).
-                addMaterials(new ItemStack(Items.br,1),
+                addMaterials(new ItemStack(Items.ghastTear,1),
                         new ItemStack(Items.ingotAdamantium,2),
                         new ItemStack(Items.ENHANCE_STONE,2)).
                 build(regiseterer);
@@ -88,10 +88,10 @@ public class ForgingTableRecipes {
                 setHammerDurabilityCost(6144).
                 setTimeReq(5400).
                 setFaultFeedback(DowngradeFeedback.of(2)).
-                addMaterials(new ItemStack(Items.br,2),
+                addMaterials(new ItemStack(Items.ghastTear,2),
                         new ItemStack(Items.ingotAdamantium,2),
                         new ItemStack(Items.ENHANCE_STONE,2),
-                        new ItemStack(Items.bp,8)).
+                        new ItemStack(Items.enderPearl,8)).
                 build(regiseterer);
         ForgingRecipe.Builder.of(Materials.vibranium,7).
                 setChanceOfFailure(70).
@@ -99,22 +99,11 @@ public class ForgingTableRecipes {
                 setHammerDurabilityCost(8192).
                 setTimeReq(6000).
                 setFaultFeedback(DowngradeFeedback.of(2)).
-                addMaterials(new ItemStack(Items.br,2),
+                addMaterials(new ItemStack(Items.ghastTear,2),
                         new ItemStack(Items.ingotAdamantium,4),
                         new ItemStack(Items.ENHANCE_STONE,2),
-                        new ItemStack(Items.bC,8),
-                        new ItemStack(Items.bS,1,1)).
-                build(regiseterer);
-        ForgingRecipe.Builder.of(Materials.vibranium,7).
-                setChanceOfFailure(70).
-                setAxeDurabilityCost(8192).
-                setHammerDurabilityCost(8192).
-                setTimeReq(6000).
-                setFaultFeedback(DowngradeFeedback.of(2)).
-                addMaterials(new ItemStack(Items.br,2),
-                        new ItemStack(Items.ingotAdamantium,2),
-                        new ItemStack(Items.ENHANCE_STONE,2),
-                        new ItemStack(Items.bS,2,2)).
+                        new ItemStack(Items.eyeOfEnder,8),
+                        new ItemStack(Items.skull,1,1)).
                 build(regiseterer);
         ForgingRecipe.Builder.of(Materials.vibranium,8).
                 setChanceOfFailure(80).
@@ -122,10 +111,10 @@ public class ForgingTableRecipes {
                 setHammerDurabilityCost(10240).
                 setTimeReq(6600).
                 setFaultFeedback(DowngradeFeedback.of(3)).
-                addMaterials(new ItemStack(Items.br,4),
+                addMaterials(new ItemStack(Items.ghastTear,4),
                         new ItemStack(Items.ingotAdamantium,2),
                         new ItemStack(Items.ENHANCE_STONE,2),
-                        new ItemStack(Items.bS,2,0)).
+                        new ItemStack(Items.skull,2,0)).
                 build(regiseterer);
         ForgingRecipe.Builder.of(Materials.vibranium,9).
                 setChanceOfFailure(90).
@@ -133,10 +122,10 @@ public class ForgingTableRecipes {
                 setHammerDurabilityCost(10240).
                 setTimeReq(7200).
                 setFaultFeedback(DowngradeFeedback.of(4)).
-                addMaterials(new ItemStack(Items.br,4),
+                addMaterials(new ItemStack(Items.ghastTear,4),
                         new ItemStack(Items.ingotAdamantium,2),
                         new ItemStack(Items.ENHANCE_STONE,2),
-                        new ItemStack(Items.bS,4,4),
+                        new ItemStack(Items.skull,4,4),
                         new ItemStack(Items.BLAZE_COAL,2)).
                 build(regiseterer);
     }

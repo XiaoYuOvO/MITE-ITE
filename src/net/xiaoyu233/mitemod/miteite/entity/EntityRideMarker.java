@@ -8,17 +8,19 @@ import net.minecraft.World;
 public class EntityRideMarker extends EntityInsentient implements IAnimal {
     public EntityRideMarker(World par1World) {
         super(par1World);
-        this.a(0.0f,0.0f);
+        this.setSize(0.0f,0.0f);
     }
 
     @Override
-    public void l_() {
-        if (this.n == null){
-            this.x();
+    public void onUpdate() {
+        if (this.riddenByEntity == null) {
+            this.setDead();
         }
-        if (!(super.q.getBlock(super.getBlockPosX(),super.getBlockPosY(),super.getBlockPosZ()) instanceof BlockStairs)){
-            this.x();
+
+        if (!(super.worldObj.getBlock(super.getBlockPosX(), super.getBlockPosY(), super.getBlockPosZ()) instanceof BlockStairs)) {
+            this.setDead();
         }
+
     }
 
     @Override

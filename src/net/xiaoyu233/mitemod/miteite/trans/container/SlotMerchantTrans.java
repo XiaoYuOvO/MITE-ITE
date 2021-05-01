@@ -1,47 +1,49 @@
 package net.xiaoyu233.mitemod.miteite.trans.container;
 
 import net.minecraft.*;
-import net.xiaoyu233.fml.asm.annotations.Link;
-import net.xiaoyu233.fml.asm.annotations.Marker;
-import net.xiaoyu233.fml.asm.annotations.Transform;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Overwrite;
+import org.spongepowered.asm.mixin.Shadow;
 
-@Transform(wa.class)
+@Mixin(wa.class)
 public class SlotMerchantTrans extends Slot {
-    @Link
-    private InventoryMerchant a;
-    @Link
-    private IMerchant d;
-    @Marker
-    public SlotMerchantTrans(IInventory inventory, int slot_index, int display_x, int display_y) {
-        super(inventory, slot_index, display_x, display_y);
-    }
+   @Shadow
+   private IMerchant theMerchant;
+   @Shadow
+   private InventoryMerchant theMerchantInventory;
 
-    public void a(EntityHuman par1EntityPlayer, ItemStack par2ItemStack) {
-        if (!par1EntityPlayer.q.I){
+   public SlotMerchantTrans(IInventory inventory, int slot_index, int display_x, int display_y) {
+      super(inventory, slot_index, display_x, display_y);
+   }
 
-            this.b(par2ItemStack);
-            MerchantRecipe var3 = this.a.i();
-            if (var3 != null) {
-                ItemStack var4 = this.a.a(0);
-                ItemStack var5 = this.a.a(1);
-                if (this.a(var3, var4, var5) || this.a(var3, var5, var4)) {
-                    this.d.a(var3);
-                    if (var4 != null && var4.b <= 0) {
-                        var4 = null;
-                    }
+   @Shadow
+   private boolean func_75230_a(MerchantRecipe par1MerchantRecipe, ItemStack par2ItemStack, ItemStack par3ItemStack) {
+      return false;
+   }
 
-                    if (var5 != null && var5.b <= 0) {
-                        var5 = null;
-                    }
+   @Overwrite
+   public void onPickupFromSlot(EntityPlayer par1EntityPlayer, ItemStack par2ItemStack) {
+      if (!par1EntityPlayer.worldObj.isRemote) {
+         this.onCrafting(par2ItemStack);
+         MerchantRecipe var3 = this.theMerchantInventory.getCurrentRecipe();
+         if (var3 != null) {
+            ItemStack var4 = this.theMerchantInventory.getStackInSlot(0);
+            ItemStack var5 = this.theMerchantInventory.getStackInSlot(1);
+            if (this.func_75230_a(var3, var4, var5) || this.func_75230_a(var3, var5, var4)) {
+               this.theMerchant.useRecipe(var3);
+               if (var4 != null && var4.stackSize <= 0) {
+                  var4 = null;
+               }
 
-                    this.a.a(0, var4);
-                    this.a.a(1, var5);
-                }
+               if (var5 != null && var5.stackSize <= 0) {
+                  var5 = null;
+               }
+
+               this.theMerchantInventory.setInventorySlotContents(0, var4);
+               this.theMerchantInventory.setInventorySlotContents(1, var5);
             }
-        }
-    }
-    @Marker
-    private boolean a(MerchantRecipe par1MerchantRecipe, ItemStack par2ItemStack, ItemStack par3ItemStack) {
-        return false;
-    }
+         }
+      }
+
+   }
 }

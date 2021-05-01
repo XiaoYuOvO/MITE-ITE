@@ -1,10 +1,7 @@
 package net.xiaoyu233.mitemod.miteite.item;
 
 import com.google.common.collect.Lists;
-import net.minecraft.EnumChatFormat;
-import net.minecraft.ItemStack;
-import net.minecraft.ItemTool;
-import net.minecraft.NBTTagCompound;
+import net.minecraft.*;
 import net.xiaoyu233.mitemod.miteite.util.EnumChatFormats;
 
 import javax.annotation.Nullable;
@@ -37,13 +34,13 @@ import java.util.function.Predicate;
 
 public enum  ToolModifierTypes implements ItemModifierTypes{
     //Tool Modifiers
-    EFFICIENCY_MODIFIER(0.25F,"急速",EnumChatFormat.e,10, (stack -> !ItemTool.isWeapon(stack)),10),
-    AQUADYNAMIC_MODIFIER(1.25F,"喜水",EnumChatFormats.LIGHT_YELLOW_GREEN,5, (stack -> !ItemTool.isWeapon(stack)),5),
-    DURABILITY_MODIFIER(0.1F,"耐久",EnumChatFormat.f,20,(stack -> true),10),
-    DAMAGE_MODIFIER(1.0F,"锋利", EnumChatFormat.p,10, ItemTool::isWeapon,5),
-    SLOWDOWN_MODIFIER(1.0F,"织网",EnumChatFormats.LIGHT_BLUE,5, ItemTool::isWeapon,5),
-    UNNATURAL_MODIFIER(0.1f,"超自然",EnumChatFormat.LIGHT_GRAY,2, itemStack -> !ItemTool.isWeapon(itemStack),5),
-    BEHEADING_MODIFIER(0.02f,"斩首",EnumChatFormats.DEAR_GREEN,1, ItemTool::isWeapon, 5);
+    EFFICIENCY_MODIFIER(0.25F,"急速",EnumChatFormat.DARK_RED,10, (stack -> !ToolModifierTypes.isWeapon(stack)),10),
+    AQUADYNAMIC_MODIFIER(1.25F,"喜水",EnumChatFormats.LIGHT_YELLOW_GREEN,5, (stack -> !ToolModifierTypes.isWeapon(stack)),5),
+    DURABILITY_MODIFIER(0.1F,"耐久",EnumChatFormat.DARK_PURPLE,20,(stack -> true),10),
+    DAMAGE_MODIFIER(1.0F,"锋利", EnumChatFormat.WHITE,10, (ToolModifierTypes::isWeapon),5),
+    SLOWDOWN_MODIFIER(1.0F,"织网",EnumChatFormats.LIGHT_BLUE,5, ToolModifierTypes::isWeapon,5),
+    UNNATURAL_MODIFIER(0.1f,"超自然",EnumChatFormat.LIGHT_GRAY,2, itemStack -> !ToolModifierTypes.isWeapon(itemStack),5),
+    BEHEADING_MODIFIER(0.02f,"斩首",EnumChatFormats.DEAR_GREEN,1, ToolModifierTypes::isWeapon, 5);
     public final String nbtName;
     public final float levelAddition;
     public final String displayName;
@@ -59,6 +56,20 @@ public enum  ToolModifierTypes implements ItemModifierTypes{
         this.weight = weight;
         this.canApplyTo = canApplyTo;
         this.maxLevel = maxLevel;
+    }
+
+    private static ArrayList<ToolModifierTypes> getAllCanBeApplied(ItemStack stack) {
+        ArrayList<ToolModifierTypes> toolModifierTypes = Lists.newArrayList(values());
+        toolModifierTypes.removeIf((modifierType) -> {
+            return !modifierType.canApplyTo.test(stack);
+        });
+        if (stack.stackTagCompound != null) {
+            toolModifierTypes.removeIf((toolModifierTypes1) -> {
+                return toolModifierTypes1.getModifierLevel(stack.stackTagCompound) >= toolModifierTypes1.maxLevel;
+            });
+        }
+
+        return toolModifierTypes;
     }
 
     @Nullable
@@ -83,13 +94,9 @@ public enum  ToolModifierTypes implements ItemModifierTypes{
         return null;
     }
 
-    private static ArrayList<ToolModifierTypes> getAllCanBeApplied(ItemStack stack){
-        ArrayList<ToolModifierTypes> toolModifierTypes  = Lists.newArrayList(ToolModifierTypes.values());
-        toolModifierTypes.removeIf(modifierType -> !modifierType.canApplyTo.test(stack));
-        if (stack.e != null) {
-            toolModifierTypes.removeIf(toolModifierTypes1 -> toolModifierTypes1.getModifierLevel(stack.e) >= toolModifierTypes1.maxLevel);
-        }
-        return toolModifierTypes;
+    public static boolean isWeapon(ItemStack stack) {
+        Item item = stack.getItem();
+        return item instanceof ItemSword || item instanceof ItemBattleAxe || item instanceof ItemWarHammer;
     }
 
     @Override
@@ -98,14 +105,15 @@ public enum  ToolModifierTypes implements ItemModifierTypes{
     }
 
     @Override
-    public int getModifierLevel(NBTTagCompound itemTag){
+    public int getModifierLevel(NBTTagCompound itemTag) {
         int lvl = 0;
-        if (itemTag != null && itemTag.b("modifiers")) {
-            NBTTagCompound modifiers = itemTag.l("modifiers");
-            if (modifiers.b(this.nbtName)) {
-                lvl = modifiers.e(this.nbtName);
+        if (itemTag != null && itemTag.hasKey("modifiers")) {
+            NBTTagCompound modifiers = itemTag.getCompoundTag("modifiers");
+            if (modifiers.hasKey(this.nbtName)) {
+                lvl = modifiers.getInteger(this.nbtName);
             }
         }
+
         return lvl;
     }
 

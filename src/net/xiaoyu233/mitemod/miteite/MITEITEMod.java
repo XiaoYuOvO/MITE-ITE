@@ -2,24 +2,31 @@ package net.xiaoyu233.mitemod.miteite;
 
 import net.xiaoyu233.fml.AbstractMod;
 import net.xiaoyu233.fml.FishModLoader;
-import net.xiaoyu233.fml.asm.annotations.Mod;
+import net.xiaoyu233.fml.classloading.Mod;
+import net.xiaoyu233.fml.config.InjectionConfig;
 import net.xiaoyu233.fml.util.ModInfo;
 import net.xiaoyu233.mitemod.miteite.events.EventListeners;
-import net.xiaoyu233.mitemod.miteite.util.Config;
+import net.xiaoyu233.mitemod.miteite.trans.MinecraftTrans;
+import net.xiaoyu233.mitemod.miteite.util.Configs;
 import net.xiaoyu233.mitemod.miteite.util.Constant;
+import org.spongepowered.asm.mixin.MixinEnvironment;
 
+import javax.annotation.Nonnull;
 import javax.swing.*;
-import java.io.File;
 
 @Mod
 public class MITEITEMod extends AbstractMod {
-    private static final String MOD_LOADER_MIN_VER_STRING = "B0.1.4";
-    private static final int MOD_LOADER_MIN_VER_NUM = 5;
-    private static final File CFG_FILE = new File(System.getProperty("user.dir"),"mite-ite-cfg.json");
-    public static Config CONFIG;
+    private static final int MOD_LOADER_MIN_VER_NUM = 100;
+    private static final String MOD_LOADER_MIN_VER_STRING = "v1.0.0";
     @Override
     public void preInit() {
 
+    }
+
+    @Nonnull
+    @Override
+    public InjectionConfig getInjectionConfig() {
+        return InjectionConfig.Builder.of("MITE-ITE", MinecraftTrans.class.getPackage(), MixinEnvironment.Phase.INIT).setRequired().build();
     }
 
     @Override
@@ -33,14 +40,7 @@ public class MITEITEMod extends AbstractMod {
             System.exit(1);
         }
         EventListeners.registerAllEvents();
-        if (!CFG_FILE.exists()) {
-            MITEITEMod.CONFIG = new Config(CFG_FILE);
-            MITEITEMod.CONFIG.saveDefault();
-            MITEITEMod.CONFIG.load();
-        }else {
-            MITEITEMod.CONFIG = new Config(CFG_FILE);
-            MITEITEMod.CONFIG.load();
-        }
+        Configs.loadConfigs();
     }
 
     @Override
@@ -56,10 +56,5 @@ public class MITEITEMod extends AbstractMod {
     @Override
     public String modVerStr() {
         return Constant.MITE_ITE_VERSION;
-    }
-
-    @Override
-    public String transformPkg() {
-        return "net.xiaoyu233.mitemod.miteite.trans";
     }
 }

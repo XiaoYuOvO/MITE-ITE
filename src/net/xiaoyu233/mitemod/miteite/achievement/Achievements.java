@@ -14,10 +14,10 @@ public class Achievements {
     public static Achievement vibraniumFurnace;
     public static void registerAchievements(){
         vibraniumIngot = new Achievement(getNextAchievementID(),"vibraniumIngot",-2,17, Items.VIBRANIUM_INGOT,
-                AchievementList.adamantiumIngot).c();
-        wearAllVibraniumPlateArmor = new Achievement(getNextAchievementID(),"vibraniumArmor",12,1,Items.VIBRANIUM_CHESTPLATE,AchievementList.wearAllAdamantiumPlateArmor).b().c();
-        vibraniumAnvil = new Achievement(getNextAchievementID(),"vibraniumAnvil",0,17, Blocks.anvilVibranium,vibraniumIngot).b().c();
-        vibraniumFurnace = new Achievement(getNextAchievementID(),"vibraniumFurnace",-4,17,Blocks.furnaceVibraniumIdle,vibraniumIngot).b().c();
+                AchievementList.adamantiumIngot).registerAchievement();
+        wearAllVibraniumPlateArmor = new Achievement(getNextAchievementID(),"vibraniumArmor",12,1,Items.VIBRANIUM_CHESTPLATE,AchievementList.wearAllAdamantiumPlateArmor).setSpecial().registerAchievement();
+        vibraniumAnvil = new Achievement(getNextAchievementID(),"vibraniumAnvil",0,17, Blocks.anvilVibranium,vibraniumIngot).setSpecial().registerAchievement();
+        vibraniumFurnace = new Achievement(getNextAchievementID(),"vibraniumFurnace",-4,17,Blocks.furnaceVibraniumIdle,vibraniumIngot).setSpecial().registerAchievement();
     }
     private static int getNextAchievementID(){
         return Constant.nextAchievementID++;

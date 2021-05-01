@@ -1,45 +1,50 @@
 package net.xiaoyu233.mitemod.miteite.trans.entity;
 
 import net.minecraft.*;
-import net.xiaoyu233.fml.asm.annotations.Marker;
-import net.xiaoyu233.fml.asm.annotations.Transform;
+import net.xiaoyu233.mitemod.miteite.util.MonsterUtil;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Overwrite;
+import org.spongepowered.asm.mixin.Shadow;
 
-@Transform(EntityLongdead.class)
+@Mixin(EntityLongdead.class)
 public class EntityLongdeadTrans extends EntitySkeleton {
-    @Marker
-    public EntityLongdeadTrans(World par1World) {
-        super(par1World);
-    }
+   public EntityLongdeadTrans(World par1World) {
+      super(par1World);
+   }
 
-    protected void az() {
-        super.az();
-        this.setEntityAttribute(GenericAttributes.b, 40.0D);
-        this.setEntityAttribute(GenericAttributes.a, this.isGuardian() ? 26.0D : 14.0D);
-        this.setEntityAttribute(GenericAttributes.d, 0.29F);
-        this.setEntityAttribute(GenericAttributes.e, this.isGuardian() ? 10.0D : 8.0D);
-    }
+   @Overwrite
+   protected void addRandomEquipment() {
+      this.addRandomWeapon();
+      int day = this.getWorld() != null ? Math.max(this.getWorld().getDayOfWorld() - 64, 0) : 0;
+      if (day < 160) {
+         this.setBoots((new ItemStack(Item.bootsChainAncientMetal)).randomizeForMob(this, true));
+         this.setLeggings((new ItemStack(Item.legsChainAncientMetal)).randomizeForMob(this, true));
+         this.setCuirass((new ItemStack(Item.plateChainAncientMetal)).randomizeForMob(this, true));
+         this.setHelmet((new ItemStack(Item.helmetChainAncientMetal)).randomizeForMob(this, true));
+      } else {
+         MonsterUtil.addDefaultArmor(day, this, true);
+      }
 
-    protected void addRandomEquipment() {
-        this.addRandomWeapon();
-        int day = this.getWorld() != null ? Math.max(this.getWorld().getDayOfWorld() - 64,0) : 0;
-        if (day < 160) {
-            this.setBoots((new ItemStack(Item.bootsChainAncientMetal)).randomizeForMob(this, true));
-            this.setLeggings((new ItemStack(Item.legsChainAncientMetal)).randomizeForMob(this, true));
-            this.setCuirass((new ItemStack(Item.plateChainAncientMetal)).randomizeForMob(this, true));
-            this.setHelmet((new ItemStack(Item.helmetChainAncientMetal)).randomizeForMob(this, true));
-        }else{
-            EntityMonsterTrans.addDefaultArmor(day,this,true);
-        }
-    }
+   }
 
-    @Marker
-    protected boolean isGuardian() {
-        return false;
-    }
+   @Overwrite
+   protected void applyEntityAttributes() {
+      super.applyEntityAttributes();
+      this.setEntityAttribute(GenericAttributes.followRange, 40.0D);
+      this.setEntityAttribute(GenericAttributes.maxHealth, this.isGuardian() ? 26.0D : 14.0D);
+      this.setEntityAttribute(GenericAttributes.movementSpeed, 0.28999999165534973D);
+      this.setEntityAttribute(GenericAttributes.attackDamage, this.isGuardian() ? 10.0D : 8.0D);
+   }
 
-    protected void enchantEquipment(ItemStack item_stack) {
-        if (this.aD().nextFloat() <= (0.2d + this.getWorld().getDayOfWorld() / 64d / 10)) {
-            EnchantmentManager.a(this.aD(), item_stack, (int)(5.0F + (this.aD().nextInt(15 + this.getWorld().getDayOfWorld() / 48)) / 10 * (float)this.aD().nextInt(18)));
-        }
-    }
+   protected void enchantEquipment(ItemStack item_stack) {
+      if ((double)this.getRNG().nextFloat() <= 0.2D + (double)this.getWorld().getDayOfWorld() / 64.0D / 10.0D) {
+         EnchantmentManager.addRandomEnchantment(this.getRNG(), item_stack, (int)(5.0F + (float)(this.getRNG().nextInt(15 + this.getWorld().getDayOfWorld() / 48) / 10) * (float)this.getRNG().nextInt(18)));
+      }
+
+   }
+
+   @Shadow
+   protected boolean isGuardian() {
+      return false;
+   }
 }

@@ -3,73 +3,92 @@ package net.xiaoyu233.mitemod.miteite.trans.network;
 import net.minecraft.Connection;
 import net.minecraft.Packet;
 import net.minecraft.Packet8UpdateHealth;
-import net.xiaoyu233.fml.asm.annotations.Link;
-import net.xiaoyu233.fml.asm.annotations.Marker;
-import net.xiaoyu233.fml.asm.annotations.Transform;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 
-@Transform(Packet8UpdateHealth.class)
+import static net.xiaoyu233.fml.util.ReflectHelper.dyCast;
+
+@Mixin(Packet8UpdateHealth.class)
 public class SPacketUpdateHealthTrans extends Packet {
-    @Link
-    public float a;
-    @Link
-    public int satiation;
-    @Link
-    public int nutrition;
-    @Link
-    public float vision_dimming;
-    public int protein,phytonutrients;
+   @Shadow
+   public float healthMP;
+   @Shadow
+   public int nutrition;
+   public int phytonutrients;
+   public int protein;
+   @Shadow
+   public int satiation;
+   @Shadow
+   public float vision_dimming;
 
-    public SPacketUpdateHealthTrans() {
-    }
+   public SPacketUpdateHealthTrans() {
+   }
 
-    public SPacketUpdateHealthTrans(float health, int satiation, int nutrition,int protein,int phytonutrients, float vision_dimming) {
-        this.a = health;
-        this.satiation = satiation;
-        this.nutrition = nutrition;
-        this.vision_dimming = vision_dimming;
-        this.protein = protein;
-        this.phytonutrients = phytonutrients;
-    }
+   public SPacketUpdateHealthTrans(float health, int satiation, int nutrition, float vision_dimming) {
+      this.healthMP = health;
+      this.satiation = satiation;
+      this.nutrition = nutrition;
+      this.vision_dimming = vision_dimming;
+   }
 
-    public void a(DataInput par1DataInput) throws IOException {
-        this.a = par1DataInput.readFloat();
-        this.satiation = par1DataInput.readByte();
-        this.nutrition = par1DataInput.readByte();
-        this.vision_dimming = par1DataInput.readFloat();
-        this.protein = par1DataInput.readInt();
-        this.phytonutrients = par1DataInput.readInt();
-    }
+   @Shadow
+   public boolean containsSameEntityIDAs(Packet par1Packet) {
+      return true;
+   }
 
-    public void a(DataOutput par1DataOutput) throws IOException {
-        par1DataOutput.writeFloat(this.a);
-        par1DataOutput.writeByte(this.satiation);
-        par1DataOutput.writeByte(this.nutrition);
-        par1DataOutput.writeFloat(this.vision_dimming);
-        par1DataOutput.writeInt(this.protein);
-        par1DataOutput.writeInt(this.phytonutrients);
-    }
+   @Shadow
+   public int getPacketSize() {
+      return 10;
+   }
 
-    @Marker
-    public void a(Connection par1NetHandler) {
-        par1NetHandler.a(this);
-    }
+   @Inject(method = "readPacketData",
+           at = @At("RETURN"))
+   private void injectReadPacketData(DataInput par1DataInput,CallbackInfo c) throws IOException {
+      this.protein = par1DataInput.readInt();
+      this.phytonutrients = par1DataInput.readInt();
+   }
 
-    @Marker
-    public int a() {
-        return 10;
-    }
+   @Inject(method = "writePacketData",
+           at = @At("RETURN"))
+   private void injectWritePacketData(DataOutput par1DataOutput, CallbackInfo c) throws IOException {
+      par1DataOutput.writeInt(this.protein);
+      par1DataOutput.writeInt(this.phytonutrients);
+   }
 
-    @Marker
-    public boolean e() {
-        return true;
-    }
+   @Shadow
+   public boolean isRealPacket() {
+      return true;
+   }
 
-    @Marker
-    public boolean a(Packet par1Packet) {
-        return true;
-    }
+   @Shadow
+   public void processPacket(Connection par1NetHandler) {
+      par1NetHandler.handleUpdateHealth(dyCast(this));
+   }
+
+   @Override
+   @Shadow
+   public void readPacketData(DataInput dataInput) throws IOException {
+
+   }
+
+   public void setPhytonutrients(int phytonutrients) {
+      this.phytonutrients = phytonutrients;
+   }
+
+   public void setProtein(int protein) {
+      this.protein = protein;
+   }
+
+   @Override
+   @Shadow
+   public void writePacketData(DataOutput dataOutput) throws IOException {
+
+   }
 }

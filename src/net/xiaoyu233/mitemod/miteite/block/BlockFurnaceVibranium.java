@@ -12,7 +12,7 @@ public class BlockFurnaceVibranium extends BlockFurnace {
     @Override
     public void a(mt mt) {
         this.cW = mt.a("furnace/vibranium/side");
-        this.e = mt.a(this.b ? "furnace/vibranium/front_on" : "furnace/vibranium/front_off");
+        this.e = mt.a(this.isActive ? "furnace/vibranium/front_on" : "furnace/vibranium/front_off");
         this.d = mt.a("furnace/vibranium/top");
     }
 
@@ -22,12 +22,12 @@ public class BlockFurnaceVibranium extends BlockFurnace {
     }
 
     @Override
-    public int getIdleBlockID() {
-        return Blocks.furnaceVibraniumIdle.cF;
+    public int getActiveBlockID() {
+        return Blocks.furnaceVibraniumBurning.blockID;
     }
 
     @Override
-    public int getActiveBlockID() {
-        return Blocks.furnaceVibraniumBurning.cF;
+    public int getIdleBlockID() {
+        return Blocks.furnaceVibraniumIdle.blockID;
     }
 }

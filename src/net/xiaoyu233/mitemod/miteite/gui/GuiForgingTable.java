@@ -10,17 +10,17 @@ import java.util.List;
 
 public class GuiForgingTable extends awy implements ICrafting {
     private static final bjo FORGING_TABLE_TEXTURE = new bjo("textures/gui/container/forging_table.png");
-    private final String timeInfo = LocaleI18n.a("gui.forgingTable.time");
-    private final String chanceOfFailureInfo = LocaleI18n.a("gui.forgingTable.chanceOfFailure");
-    private final String hammerCostInfo = LocaleI18n.a("gui.forgingTable.hammerCost");
-    private final String axeCostInfo = LocaleI18n.a("gui.forgingTable.axeCost");
-    private final String ifFail = LocaleI18n.a("gui.forgingTable.ifFail");
+    private final String axeCostInfo = LocaleI18n.translateToLocal("gui.forgingTable.axeCost");
+    private final String chanceOfFailureInfo = LocaleI18n.translateToLocal("gui.forgingTable.chanceOfFailure");
+    private final String hammerCostInfo = LocaleI18n.translateToLocal("gui.forgingTable.hammerCost");
+    private final String ifFail = LocaleI18n.translateToLocal("gui.forgingTable.ifFail");
+    private final EntityPlayer player;
     private static final int MAX_DISPLAY_TIME = 200;
     private final int x;
     private final int y;
     private final int z;
     private final PlayerInventory inventory;
-    private final EntityHuman player;
+    private final String timeInfo = LocaleI18n.translateToLocal("gui.forgingTable.time");
     private final ContainerForgingTable forgingTable;
     private aut startButton;
     private String infoString;
@@ -30,50 +30,27 @@ public class GuiForgingTable extends awy implements ICrafting {
     private String failName;
     private int hammerCost,axeCost;
 
-    public GuiForgingTable(EntityHuman player, int x, int y, int z,ForgingTableSlots slots) {
+    public GuiForgingTable(EntityPlayer player, int x, int y, int z,ForgingTableSlots slots) {
         super(new ContainerForgingTable(slots,player,x, y, z));
         this.forgingTable = (ContainerForgingTable) super.e;
         this.x = x;
         this.y = y;
         this.z = z;
-        this.inventory = player.bn;
+        this.inventory = player.inventory;
         this.player = player;
     }
 
     @Override
-    public void a(Container container, List list) {
-
-    }
-
-    @Override
-    public void a(Container container, int i, ItemStack itemStack) {
-
-    }
-
-    @Override
-    //tick
-    public void c() {
-        super.c();
-        if (this.currentInfoTime < MAX_DISPLAY_TIME){
-            this.currentInfoTime++;
-        }else {
-            this.currentInfoTime = 0;
-            this.infoString = null;
+    //onWindowResize
+    public void A_() {
+        super.A_();
+        boolean isEnabled = true;
+        if (this.startButton != null){
+            isEnabled = this.startButton.h;
         }
-    }
-
-    @Override
-    public void a(Container container, int i, int i1) {
-        this.player.sendPacket(new Packet105CraftProgressBar(container.d, i, i1));
-    }
-
-    @Override
-    public void a(Minecraft par1Minecraft, int par2, int par3) {
-        this.f = par1Minecraft;
-        this.o = par1Minecraft.l;
-        this.g = par2;
-        this.h = par3;
-        this.A_();
+        this.i.clear();
+        this.i.add(this.startButton = new aut(0,this.g/2+3, this.h/2-32,40,20,LocaleI18n.translateToLocal("gui.forgingTable.start")));
+        this.startButton.h = isEnabled;
     }
 
     @Override
@@ -98,23 +75,45 @@ public class GuiForgingTable extends awy implements ICrafting {
             this.b(this.f.l,this.hammerCostInfo + ":" + this.hammerCost,var3,var5+20,0xffffff);
             this.b(this.f.l,this.axeCostInfo + ":" + this.axeCost,var3,var5+30,0xffffff);
             this.b(this.f.l,this.ifFail,var3,var5+40,0xFFFF55);
-            this.b(this.f.l,"   "+LocaleI18n.a(this.failName,this.failData),var3,var5+50,0xFF5555);
+            this.b(this.f.l,"   "+LocaleI18n.translateToLocalFormatted(this.failName,this.failData),var3,var5+50,0xFF5555);
+        }
+    }
+
+    @Override
+    public void sendProgressBarUpdate(Container container, int i, int i1) {
+        this.player.sendPacket(new Packet105CraftProgressBar(container.windowId, i, i1));
+    }
+
+    @Override
+    //tick
+    public void c() {
+        super.c();
+        if (this.currentInfoTime < MAX_DISPLAY_TIME){
+            this.currentInfoTime++;
+        }else {
+            this.currentInfoTime = 0;
+            this.infoString = null;
         }
     }
 
 
+    @Override
+    public void a(Minecraft par1Minecraft, int par2, int par3) {
+        this.f = par1Minecraft;
+        this.o = par1Minecraft.l;
+        this.g = par2;
+        this.h = par3;
+        this.A_();
+    }
 
     @Override
-    //onWindowResize
-    public void A_() {
-        super.A_();
-        boolean isEnabled = true;
-        if (this.startButton != null){
-            isEnabled = this.startButton.h;
-        }
-        this.i.clear();
-        this.i.add(this.startButton = new aut(0,this.g/2+3, this.h/2-32,40,20,LocaleI18n.a("gui.forgingTable.start")));
-        this.startButton.h = isEnabled;
+    public void sendSlotContents(Container container, int i, ItemStack itemStack) {
+
+    }
+
+    @Override
+    public void updateCraftingInventory(Container container, List list) {
+
     }
 
     @Override

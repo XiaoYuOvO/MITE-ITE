@@ -7,7 +7,7 @@ public class SlotTool extends Slot {
         super(inventory, slot_index, display_x, display_y);
     }
 
-    public boolean a(ItemStack par1ItemStack) {
-        return par1ItemStack.b() instanceof ItemTool || par1ItemStack.b() instanceof ItemArmor;
+    public boolean isItemValid(ItemStack par1ItemStack) {
+        return par1ItemStack.getItem() instanceof ItemTool || par1ItemStack.getItem() instanceof ItemArmor;
     }
 }

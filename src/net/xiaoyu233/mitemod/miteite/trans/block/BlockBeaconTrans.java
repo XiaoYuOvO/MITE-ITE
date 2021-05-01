@@ -1,25 +1,23 @@
 package net.xiaoyu233.mitemod.miteite.trans.block;
 
 import net.minecraft.*;
-import net.xiaoyu233.fml.asm.annotations.Marker;
-import net.xiaoyu233.fml.asm.annotations.Transform;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 
-@Transform(BlockBeacon.class)
+@Mixin(BlockBeacon.class)
 public class BlockBeaconTrans extends BlockContainer {
-    @Marker
-    protected BlockBeaconTrans(int par1, Material par2Material, BlockConstants constants) {
-        super(par1, par2Material, constants);
-    }
+   protected BlockBeaconTrans(int par1, Material par2Material, BlockConstants constants) {
+      super(par1, par2Material, constants);
+   }
 
-    public void a(World world, int x, int y, int z, int block_id, int metadata) {
-        TileEntityBeacon beacon = (TileEntityBeacon)world.r(x, y, z);
-        beacon.clearAllPlayersBoost();
-        world.s(x,y,z);
-    }
+   public void breakBlock(World world, int x, int y, int z, int block_id, int metadata) {
+      TileEntityBeacon beacon = (TileEntityBeacon)world.getBlockTileEntity(x, y, z);
+      beacon.clearAllPlayersBoost();
+      world.removeBlockTileEntity(x, y, z);
+   }
 
-    @Override
-    @Marker
-    public TileEntity b(World world) {
-        return null;
-    }
+   @Shadow
+   public TileEntity createNewTileEntity(World world) {
+      return null;
+   }
 }

@@ -4,28 +4,21 @@ import net.minecraft.EntityMinecartAbstract;
 import net.minecraft.EntityMinecartContainer;
 import net.minecraft.ItemStack;
 import net.minecraft.World;
-import net.xiaoyu233.fml.asm.annotations.Link;
-import net.xiaoyu233.fml.asm.annotations.Marker;
-import net.xiaoyu233.fml.asm.annotations.Transform;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 
-@Transform(EntityMinecartContainer.class)
-public class EntityMinecartContainerTrans extends EntityMinecartAbstract {
-    @Link
-    private ItemStack[] a;
-    @Link
-    private boolean b;
-    @Marker
-    public EntityMinecartContainerTrans(World par1World) {
-        super(par1World);
-    }
+@Mixin(EntityMinecartContainer.class)
+public abstract class EntityMinecartContainerTrans extends EntityMinecartAbstract {
+   @Shadow
+   private boolean dropContentsWhenDead;
+   @Shadow
+   private ItemStack[] minecartContainerItems;
 
-    @Override
-    @Marker
-    public int l() {
-        return 0;
-    }
+   public EntityMinecartContainerTrans(World par1World) {
+      super(par1World);
+   }
 
-    public void x() {
-        super.x();
-    }
+   public void setDead() {
+      super.setDead();
+   }
 }

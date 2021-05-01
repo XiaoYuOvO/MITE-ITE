@@ -4,20 +4,19 @@ import net.minecraft.EntityBlaze;
 import net.minecraft.EntityMonster;
 import net.minecraft.GenericAttributes;
 import net.minecraft.World;
-import net.xiaoyu233.fml.asm.annotations.Marker;
-import net.xiaoyu233.fml.asm.annotations.Transform;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Overwrite;
 
-@Transform(EntityBlaze.class)
+@Mixin(EntityBlaze.class)
 public class EntityBlazeTrans extends EntityMonster {
-    @Marker
-    public EntityBlazeTrans(World par1World) {
-        super(par1World);
-    }
+   public EntityBlazeTrans(World par1World) {
+      super(par1World);
+   }
 
-    @Override
-    protected void az() {
-        super.az();
-        this.a(GenericAttributes.e).a(6.0D);
-        this.a(GenericAttributes.a).a(40.0D);
-    }
+   @Overwrite
+   protected void applyEntityAttributes() {
+      super.applyEntityAttributes();
+      this.setEntityAttribute(GenericAttributes.attackDamage).setAttribute(6.0D);
+      this.setEntityAttribute(GenericAttributes.maxHealth).setAttribute(40.0D);
+   }
 }

@@ -7,14 +7,14 @@ import net.minecraft.World;
 public class EntityAncientDragon extends EntityMonster {
     public EntityAncientDragon(World par1World) {
         super(par1World);
-        this.a(6.0f,10.0f);
+        this.setSize(6.0F, 10.0F);
     }
 
-    protected void az() {
-        super.az();
-        this.setEntityAttribute(GenericAttributes.b, 16d);
-        this.setEntityAttribute(GenericAttributes.a, 600.0D);
-        this.setEntityAttribute(GenericAttributes.d, 0.23000000417232513D);
-        this.setEntityAttribute(GenericAttributes.e, 15.0D);
+    protected void applyEntityAttributes() {
+        super.applyEntityAttributes();
+        this.setEntityAttribute(GenericAttributes.followRange, 16.0D);
+        this.setEntityAttribute(GenericAttributes.maxHealth, 600.0D);
+        this.setEntityAttribute(GenericAttributes.movementSpeed, 0.23000000417232513D);
+        this.setEntityAttribute(GenericAttributes.attackDamage, 15.0D);
     }
 }

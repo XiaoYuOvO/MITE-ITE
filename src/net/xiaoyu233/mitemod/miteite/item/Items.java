@@ -2,181 +2,245 @@ package net.xiaoyu233.mitemod.miteite.item;
 
 import net.minecraft.*;
 import net.xiaoyu233.mitemod.miteite.block.Blocks;
-import net.xiaoyu233.mitemod.miteite.trans.item.CraftingManagerHelper;
-import net.xiaoyu233.mitemod.miteite.trans.item.ItemTrans;
 import net.xiaoyu233.mitemod.miteite.util.Constant;
+import net.xiaoyu233.mitemod.miteite.util.RecipeRegister;
 
 import static net.xiaoyu233.mitemod.miteite.util.ReflectHelper.createInstance;
 
 @SuppressWarnings("ConstantConditions")
 public class Items extends Item{
-    public static final Item OBSIDIAN_STICK = createInstance(Item.class,new Class[]{int.class,Material.class,String.class},ItemTrans.getNextItemID(),Material.obsidian,"obsidian_stick");
-    public static final Item VIBRANIUM_INGOT = createInstance(ItemIngot.class,new Class[]{int.class,Material.class},ItemTrans.getNextItemID(),Materials.vibranium);
-    public static final ItemNugget VIBRANIUM_NUGGET = createInstance(ItemNugget.class, new Class[]{int.class,Material.class},ItemTrans.getNextItemID(),Materials.vibranium);
-    public static final ItemArmor VIBRANIUM_HELMET = new ItemHelmet(ItemTrans.getNextItemID(),Materials.vibranium,false);
-    public static final ItemArmor VIBRANIUM_CHESTPLATE = new ItemCuirass(ItemTrans.getNextItemID(), Materials.vibranium, false);
-    public static final ItemArmor VIBRANIUM_LEGGINGS = new ItemLeggings(ItemTrans.getNextItemID(),Materials.vibranium,false);
-    public static final ItemArmor VIBRANIUM_BOOTS = new ItemBoots(ItemTrans.getNextItemID(),Materials.vibranium,false);
-    public static final ItemSword VIBRANIUM_SWORD = createInstance(ItemSword.class,new Class[]{int.class,Material.class},ItemTrans.getNextItemID(), Materials.vibranium);
-    public static final ItemShovel VIBRANIUM_SHOVEL = createInstance(ItemShovel.class,new Class[]{int.class,Material.class},ItemTrans.getNextItemID(),Materials.vibranium);
-    public static final ItemPickaxe VIBRANIUM_PICKAXE = createInstance(ItemPickaxe.class,new Class[]{int.class,Material.class},ItemTrans.getNextItemID(),Materials.vibranium);
-    public static final ItemAxe VIBRANIUM_AXE = createInstance(ItemAxe.class,new Class[]{int.class,Material.class},ItemTrans.getNextItemID(),Materials.vibranium);
-    public static final ItemDagger VIBRANIUM_DAGGER = createInstance(ItemDagger.class,new Class[]{int.class,Material.class},ItemTrans.getNextItemID(),Materials.vibranium);
-    public static final ItemWarHammer VIBRANIUM_WAR_HAMMER = createInstance(ItemWarHammer.class,new Class[]{int.class,Material.class},ItemTrans.getNextItemID(),Materials.vibranium);
-    public static final ItemBattleAxe VIBRANIUM_BATTLE_AXE = createInstance(ItemBattleAxe.class,new Class[]{int.class,Material.class},ItemTrans.getNextItemID(),Materials.vibranium);
-    public static final Item DIAMOND_CHUNK = createInstance(Item.class,new Class[]{int.class,Material.class,String.class},ItemTrans.getNextItemID(),Material.diamond,"diamond_chunk").setCraftingDifficultyAsComponent(ItemRock.getCraftingDifficultyAsComponent(Material.diamond) /(float)4);
-    public static final Item BLAZE_COAL = new ItemBlazeCoal(ItemTrans.getNextItemID());
-    public static final ItemBow VIBRANIUM_BOW = new ItemBow(ItemTrans.getNextItemID(),Materials.vibranium);
-    public static final Item ENHANCE_STONE = createInstance(Item.class,new Class[]{int.class,Material.class,String.class},ItemTrans.getNextItemID(),Material.diamond,"forging_stone").setCraftingDifficultyAsComponent(ItemRock.getCraftingDifficultyAsComponent(Material.diamond) * 2f);
+    public static final Item BLAZE_COAL = new ItemBlazeCoal(Constant.getNextItemID());
+    public static final Item DIAMOND_CHUNK = createInstance(Item.class,new Class[]{int.class,Material.class,String.class},Constant.getNextItemID(),Material.diamond,"diamond_chunk").setCraftingDifficultyAsComponent(ItemRock.getCraftingDifficultyAsComponent(Material.diamond) /(float)4);
+    public static final Item ENHANCE_STONE = createInstance(Item.class,new Class[]{int.class,Material.class,String.class},Constant.getNextItemID(),Material.diamond,"forging_stone").setCraftingDifficultyAsComponent(ItemRock.getCraftingDifficultyAsComponent(Material.diamond) * 2f);
+    public static final Item OBSIDIAN_STICK = createInstance(Item.class,new Class[]{int.class,Material.class,String.class},Constant.getNextItemID(),Material.obsidian,"obsidian_stick");
+    public static final ItemAxe VIBRANIUM_AXE = createInstance(ItemAxe.class,new Class[]{int.class,Material.class},Constant.getNextItemID(),Materials.vibranium);
+    public static final ItemBattleAxe VIBRANIUM_BATTLE_AXE = createInstance(ItemBattleAxe.class,new Class[]{int.class,Material.class},Constant.getNextItemID(),Materials.vibranium);
+    public static final ItemArmor VIBRANIUM_BOOTS = new ItemBoots(Constant.getNextItemID(),Materials.vibranium,false);
+    public static final ItemBow VIBRANIUM_BOW = new ItemBow(Constant.getNextItemID(),Materials.vibranium);
+    public static final ItemArmor VIBRANIUM_CHESTPLATE = new ItemCuirass(Constant.getNextItemID(), Materials.vibranium, false);
+    public static final ItemDagger VIBRANIUM_DAGGER = createInstance(ItemDagger.class,new Class[]{int.class,Material.class},Constant.getNextItemID(),Materials.vibranium);
+    public static final ItemArmor VIBRANIUM_HELMET = new ItemHelmet(Constant.getNextItemID(),Materials.vibranium,false);
+    public static final Item VIBRANIUM_INGOT = createInstance(ItemIngot.class,new Class[]{int.class,Material.class},Constant.getNextItemID(),Materials.vibranium);
+    public static final ItemArmor VIBRANIUM_LEGGINGS = new ItemLeggings(Constant.getNextItemID(),Materials.vibranium,false);
+    public static final ItemNugget VIBRANIUM_NUGGET = createInstance(ItemNugget.class, new Class[]{int.class,Material.class},Constant.getNextItemID(),Materials.vibranium);
+    public static final ItemPickaxe VIBRANIUM_PICKAXE = createInstance(ItemPickaxe.class,new Class[]{int.class,Material.class},Constant.getNextItemID(),Materials.vibranium);
+    public static final ItemShovel VIBRANIUM_SHOVEL = createInstance(ItemShovel.class,new Class[]{int.class,Material.class},Constant.getNextItemID(),Materials.vibranium);
+    public static final ItemSword VIBRANIUM_SWORD = createInstance(ItemSword.class,new Class[]{int.class,Material.class},Constant.getNextItemID(), Materials.vibranium);
+    public static final ItemWarHammer VIBRANIUM_WAR_HAMMER = createInstance(ItemWarHammer.class,new Class[]{int.class,Material.class},Constant.getNextItemID(),Materials.vibranium);
+
+    private static Item register(String resourceLocation, Item item, CreativeModeTab tab) {
+        item.setResourceLocation(item.getResourceLocationPrefix() + resourceLocation);
+        item.setUnlocalizedName(resourceLocation);
+        item.setCreativeTab(tab);
+        return item;
+    }
+
+    private static Item register(String resourceLocation, Item item) {
+        item.setResourceLocation(item.getResourceLocationPrefix() + resourceLocation);
+        item.setUnlocalizedName(resourceLocation);
+        return item;
+    }
+
     public static void registerItems() {
-        register("obsidian_stick",OBSIDIAN_STICK,CreativeModeTab.l);
-        register("vibranium", VIBRANIUM_INGOT,CreativeModeTab.l);
-        register("vibranium_nugget",VIBRANIUM_NUGGET,CreativeModeTab.l);
-        register("vibranium_helmet",VIBRANIUM_HELMET);
-        register("vibranium_chestplate",VIBRANIUM_CHESTPLATE);
-        register("vibranium_leggings",VIBRANIUM_LEGGINGS);
-        register("vibranium_boots",VIBRANIUM_BOOTS);
-        register("vibranium_sword",VIBRANIUM_SWORD);
-        register("vibranium_shovel",VIBRANIUM_SHOVEL);
-        register("vibranium_pickaxe",VIBRANIUM_PICKAXE);
-        register("vibranium_axe",VIBRANIUM_AXE);
-        register("vibranium_dagger",VIBRANIUM_DAGGER);
-        register("vibranium_war_hammer",VIBRANIUM_WAR_HAMMER);
-        register("vibranium_battle_axe",VIBRANIUM_BATTLE_AXE);
-        register("diamond_chunk",DIAMOND_CHUNK,CreativeModeTab.l);
-        register("blaze_coal",BLAZE_COAL,CreativeModeTab.l);
-        register("bows/vibranium/",VIBRANIUM_BOW).b("vibranium_bow");
-        register("enhance_stone", ENHANCE_STONE, CreativeModeTab.l);
+        register("obsidian_stick", OBSIDIAN_STICK, CreativeModeTab.tabMaterials);
+        register("vibranium", VIBRANIUM_INGOT, CreativeModeTab.tabMaterials);
+        register("vibranium_nugget", VIBRANIUM_NUGGET, CreativeModeTab.tabMaterials);
+        register("vibranium_helmet", VIBRANIUM_HELMET);
+        register("vibranium_chestplate", VIBRANIUM_CHESTPLATE);
+        register("vibranium_leggings", VIBRANIUM_LEGGINGS);
+        register("vibranium_boots", VIBRANIUM_BOOTS);
+        register("vibranium_sword", VIBRANIUM_SWORD);
+        register("vibranium_shovel", VIBRANIUM_SHOVEL);
+        register("vibranium_pickaxe", VIBRANIUM_PICKAXE);
+        register("vibranium_axe", VIBRANIUM_AXE);
+        register("vibranium_dagger", VIBRANIUM_DAGGER);
+        register("vibranium_war_hammer", VIBRANIUM_WAR_HAMMER);
+        register("vibranium_battle_axe", VIBRANIUM_BATTLE_AXE);
+        register("diamond_chunk", DIAMOND_CHUNK, CreativeModeTab.tabMaterials);
+        register("blaze_coal", BLAZE_COAL, CreativeModeTab.tabMaterials);
+        register("bows/vibranium/", VIBRANIUM_BOW).setUnlocalizedName("vibranium_bow");
+        register("enhance_stone", ENHANCE_STONE, CreativeModeTab.tabMaterials);
         Constant.initItemArray();
     }
-    public static void registerRecipes(){
-        CraftingManagerHelper.registerShapedRecipe(new ItemStack(OBSIDIAN_STICK),true,
-                "#",
-                "#",
-                '#',Block.au
-        );
-        CraftingManagerHelper.registerShapedRecipe(new ItemStack(VIBRANIUM_INGOT),false,
-                 "NIN",
-                         "IDI",
-                         "NIN",
-                         'N',Item.mithrilNugget,
-                         'I',Item.ingotAdamantium,
-                         'D',Item.p
-        );
-        CraftingManagerHelper.registerShapelessRecipe(new ItemStack(VIBRANIUM_NUGGET,9),true,Items.VIBRANIUM_INGOT);
-        CraftingManagerHelper.registerShapelessRecipe(new ItemStack(VIBRANIUM_INGOT),true,Items.VIBRANIUM_NUGGET,Items.VIBRANIUM_NUGGET,Items.VIBRANIUM_NUGGET,Items.VIBRANIUM_NUGGET,Items.VIBRANIUM_NUGGET,Items.VIBRANIUM_NUGGET,Items.VIBRANIUM_NUGGET,Items.VIBRANIUM_NUGGET,Items.VIBRANIUM_NUGGET);
-        CraftingManagerHelper.registerShapedRecipe(new ItemStack(VIBRANIUM_HELMET),true,
-                "###",
-                        "#A#",
-                        '#',VIBRANIUM_INGOT,
-                        'A',Block.blockAncientMetal);
-        CraftingManagerHelper.registerShapedRecipe(new ItemStack(VIBRANIUM_CHESTPLATE),true,
-                "#A#",
-                        "###",
-                        "###",
-                        '#',VIBRANIUM_INGOT,
-                'A',Block.blockAncientMetal);
-        CraftingManagerHelper.registerShapedRecipe(new ItemStack(VIBRANIUM_LEGGINGS),true,
-                "###",
-                        "#A#",
-                        "# #",
-                        '#',VIBRANIUM_INGOT,
-                'A',Block.blockAncientMetal);
-        CraftingManagerHelper.registerShapedRecipe(new ItemStack(VIBRANIUM_BOOTS),true,
-                "# #",
-                        "#A#",
-                        '#',VIBRANIUM_INGOT,
-                'A',Block.blockAncientMetal);
-        CraftingManagerHelper.registerShapedRecipe(new ItemStack(VIBRANIUM_PICKAXE),true,
-                "###",
-                        " A ",
-                        " S ",
-                        '#',VIBRANIUM_INGOT,
-                        'S',OBSIDIAN_STICK,
-                        'A',Items.pickaxeAncientMetal);
-        CraftingManagerHelper.registerShapedRecipe(new ItemStack(VIBRANIUM_SHOVEL),true,
-                "#",
-                        "A",
-                        "S",
-                        '#',VIBRANIUM_INGOT,
-                        'S',OBSIDIAN_STICK,
-                        'A',Items.shovelAncientMetal);
-        CraftingManagerHelper.registerShapedRecipe(new ItemStack(VIBRANIUM_SWORD),true,
-                " # ",
-                        " # ",
-                        " A ",
-                        '#',VIBRANIUM_INGOT,
-                        'S',OBSIDIAN_STICK,
-                        'A',Items.swordAncientMetal);
-        CraftingManagerHelper.registerShapedRecipe(new ItemStack(VIBRANIUM_AXE),true,
-                "##",
-                        "A#",
-                        "S ",
-                        '#',VIBRANIUM_INGOT,
-                        'S',OBSIDIAN_STICK,
-                        'A',Items.axeAncientMetal);
-        CraftingManagerHelper.registerShapedRecipe(new ItemStack(VIBRANIUM_DAGGER),true,
-                "I",
-                        "A",
-                'I',Items.VIBRANIUM_INGOT,
-                'A',Items.daggerAncientMetal
-                );
-        CraftingManagerHelper.registerShapedRecipe(new ItemStack(VIBRANIUM_WAR_HAMMER),true,
-                "III",
-                        "IAI",
-                        " S ",
-                'I',Items.VIBRANIUM_INGOT,
-                'S',OBSIDIAN_STICK,
-                'A',Items.warHammerAncientMetal
-        );
-        CraftingManagerHelper.registerShapedRecipe(new ItemStack(VIBRANIUM_BATTLE_AXE),true,
-                "I I",
-                        "IAI",
-                        " S ",
-                'I',Items.VIBRANIUM_INGOT,
-                'S',OBSIDIAN_STICK,
-                'A',Items.battleAxeAncientMetal
-                );
-        CraftingManagerHelper.registerShapelessRecipe(new ItemStack(VIBRANIUM_INGOT,9),true, Blocks.blockVibranium);
-        CraftingManagerHelper.registerShapelessRecipe(new ItemStack(Item.p),false, Items.DIAMOND_CHUNK,Items.DIAMOND_CHUNK,Items.DIAMOND_CHUNK,Items.DIAMOND_CHUNK);
-        CraftingManagerHelper.registerShapedRecipe(new ItemStack(BLAZE_COAL),true,
-                " B ",
-                        "BCB",
-                        " B ",
-                'B',Item.by,
-                'C',Item.o
-                );
 
-        RecipesFurnace.a().addSmelting(Block.cE.cF, new ItemStack(Items.DIAMOND_CHUNK));
-        CraftingManagerHelper.registerShapedRecipe(new ItemStack(Items.VIBRANIUM_BOW),true,
+    public static void registerRecipes(RecipeRegister register) {
+        register.registerShapedRecipe(new ItemStack(OBSIDIAN_STICK), true, "#", "#", '#', Block.obsidian);
+        register.registerShapedRecipe(new ItemStack(VIBRANIUM_INGOT),
+                false,
+                "NIN",
+                "IDI",
+                "NIN",
+                'N',
+                Item.mithrilNugget,
+                'I',
+                Item.ingotAdamantium,
+                'D',
+                Item.diamond);
+        register.registerShapelessRecipe(new ItemStack(VIBRANIUM_NUGGET, 9), true, VIBRANIUM_INGOT);
+        register.registerShapelessRecipe(new ItemStack(VIBRANIUM_INGOT),
+                true,
+                VIBRANIUM_NUGGET,
+                VIBRANIUM_NUGGET,
+                VIBRANIUM_NUGGET,
+                VIBRANIUM_NUGGET,
+                VIBRANIUM_NUGGET,
+                VIBRANIUM_NUGGET,
+                VIBRANIUM_NUGGET,
+                VIBRANIUM_NUGGET,
+                VIBRANIUM_NUGGET);
+        register.registerShapedRecipe(new ItemStack(VIBRANIUM_HELMET),
+                true,
+                "###",
+                "#A#",
+                '#',
+                VIBRANIUM_INGOT,
+                'A',
+                Block.blockAncientMetal);
+        register.registerShapedRecipe(new ItemStack(VIBRANIUM_CHESTPLATE),
+                true,
+                "#A#",
+                "###",
+                "###",
+                '#',
+                VIBRANIUM_INGOT,
+                'A',
+                Block.blockAncientMetal);
+        register.registerShapedRecipe(new ItemStack(VIBRANIUM_LEGGINGS),
+                true,
+                "###",
+                "#A#",
+                "# #",
+                '#',
+                VIBRANIUM_INGOT,
+                'A',
+                Block.blockAncientMetal);
+        register.registerShapedRecipe(new ItemStack(VIBRANIUM_BOOTS),
+                true,
+                "# #",
+                "#A#",
+                '#',
+                VIBRANIUM_INGOT,
+                'A',
+                Block.blockAncientMetal);
+        register.registerShapedRecipe(new ItemStack(VIBRANIUM_PICKAXE),
+                true,
+                "###",
+                " A ",
+                " S ",
+                '#',
+                VIBRANIUM_INGOT,
+                'S',
+                OBSIDIAN_STICK,
+                'A',
+                pickaxeAncientMetal);
+        register.registerShapedRecipe(new ItemStack(VIBRANIUM_SHOVEL),
+                true,
+                "#",
+                "A",
+                "S",
+                '#',
+                VIBRANIUM_INGOT,
+                'S',
+                OBSIDIAN_STICK,
+                'A',
+                shovelAncientMetal);
+        register.registerShapedRecipe(new ItemStack(VIBRANIUM_SWORD),
+                true,
+                " # ",
+                " # ",
+                " A ",
+                '#',
+                VIBRANIUM_INGOT,
+                'S',
+                OBSIDIAN_STICK,
+                'A',
+                swordAncientMetal);
+        register.registerShapedRecipe(new ItemStack(VIBRANIUM_AXE),
+                true,
+                "##",
+                "A#",
+                "S ",
+                '#',
+                VIBRANIUM_INGOT,
+                'S',
+                OBSIDIAN_STICK,
+                'A',
+                axeAncientMetal);
+        register.registerShapedRecipe(new ItemStack(VIBRANIUM_DAGGER),
+                true,
+                "I",
+                "A",
+                'I',
+                VIBRANIUM_INGOT,
+                'A',
+                daggerAncientMetal);
+        register.registerShapedRecipe(new ItemStack(VIBRANIUM_WAR_HAMMER),
+                true,
+                "III",
+                "IAI",
+                " S ",
+                'I',
+                VIBRANIUM_INGOT,
+                'S',
+                OBSIDIAN_STICK,
+                'A',
+                warHammerAncientMetal);
+        register.registerShapedRecipe(new ItemStack(VIBRANIUM_BATTLE_AXE),
+                true,
+                "I I",
+                "IAI",
+                " S ",
+                'I',
+                VIBRANIUM_INGOT,
+                'S',
+                OBSIDIAN_STICK,
+                'A',
+                battleAxeAncientMetal);
+        register.registerShapelessRecipe(new ItemStack(VIBRANIUM_INGOT, 9), true, Blocks.blockVibranium);
+        register.registerShapelessRecipe(new ItemStack(Item.diamond),
+                false,
+                DIAMOND_CHUNK,
+                DIAMOND_CHUNK,
+                DIAMOND_CHUNK,
+                DIAMOND_CHUNK);
+        register.registerShapedRecipe(new ItemStack(BLAZE_COAL),
+                true,
+                " B ",
+                "BCB",
+                " B ",
+                'B',
+                Item.blazePowder,
+                'C',
+                Item.coal);
+        RecipesFurnace.smelting().addSmelting(Block.coalBlock.blockID, new ItemStack(DIAMOND_CHUNK));
+        register.registerShapedRecipe(new ItemStack(VIBRANIUM_BOW),
+                true,
                 "NSL",
-                        "AVL",
-                        "NSL",
-                'S',Items.OBSIDIAN_STICK,
-                'V',Items.VIBRANIUM_INGOT,
-                'L',Item.M,
-                'N',Items.VIBRANIUM_NUGGET,
-                'A',Items.bowAncientMetal
-                );
-        CraftingManagerHelper.registerShapedRecipe(new ItemStack(Item.bJ),true,
-            "SS",
-                    "SS",
-                'S',Item.shardEmerald);
-        CraftingManagerHelper.registerShapelessRecipe(new ItemStack(Item.shardEmerald,4),true,Item.bJ);
-        CraftingManagerHelper.registerShapedRecipe(new ItemStack(Items.ENHANCE_STONE),true,
+                "AVL",
+                "NSL",
+                'S',
+                OBSIDIAN_STICK,
+                'V',
+                VIBRANIUM_INGOT,
+                'L',
+                Item.silk,
+                'N',
+                VIBRANIUM_NUGGET,
+                'A',
+                bowAncientMetal);
+        register.registerShapedRecipe(new ItemStack(Item.emerald),
+                true,
+                "SS",
+                "SS",
+                'S',
+                Item.shardEmerald);
+        register.registerShapelessRecipe(new ItemStack(Item.shardEmerald, 4), true, Item.emerald);
+        register.registerShapedRecipe(new ItemStack(ENHANCE_STONE),
+                true,
                 "ADA",
-                'A',Item.ingotAdamantium,
-                'D',Item.p);
-    }
-    private static Item register(String resourceLocation,Item item,CreativeModeTab tab){
-        item.setResourceLocation(item.getResourceLocationPrefix() + resourceLocation);
-        item.b(resourceLocation);
-        item.setCreativeTable(tab);
-        return item;
-    }
-    private static Item register(String resourceLocation,Item item){
-        item.setResourceLocation(item.getResourceLocationPrefix() +resourceLocation);
-        item.b(resourceLocation);
-        return item;
+                'A',
+                Item.ingotAdamantium,
+                'D',
+                Item.diamond);
     }
 }

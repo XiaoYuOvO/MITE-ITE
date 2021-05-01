@@ -1,13 +1,15 @@
 package net.xiaoyu233.mitemod.miteite.trans.block;
 
-import net.minecraft.Block;
-import net.minecraft.BlockLeaves;
-import net.minecraft.IBlockAccess;
-import net.xiaoyu233.fml.asm.annotations.Transform;
+import net.minecraft.*;
+import org.spongepowered.asm.mixin.Mixin;
 
-@Transform(BlockLeaves.class)
-public class BlockLeavesTrans {
-    public boolean hidesAdjacentSide(IBlockAccess block_access, int x, int y, int z, Block neighbor, int side) {
-        return false;
-    }
+@Mixin(BlockLeaves.class)
+public class BlockLeavesTrans extends BlockTransparant {
+   protected BlockLeavesTrans(int par1, Material par2Material, boolean par3) {
+      super(par1, par2Material, par3);
+   }
+
+   public boolean hidesAdjacentSide(IBlockAccess block_access, int x, int y, int z, Block neighbor, int side) {
+      return false;
+   }
 }

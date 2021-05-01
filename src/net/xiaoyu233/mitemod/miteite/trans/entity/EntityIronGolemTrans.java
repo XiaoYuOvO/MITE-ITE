@@ -1,98 +1,97 @@
 package net.xiaoyu233.mitemod.miteite.trans.entity;
 
 import net.minecraft.*;
-import net.xiaoyu233.fml.asm.annotations.Link;
-import net.xiaoyu233.fml.asm.annotations.Marker;
-import net.xiaoyu233.fml.asm.annotations.Transform;
-import net.xiaoyu233.mitemod.miteite.MITEITEMod;
-import net.xiaoyu233.mitemod.miteite.util.Config;
+import net.xiaoyu233.mitemod.miteite.util.Configs;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Overwrite;
+import org.spongepowered.asm.mixin.Shadow;
 
-@Transform(EntityIronGolem.class)
+@Mixin(EntityIronGolem.class)
 public class EntityIronGolemTrans extends EntityGolem {
-    public int DATA_OBJ_IS_BOOSTED;
-    @Link
-    private int br;
+   public int DATA_OBJ_IS_BOOSTED;
+   @Shadow
+   private int attackTimer;
+   
+   public EntityIronGolemTrans(World par1World) {
+      super(par1World);
+   }
 
-    @Marker
-    public EntityIronGolemTrans(World par1World) {
-        super(par1World);
-    }
+   @Overwrite
+   protected void applyEntityAttributes() {
+      super.applyEntityAttributes();
+      this.getEntityAttribute(GenericAttributes.maxHealth).setAttribute(100.0D);
+      this.getEntityAttribute(GenericAttributes.movementSpeed).setAttribute(0.25D);
+      this.setEntityAttribute(GenericAttributes.attackDamage, 0.0D);
+   }
 
-    @Override
-    public boolean onEntityRightClicked(EntityHuman player, ItemStack item_stack) {
-        if (MITEITEMod.CONFIG.get(Config.ConfigEntry.CAN_BOOST_IRON_GOLEM)) {
-            if (!this.isBoosted() && item_stack != null && item_stack.isBlock() && item_stack.getItemAsBlock().getBlock() == Block.blockMithril) {
-                this.a(1.9F, 3.5F);
-                this.setEntityAttribute(GenericAttributes.a, this.getEntityAttributeValue(GenericAttributes.a) + 20);
-                this.setEntityAttribute(GenericAttributes.e, this.getEntityAttributeValue(GenericAttributes.e) + 3);
-                this.g((float) this.getEntityAttributeValue(GenericAttributes.a));
-                this.ah.b(DATA_OBJ_IS_BOOSTED, (byte) 1);
-                if (!this.getWorld().I) {
-                    player.convertOneOfHeldItem(null);
-                }
-                return true;
-            }
-        }
-        return super.onEntityRightClicked(player, item_stack);
-    }
+   public EntityDamageResult attackEntityAsMob(Entity target) {
+      this.attackTimer = 10;
+      this.worldObj.setEntityState(this, EnumEntityState.golem_throw);
+      EntityDamageResult result = target.attackEntityFrom(new Damage(DamageSource.causeMobDamage(this), (float)((double)((float)(7 + this.rand.nextInt(15))) + this.getEntityAttributeValue(GenericAttributes.attackDamage))));
+      if (result != null) {
+         if (result.entityWasKnockedBack()) {
+            target.motionY += 0.4000000059604645D;
+         }
 
-    protected void a() {
-        super.a();
-        this.ah.addObject(16, (byte)0);
-        this.DATA_OBJ_IS_BOOSTED = this.ah.addObject(this.ah.getNextAvailableId(), (byte)0);
+         this.playSound("mob.irongolem.throw", 1.0F, 1.0F);
+      }
 
-    }
+      return result;
+   }
 
-    public EntityDamageResult attackEntityAsMob(Entity target) {
-        this.br = 10;
-        this.q.setEntityState(this, EnumEntityState.golem_throw);
-        EntityDamageResult result = target.attackEntityFrom(new Damage(DamageSource.a(this), (float) ((float)(7 + this.ab.nextInt(15)) + this.getEntityAttributeValue(GenericAttributes.e))));
-        if (result != null) {
-            if (result.entityWasKnockedBack()) {
-                target.y += 0.4000000059604645D;
-            }
+   protected void entityInit() {
+      super.entityInit();
+      this.dataWatcher.addObject(16, (byte)0);
+      this.DATA_OBJ_IS_BOOSTED = this.dataWatcher.addObject(this.dataWatcher.getNextAvailableId(), (byte)0);
+   }
 
-            this.a("mob.irongolem.throw", 1.0F, 1.0F);
-        }
-        return result;
-    }
+   private boolean isBoosted() {
+      return this.dataWatcher.getWatchableObjectByte(this.DATA_OBJ_IS_BOOSTED) != 0;
+   }
 
-    private boolean isBoosted() {
-        return this.ah.a(DATA_OBJ_IS_BOOSTED) != 0;
-    }
+   @Shadow
+   private boolean isPlayerCreated() {
+      return false;
+   }
 
-    public void b(NBTTagCompound par1NBTTagCompound) {
-        super.b(par1NBTTagCompound);
-        par1NBTTagCompound.a("Boosted", this.isBoosted());
-        par1NBTTagCompound.a("PlayerCreated", this.bW());
-    }
+   @Shadow
+   private void setPlayerCreated(boolean playerCreated) {
+   }
 
-    public void a(NBTTagCompound par1NBTTagCompound) {
-        super.a(par1NBTTagCompound);
-        if (par1NBTTagCompound.b("Boosted")){
-            this.ah.b(DATA_OBJ_IS_BOOSTED,(byte)(par1NBTTagCompound.n("Boosted") ? 1 : 0));
-        }
-        this.i(par1NBTTagCompound.n("PlayerCreated"));
-        if (this.isBoosted()){
-            this.a(1.9F, 3F);
-        }
-    }
+   @Override
+   public boolean onEntityRightClicked(EntityPlayer player, ItemStack item_stack) {
+      if ((Configs.Entities.CAN_BOOST_IRON_GOLEM.get()) && !this.isBoosted() && item_stack != null && item_stack.isBlock() && item_stack.getItemAsBlock().getBlock() == Block.blockMithril) {
+         this.setSize(1.9F, 3.5F);
+         this.setEntityAttribute(GenericAttributes.maxHealth, this.getEntityAttributeValue(GenericAttributes.maxHealth) + 20.0D);
+         this.setEntityAttribute(GenericAttributes.attackDamage, this.getEntityAttributeValue(GenericAttributes.attackDamage) + 3.0D);
+         this.setHealth((float)this.getEntityAttributeValue(GenericAttributes.maxHealth));
+         this.dataWatcher.updateObject(this.DATA_OBJ_IS_BOOSTED, (byte)1);
+         if (!this.getWorld().isRemote) {
+            player.convertOneOfHeldItem(null);
+         }
 
-    @Marker
-    private boolean bW() {
-        return false;
-    }
+         return true;
+      } else {
+         return super.onEntityRightClicked(player, item_stack);
+      }
+   }
 
-    @Marker
-    private void i(boolean playerCreated) {
+   public void readEntityFromNBT(NBTTagCompound par1NBTTagCompound) {
+      super.readEntityFromNBT(par1NBTTagCompound);
+      if (par1NBTTagCompound.hasKey("Boosted")) {
+         this.dataWatcher.updateObject(this.DATA_OBJ_IS_BOOSTED, (byte)(par1NBTTagCompound.getBoolean("Boosted") ? 1 : 0));
+      }
 
-    }
+      this.setPlayerCreated(par1NBTTagCompound.getBoolean("PlayerCreated"));
+      if (this.isBoosted()) {
+         this.setSize(1.9F, 3.0F);
+      }
 
-    @Override
-    protected void az() {
-        super.az();
-        this.a(GenericAttributes.a).a(100.0D);
-        this.a(GenericAttributes.d).a(0.25D);
-        this.setEntityAttribute(GenericAttributes.e,0);
-    }
+   }
+
+   public void writeEntityToNBT(NBTTagCompound par1NBTTagCompound) {
+      super.writeEntityToNBT(par1NBTTagCompound);
+      par1NBTTagCompound.setBoolean("Boosted", this.isBoosted());
+      par1NBTTagCompound.setBoolean("PlayerCreated", this.isPlayerCreated());
+   }
 }

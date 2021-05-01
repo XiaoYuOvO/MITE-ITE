@@ -8,8 +8,8 @@ import net.minecraft.Material;
 public class ItemBlazeCoal extends Item {
     public ItemBlazeCoal(int par1) {
         super(par1, Material.coal, "blaze_coal");
-        this.d(16);
-        this.a(CreativeModeTab.l);
+        this.setMaxStackSize(16);
+        this.setCreativeTab(CreativeModeTab.tabMaterials);
     }
     public int getBurnTime(ItemStack item_stack) {
         return 6800;

@@ -1,36 +1,31 @@
 package net.xiaoyu233.mitemod.miteite.trans.item.enchantment;
 
-import net.minecraft.*;
-import net.xiaoyu233.fml.asm.annotations.Marker;
-import net.xiaoyu233.fml.asm.annotations.Transform;
+import net.minecraft.CreativeModeTab;
+import net.minecraft.EnchantmentThorns;
+import net.minecraft.Item;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.SoftOverride;
 
-@Transform(EnchantmentThorns.class)
-public class EnchantmentThornsTrans extends Enchantment{
-    @Marker
-    protected EnchantmentThornsTrans(int id, yq rarity, int difficulty) {
-        super(id, rarity, difficulty);
-    }
+@Mixin(EnchantmentThorns.class)
+public class EnchantmentThornsTrans extends EnchantmentTrans{
+   @Shadow
+   public boolean canEnchantItem(Item item) {
+      return false;
+   }
 
-    @Override
-    @Marker
-    public boolean isOnCreativeTab(CreativeModeTab creativeModeTab) {
-        return false;
-    }
+   @Shadow
+   public String getNameSuffix() {
+      return null;
+   }
 
-    @Override
-    @Marker
-    public boolean canEnchantItem(Item item) {
-        return false;
-    }
+   @SoftOverride
+   public int getNumLevelsForVibranium() {
+      return 5;
+   }
 
-    @Override
-    @Marker
-    public String getNameSuffix() {
-        return null;
-    }
-
-    @Override
-    public int getNumLevelsForVibranium() {
-        return 5;
-    }
+   @Shadow
+   public boolean isOnCreativeTab(CreativeModeTab creativeModeTab) {
+      return false;
+   }
 }

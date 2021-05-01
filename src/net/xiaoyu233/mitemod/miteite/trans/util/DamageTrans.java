@@ -1,102 +1,109 @@
 package net.xiaoyu233.mitemod.miteite.trans.util;
 
 import net.minecraft.*;
-import net.xiaoyu233.fml.asm.annotations.Link;
-import net.xiaoyu233.fml.asm.annotations.Marker;
-import net.xiaoyu233.fml.asm.annotations.Transform;
-import net.xiaoyu233.mitemod.miteite.MITEITEMod;
-import net.xiaoyu233.mitemod.miteite.util.Config;
+import net.xiaoyu233.mitemod.miteite.util.Configs;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Overwrite;
+import org.spongepowered.asm.mixin.Shadow;
 
-@Transform(Damage.class)
+@Mixin(Damage.class)
 public class DamageTrans {
-    @Link
-    private DamageSource source;
-    @Link
-    private float amount;
+   @Shadow
+   private float amount;
+   @Shadow
+   private DamageSource source;
 
-    public Entity getResponsibleEntityP() {
-        return this.source.getResponsibleEntity();
-    }
+   @Overwrite
+   protected float applyTargetDefenseModifiers(EntityLiving target, EntityDamageResult result) {
+      if (target.onClient()) {
+         Minecraft.setErrorMessage("applyTargetDefenseModifiers: called on client?");
+      }
 
-    protected float applyTargetDefenseModifiers(EntityLiving target, EntityDamageResult result) {
-        if (target.onClient()) {
-            Minecraft.setErrorMessage("applyTargetDefenseModifiers: called on client?");
-        }
+      if (this.amount <= 0.0F) {
+         return 0.0F;
+      } else if (this.isAbsolute()) {
+         return this.amount;
+      } else {
+         if (target instanceof EntityPlayer) {
+            EntityPlayer player = (EntityPlayer)target;
+            if (!this.bypassesMundaneArmor() && player.isBlocking()) {
+               this.amount /= 2.0F;
+               if (this.amount < 1.0F) {
+                  this.amount = 1.0F;
+               }
 
-        if (this.amount <= 0.0F) {
-            return 0.0F;
-        } else if (this.isAbsolute()) {
-            return this.amount;
-        } else {
-            if (target instanceof EntityHuman) {
-                EntityHuman player = (EntityHuman)target;
-                if (!this.bypassesMundaneArmor() && player.bv()) {
-                    this.amount /= 2.0F;
-                    if (this.amount < 1.0F) {
-                        this.amount = 1.0F;
-                    }
+               ItemStack item_stack = player.getHeldItemStack();
+               if (item_stack != null && item_stack.getItem() instanceof ItemTool) {
+                  ItemTool item_tool = (ItemTool)item_stack.getItem();
+                  result.applyHeldItemDamageResult(item_stack.tryDamageItem(DamageSource.generic, (int)(this.amount * (float)item_tool.getToolDecayFromAttackingEntity(item_stack, null)), target));
+               }
+            }
+         }
 
-                    ItemStack item_stack = player.getHeldItemStack();
-                    if (item_stack != null && item_stack.b() instanceof ItemTool) {
-                        ItemTool item_tool = (ItemTool)item_stack.b();
-                        result.applyHeldItemDamageResult(item_stack.tryDamageItem(DamageSource.j, (int)(this.amount * (float)item_tool.getToolDecayFromAttackingEntity(item_stack, null)), target));
-                    }
-                }
+         float total_protection = target.getTotalProtection(this.getSource());
+         ItemStack[] wornItems = target.getWornItems();
+         int delta;
+         if (wornItems.length >= 4) {
+            boolean allProtectionV = true;
+            ItemStack[] var6 = wornItems;
+            int var7 = wornItems.length;
+
+            for(delta = 0; delta < var7; ++delta) {
+               ItemStack armor = var6[delta];
+               if (armor == null) {
+                  allProtectionV = false;
+               } else {
+                  allProtectionV = armor.getEnchantmentLevel(Enchantment.protection) >= 5 && allProtectionV;
+               }
             }
 
-            float total_protection = target.getTotalProtection(this.getSource());
-            ItemStack[] wornItems = target.getWornItems();
-            if (wornItems.length >= 4){
-                boolean allProtectionV = true;
-                for (ItemStack armor : wornItems) {
-                    if (armor != null){
-                        allProtectionV = armor.getEnchantmentLevel(Enchantment.d) >= 5 && allProtectionV;
-                    }else {
-                        allProtectionV = false;
-                    }
-                }
-                if (allProtectionV){
-                    this.amount -= Math.min(this.amount * MITEITEMod.CONFIG.get(Config.ConfigEntry.ALL_PROTECTION_V_DEFENCE_FRACTION),this.amount);
-                }
+            if (allProtectionV) {
+               this.amount = (float)((double)this.amount - Math.min((double)this.amount * Configs.Item.Enchantment.ALL_PROTECTION_V_DEFENCE_FRACTION.get(), this.amount));
             }
-            DebugAttack.setTargetProtection(total_protection);
-            float amount_dealt_to_armor = Math.min(target.getProtectionFromArmor(this.getSource(), false), this.amount);
-            target.tryDamageArmorP(this.getSource(), amount_dealt_to_armor, result);
-            DebugAttack.setDamageDealtToArmor(amount_dealt_to_armor);
-            float piercing = Enchantment.piercing.getLevelFraction(this.getItemAttackedWith()) * 5.0F;
-            float effective_protection = Math.max(total_protection - piercing, 0.0F);
-            DebugAttack.setPiercing(piercing);
-            if (target instanceof EntityHuman && effective_protection >= this.amount) {
-                int delta = (int)(effective_protection - this.amount);
+         }
 
-                for(int i = -1; i < delta; ++i) {
-                    if (target.aD().nextFloat() < 0.2F) {
-                        return 0.0F;
-                    }
-                }
+         DebugAttack.setTargetProtection(total_protection);
+         float amount_dealt_to_armor = Math.min(target.getProtectionFromArmor(this.getSource(), false), this.amount);
+         target.tryDamageArmorP(this.getSource(), amount_dealt_to_armor, result);
+         DebugAttack.setDamageDealtToArmor(amount_dealt_to_armor);
+         float piercing = Enchantment.piercing.getLevelFraction(this.getItemAttackedWith()) * 5.0F;
+         float effective_protection = Math.max(total_protection - piercing, 0.0F);
+         DebugAttack.setPiercing(piercing);
+         if (target instanceof EntityPlayer && effective_protection >= this.amount) {
+            delta = (int)(effective_protection - this.amount);
+
+            for(int i = -1; i < delta; ++i) {
+               if (target.getRNG().nextFloat() < 0.2F) {
+                  return 0.0F;
+               }
             }
+         }
 
-            return Math.max(this.amount - effective_protection, 1.0F);
-        }
-    }
+         return Math.max(this.amount - effective_protection, 1.0F);
+      }
+   }
 
-    @Marker
-    private boolean bypassesMundaneArmor() {
-        return false;
-    }
+   @Shadow
+   private boolean bypassesMundaneArmor() {
+      return false;
+   }
 
-    @Marker
-    private ItemStack getItemAttackedWith() {
-        return null;
-    }
+   @Shadow
+   private ItemStack getItemAttackedWith() {
+      return null;
+   }
 
-    @Marker
-    private boolean isAbsolute() {
-        return false;
-    }
+   public Entity getResponsibleEntityP() {
+      return this.source.getResponsibleEntity();
+   }
 
-    @Marker
-    private DamageSource getSource() {
-        return null;
-    }
+   @Shadow
+   private DamageSource getSource() {
+      return null;
+   }
+
+   @Shadow
+   private boolean isAbsolute() {
+      return false;
+   }
 }

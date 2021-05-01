@@ -28,7 +28,7 @@ public class Materials extends Material {
     }
 
     public float getDamageVsEntity() {
-        if (this == d) {
+        if (this == wood) {
             return 0.0F;
         } else if (this == flint) {
             return 1.0F;
@@ -42,7 +42,7 @@ public class Materials extends Material {
             return 3.0F;
         } else if (this == gold) {
             return 2.0F;
-        } else if (this == f) {
+        } else if (this == iron) {
             return 4.0F;
         } else if (this == ancient_metal) {
             return 4.0F;
@@ -52,9 +52,9 @@ public class Materials extends Material {
             return 6.0F;
         } else if (this == diamond) {
             return 4.0F;
-        } else if (this == vibranium){
+        } else if (this == vibranium) {
             return 9.0F;
-        }else{
+        } else {
             Minecraft.setErrorMessage("getDamageVsEntity: unhandled material " + this.name);
             return 0.0F;
         }

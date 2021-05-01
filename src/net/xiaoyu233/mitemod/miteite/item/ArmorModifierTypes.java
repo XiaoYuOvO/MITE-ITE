@@ -13,12 +13,12 @@ import java.util.function.Predicate;
 
 public enum ArmorModifierTypes implements ItemModifierTypes{
     //Armor Modifiers
-    DURABILITY_MODIFIER(0.1F,"持久",EnumChatFormat.f,20,(stack -> true)),
+    DURABILITY_MODIFIER(0.1F,"持久",EnumChatFormat.DARK_PURPLE,20,(stack -> true)),
     PROJECTILE_PROTECTION_MODIFIER(0.5F,"弹射物保护", EnumChatFormats.DARK_GREY,7,(stack -> hasNotOtherProtectionModifier(stack,3))),
     EXPLOSION_PROTECTION_MODIFIER(0.5F,"爆炸保护", EnumChatFormats.DARK_RED,7,(stack -> hasNotOtherProtectionModifier(stack,2))),
     FIRE_PROTECTION_MODIFIER(0.5F,"火焰保护", EnumChatFormats.LIGHT_ORANGE,7,(stack -> hasNotOtherProtectionModifier(stack,0))),
-    PROTECTION_MODIFIER(0.25F,"保护",EnumChatFormat.p,5,(stack -> hasNotOtherProtectionModifier(stack,1))),
-    STEADY_MODIFIER(0.15F,"稳定",EnumChatFormat.i,8,(stack -> true)),
+    PROTECTION_MODIFIER(0.25F,"保护",EnumChatFormat.WHITE,5,(stack -> hasNotOtherProtectionModifier(stack,1))),
+    STEADY_MODIFIER(0.15F,"稳定",EnumChatFormat.DARK_GRAY,8,(stack -> true)),
     BLESSED_MODIFIER(1F,"神圣",EnumChatFormats.SILVER,8,(stack -> true));
 
     public final String nbtName;
@@ -56,9 +56,9 @@ public enum ArmorModifierTypes implements ItemModifierTypes{
 
     }
 
-    public static boolean hasModifier(ItemStack stack,ArmorModifierTypes modifierType){
-        NBTTagCompound itemTag = stack.e;
-        return itemTag != null && itemTag.b("modifiers") && itemTag.l("modifiers").b(modifierType.nbtName);
+    public static boolean hasModifier(ItemStack stack, ArmorModifierTypes modifierType) {
+        NBTTagCompound itemTag = stack.stackTagCompound;
+        return itemTag != null && itemTag.hasKey("modifiers") && itemTag.getCompoundTag("modifiers").hasKey(modifierType.nbtName);
     }
 
     @Nullable
@@ -91,14 +91,15 @@ public enum ArmorModifierTypes implements ItemModifierTypes{
         return this.levelAddition * getModifierLevel(itemTag);
     }
 
-    public int getModifierLevel(NBTTagCompound itemTag){
+    public int getModifierLevel(NBTTagCompound itemTag) {
         int lvl = 0;
-        if (itemTag != null && itemTag.b("modifiers")) {
-            NBTTagCompound modifiers = itemTag.l("modifiers");
-            if (modifiers.b(this.nbtName)) {
-                lvl = modifiers.e(this.nbtName);
+        if (itemTag != null && itemTag.hasKey("modifiers")) {
+            NBTTagCompound modifiers = itemTag.getCompoundTag("modifiers");
+            if (modifiers.hasKey(this.nbtName)) {
+                lvl = modifiers.getInteger(this.nbtName);
             }
         }
+
         return lvl;
     }
 

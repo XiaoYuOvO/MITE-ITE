@@ -11,45 +11,45 @@ public class SPacketOverlayMessage extends Packet {
     private int color;
     private String msg;
     private int time;
-    public SPacketOverlayMessage(){}
-    public SPacketOverlayMessage(String msg,int color,int time){
+
+    public SPacketOverlayMessage() {
+    }
+
+    public SPacketOverlayMessage(String msg, int color, int time) {
         this.msg = msg;
         this.color = color;
         this.time = time;
     }
-    @Override
-    public void a(DataInput var1) throws IOException {
-        this.color = var1.readInt();
-        this.msg = Packet.a(var1,32767);
-        this.time = var1.readInt();
-    }
-
-    @Override
-    public void a(DataOutput var1) throws IOException {
-        var1.writeInt(this.color);
-        Packet.a(this.msg,var1);
-        var1.writeInt(this.time);
-    }
-
-    @Override
-    public void a(Connection var1) {
-        var1.handleOverlayMessage(this);
-    }
-
-    @Override
-    public int a() {
-        return  4 + 4 + Packet.getPacketSizeOfString(msg);
-    }
 
     public int getColor() {
-        return color;
-    }
-
-    public int getTime() {
-        return time;
+        return this.color;
     }
 
     public String getMsg() {
-        return msg;
+        return this.msg;
+    }
+
+    public int getPacketSize() {
+        return 8 + Packet.getPacketSizeOfString(this.msg);
+    }
+
+    public int getTime() {
+        return this.time;
+    }
+
+    public void processPacket(Connection var1) {
+        var1.handleOverlayMessage(this);
+    }
+
+    public void readPacketData(DataInput var1) throws IOException {
+        this.color = var1.readInt();
+        this.msg = Packet.readString(var1, 32767);
+        this.time = var1.readInt();
+    }
+
+    public void writePacketData(DataOutput var1) throws IOException {
+        var1.writeInt(this.color);
+        Packet.writeString(this.msg, var1);
+        var1.writeInt(this.time);
     }
 }

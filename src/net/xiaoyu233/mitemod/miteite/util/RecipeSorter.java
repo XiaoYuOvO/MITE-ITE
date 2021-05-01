@@ -13,10 +13,10 @@ public class RecipeSorter implements Comparator<aah> {
             return 1;
         } else if (var2 instanceof ShapelessRecipes && var1 instanceof ShapedRecipes) {
             return -1;
-        } else if (var2.a() < var1.a()) {
+        } else if (var2.getRecipeSize() < var1.getRecipeSize()) {
             return -1;
         } else {
-            return var2.a() > var1.a() ? 1 : 0;
+            return var2.getRecipeSize() > var1.getRecipeSize() ? 1 : 0;
         }
     }
 }

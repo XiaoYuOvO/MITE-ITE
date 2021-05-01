@@ -1,44 +1,46 @@
 package net.xiaoyu233.mitemod.miteite.trans.network;
 
 import net.minecraft.*;
-import net.xiaoyu233.fml.asm.annotations.Link;
-import net.xiaoyu233.fml.asm.annotations.Marker;
-import net.xiaoyu233.fml.asm.annotations.Transform;
 import net.xiaoyu233.mitemod.miteite.inventory.container.ContainerForgingTable;
 import net.xiaoyu233.mitemod.miteite.network.CPacketStartForging;
 import net.xiaoyu233.mitemod.miteite.network.CPacketSyncItems;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.SoftOverride;
 
 import java.util.ArrayList;
 
-@Transform(PlayerConnection.class)
-public class ServerNetworkManagerTrans extends Connection {
-    @Link
-    public EntityPlayer c;
+@Mixin(PlayerConnection.class)
+public class ServerNetworkManagerTrans extends NetworkManagerTrans {
+   @Shadow
+   public ServerPlayer playerEntity;
 
-    @Override
-    @Marker
-    public boolean a() {
-        return false;
-    }
+   @Shadow
+   public INetworkManager getNetManager() {
+      return null;
+   }
 
-    @Override
-    @Marker
-    public INetworkManager getNetManager() {
-        return null;
-    }
+   @SoftOverride
+   public void handleSyncItems(CPacketSyncItems packet) {
+      ArrayList<ItemStack> itemList = new ArrayList<>();
 
-    public void processStartForgingPacket(CPacketStartForging packet){
-        if (this.c.bp instanceof ContainerForgingTable){
-            ((ContainerForgingTable) this.c.bp).startForging();
-        }
-    }
+      for(int index = 0; index < this.playerEntity.openContainer.inventorySlots.size(); ++index) {
+         itemList.add(((Slot)this.playerEntity.openContainer.inventorySlots.get(index)).getStack());
+      }
 
-    public void handleSyncItems(CPacketSyncItems packet){
-        ArrayList<ItemStack> itemList = new ArrayList<>();
+      this.playerEntity.updateCraftingInventory(this.playerEntity.openContainer, itemList);
+   }
 
-        for(int index = 0; index < c.bp.c.size(); ++index) {
-            itemList.add(((Slot)c.bp.c.get(index)).d());
-        }
-        c.a(c.bp, itemList);
-    }
+   @Shadow
+   public boolean isServerHandler() {
+      return false;
+   }
+
+   @SoftOverride
+   public void processStartForgingPacket(CPacketStartForging packet) {
+      if (this.playerEntity.openContainer instanceof ContainerForgingTable) {
+         ((ContainerForgingTable)this.playerEntity.openContainer).startForging();
+      }
+
+   }
 }

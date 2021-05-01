@@ -1,137 +1,157 @@
 package net.xiaoyu233.mitemod.miteite.trans.block.tileentity;
 
 import net.minecraft.*;
-import net.xiaoyu233.fml.asm.annotations.Link;
-import net.xiaoyu233.fml.asm.annotations.Marker;
-import net.xiaoyu233.fml.asm.annotations.Transform;
 import net.xiaoyu233.mitemod.miteite.block.Blocks;
 import net.xiaoyu233.mitemod.miteite.util.BlockPos;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Overwrite;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.List;
 
-@Transform(TileEntityBeacon.class)
-public class TileEntityBeaconTrans extends TileEntity{
-    @Link
-    private boolean d;
-    //Beacon level
-    @Link
-    private int e;
-    @Link
-    private int f;
-    @Link
-    private int g;
-    private BlockPos currentPos;
+@Mixin(TileEntityBeacon.class)
+public class TileEntityBeaconTrans extends TileEntity {
+   private BlockPos currentPos;
+   @Shadow
+   private boolean isBeaconActive;
+   @Shadow
+   private int levels;
+   @Shadow
+   private int primaryEffect;
+   @Shadow
+   private int secondaryEffect;
 
-    public void a(NBTTagCompound par1NBTTagCompound) {
-        super.a(par1NBTTagCompound);
-        this.f = par1NBTTagCompound.e("Primary");
-        this.g = par1NBTTagCompound.e("Secondary");
-        this.e = par1NBTTagCompound.e("Levels");
-        this.currentPos = new BlockPos(this.l,this.m,this.n);
-    }
+   @Overwrite
+   private void addEffectsToPlayers() {
+      if (this.isBeaconActive && this.levels > 0 && !this.worldObj.isRemote && this.primaryEffect > 0) {
+         double var1 = this.levels * 10 + 10;
+         byte var3 = 0;
+         if (this.levels >= 4 && this.primaryEffect == this.secondaryEffect) {
+            var3 = 1;
+         }
 
-    public void clearAllPlayersBoost(){
-        double var1 = this.e * 10 + 10;
-        AxisAlignedBB var4 = AxisAlignedBB.a().a(this.l, this.m, this.n, this.l + 1, this.m + 1, this.n + 1).b(var1, var1, var1);
-        for (EntityHuman entityHuman : (List<EntityHuman>)this.k.a(EntityHuman.class, var4)) {
-            entityHuman.setCraftingBoostFactor(0,this.currentPos);
-        }
-    }
+         AxisAlignedBB var4 = AxisAlignedBB.getAABBPool().getAABB(this.xCoord, this.yCoord, this.zCoord, this.xCoord + 1, this.yCoord + 1, this.zCoord + 1).expand(var1, var1, var1);
+         var4.maxY = this.worldObj.getHeight();
+         List var5 = this.worldObj.getEntitiesWithinAABB(EntityPlayer.class, var4);
 
-    private void u() {
-        if (this.d && this.e > 0 && !this.k.I && this.f > 0) {
-            byte var3 = 0;
-            if (this.e >= 4 && this.f == this.g) {
-                var3 = 1;
+         EntityPlayer var7;
+         for (Object o : var5) {
+            var7 = (EntityPlayer) o;
+            var7.addPotionEffect(new MobEffect(this.primaryEffect, 180, var3, true));
+            var7.setCraftingBoostFactor(this.getCraftingBoostFactor(this.levels), this.currentPos);
+            var7.setCraftingBoostTimer(80);
+         }
+
+         if (this.levels >= 4 && this.primaryEffect != this.secondaryEffect && this.secondaryEffect > 0) {
+
+            for (Object o : var5) {
+               var7 = (EntityPlayer) o;
+               var7.addPotionEffect(new MobEffect(this.secondaryEffect, 180, 0, true));
+            }
+         }
+      }
+
+   }
+
+   public void clearAllPlayersBoost() {
+      double var1 = this.levels * 10 + 10;
+      AxisAlignedBB var4 = AxisAlignedBB.getAABBPool().getAABB(this.xCoord, this.yCoord, this.zCoord, this.xCoord + 1, this.yCoord + 1, this.zCoord + 1).expand(var1, var1, var1);
+      for (Object o : this.worldObj.getEntitiesWithinAABB(EntityPlayer.class, var4)) {
+         EntityPlayer EntityPlayer = (EntityPlayer) o;
+         EntityPlayer.setCraftingBoostFactor(0.0F, this.currentPos);
+      }
+
+   }
+
+//   @Inject(locals = LocalCapture.PRINT,method = "addEffectsToPlayers",at = @At(ordinal = 1,shift = At.Shift.AFTER,value = "INVOKE",target = "Lnet/minecraft/EntityLiving;addPotionEffect(Lnet/minecraft/MobEffect;)V"))
+//   private void injectCraftingBoost(CallbackInfo ci){
+//
+//   }
+
+   private float getCraftingBoostFactor(int level) {
+      switch(level) {
+      case 1:
+         return 0.1F;
+      case 2:
+         return 0.35F;
+      case 3:
+         return 1.0F;
+      case 4:
+         return 1.75F;
+      default:
+         return 0.0F;
+      }
+   }
+
+   @Inject(method = "readFromNBT",at = @At("RETURN"))
+   public void injectReadNBT(NBTTagCompound par1NBTTagCompound,CallbackInfo callbackInfo) {
+      this.currentPos = new BlockPos(this.xCoord, this.yCoord, this.zCoord);
+   }
+
+   @Inject(method = "updateState",at = @At(value = "HEAD"))
+   private void injectUpdatePos(CallbackInfo ci){
+      if (this.currentPos == null) {
+         this.currentPos = new BlockPos(this.xCoord, this.yCoord, this.zCoord);
+      }
+   }
+
+   @Shadow
+   public void setPrimaryEffect(int par1) {
+   }
+
+   @Overwrite
+   private void updateState(){
+      if (this.currentPos == null){
+         this.currentPos = new BlockPos(this.xCoord, this.yCoord, this.zCoord);
+      }
+      if (!this.worldObj.canBlockSeeTheSky(this.xCoord, this.yCoord + 1, this.zCoord)) {
+         this.isBeaconActive = false;
+         this.levels = 0;
+      } else {
+         this.isBeaconActive = true;
+         int previousLevel = this.levels;
+         this.levels = 0;
+
+         for(int var1 = 1; var1 <= 4; this.levels = var1++) {
+            int var2 = this.yCoord - var1;
+            if (var2 < 0) {
+               break;
             }
 
-            double var1 = this.e * 10 + 10;
-            AxisAlignedBB var4 = AxisAlignedBB.a().a(this.l, this.m, this.n, this.l + 1, this.m + 1, this.n + 1).b(var1, var1, var1);
-            var4.e = this.k.R();
+            boolean var3 = true;
 
-            List<EntityHuman> var5 = this.k.a(EntityHuman.class, var4);
-            for (EntityHuman entityHuman : var5) {
-                entityHuman.c(new MobEffect(this.f, 180, var3, true));
-                entityHuman.setCraftingBoostFactor(this.getCraftingBoostFactor(this.e),this.currentPos);
-                entityHuman.setCraftingBoostTimer(80);
+            for(int var4 = this.xCoord - var1; var4 <= this.xCoord + var1 && var3; ++var4) {
+               for(int var5 = this.zCoord - var1; var5 <= this.zCoord + var1; ++var5) {
+                  int var6 = this.worldObj.getBlockId(var4, var2, var5);
+                  if (var6 != Block.blockEmerald.blockID && var6 != Block.blockDiamond.blockID && var6 != Block.blockCopper.blockID && var6 != Block.blockSilver.blockID && var6 != Block.blockGold.blockID && var6 != Block.blockIron.blockID && var6 != Block.blockMithril.blockID && var6 != Block.blockAdamantium.blockID && var6 != Blocks.blockVibranium.blockID) {
+                     var3 = false;
+                     break;
+                  }
+               }
             }
 
-
-            if (this.e >= 4 && this.f != this.g && this.g > 0) {
-                for (EntityHuman entityHuman : var5) {
-                    entityHuman.c(new MobEffect(this.g, 180, 0, true));
-                }
+            if (!var3) {
+               break;
             }
-        }
+         }
 
-    }
+         if (this.levels == 0) {
+            this.isBeaconActive = false;
+            if (previousLevel != 0) {
+               double var1 = previousLevel * 10 + 10;
+               AxisAlignedBB var4 = AxisAlignedBB.getAABBPool().getAABB(this.xCoord, this.yCoord, this.zCoord, this.xCoord + 1, this.yCoord + 1, this.zCoord + 1).expand(var1, var1, var1);
 
-    private void v() {
-        if (this.currentPos == null){
-            this.currentPos = new BlockPos(this.l,this.m,this.n);
-        }
-        if (!this.k.l(this.l, this.m + 1, this.n)) {
-            this.d = false;
-            this.e = 0;
-        } else {
-            int previousLevel = this.e;
-            this.d = true;
-            this.e = 0;
-
-            for(int var1 = 1; var1 <= 4; this.e = var1++) {
-                int var2 = this.m - var1;
-                if (var2 < 0) {
-                    break;
-                }
-
-                boolean var3 = true;
-
-                for(int var4 = this.l - var1; var4 <= this.l + var1 && var3; ++var4) {
-                    for(int var5 = this.n - var1; var5 <= this.n + var1; ++var5) {
-                        int var6 = this.k.a(var4, var2, var5);
-                        if (var6 != Block.ca.cF && var6 != Block.aC.cF && var6 != Block.blockCopper.cF && var6 != Block.blockSilver.cF && var6 != Block.am.cF && var6 != Block.an.cF && var6 != Block.blockMithril.cF && var6 != Block.blockAdamantium.cF && var6 != Blocks.blockVibranium.cF) {
-                            var3 = false;
-                            break;
-                        }
-                    }
-                }
-
-                if (!var3) {
-                    break;
-                }
+               for (Object o : this.worldObj.getEntitiesWithinAABB(EntityPlayer.class, var4)) {
+                  EntityPlayer EntityPlayer = (EntityPlayer) o;
+                  EntityPlayer.setCraftingBoostFactor(0.0F, this.currentPos);
+               }
             }
-
-            if (this.e == 0) {
-                this.d = false;
-                if (previousLevel != 0){
-                    double var1 = previousLevel * 10 + 10;
-                    AxisAlignedBB var4 = AxisAlignedBB.a().a(this.l, this.m, this.n, this.l + 1, this.m + 1, this.n + 1).b(var1, var1, var1);
-                    for (EntityHuman entityHuman : (List<EntityHuman>)this.k.a(EntityHuman.class, var4)) {
-                        entityHuman.setCraftingBoostFactor(0,this.currentPos);
-                    }
-                }
-            }else {
-                this.d(this.f);
-            }
-        }
-
-    }
-
-    @Marker
-    public void d(int par1) {}
-
-    private float getCraftingBoostFactor(int level){
-        switch (level){
-            case 1 :
-                return 0.1f;
-            case 2 :
-                return 0.35f;
-            case 3 :
-                return 1f;
-            case 4:
-                return 1.75f;
-            default:
-                return 0;
-        }
-    }
+         } else {
+            this.setPrimaryEffect(this.primaryEffect);
+         }
+      }
+   }
 }

@@ -20,60 +20,151 @@ public class ContainerForgingTable extends Container {
     private int forgingTime;
     private int lastForgingTime;
 
-    public ContainerForgingTable(ForgingTableSlots slots,EntityHuman player, int x, int y, int z) {
+    public ContainerForgingTable(ForgingTableSlots slots,EntityPlayer player, int x, int y, int z) {
         super(player);
         this.blockX = x;
         this.blockY = y;
         this.blockZ = z;
         slots.initSlots(this);
         this.slots = slots;
-        if (!player.getWorld().I) {
-            this.tileentity = (TileEntityForgingTable) player.getWorldServer().r(x, y, z);
+        if (!player.getWorld().isRemote) {
+            this.tileentity = (TileEntityForgingTable) player.getWorldServer().getBlockTileEntity(x, y, z);
         }else {
             this.tileentity = null;
         }
-        this.a(slots);
+        this.onCraftMatrixChanged(slots);
 
         int index;
         for(index = 0; index < 3; ++index) {
             for(int var8 = 0; var8 < 9; ++var8) {
-                this.a(new Slot(player.bn, var8 + index * 9 + 9, 8 + var8 * 18, 84 + index * 18));
+                this.addSlot(new Slot(player.inventory, var8 + index * 9 + 9, 8 + var8 * 18, 84 + index * 18));
             }
         }
 
         for(index = 0; index < 9; ++index) {
-            this.a(new Slot(player.bn, index, 8 + index * 18, 142));
+            this.addSlot(new Slot(player.inventory, index, 8 + index * 18, 142));
         }
 
+    }
+
+    public void addSlot(Slot slot){
+        this.addSlotToContainer(slot);
+    }
+
+    @Override
+    public boolean canInteractWith(EntityPlayer player) {
+        if (this.world.getBlock(this.blockX, this.blockY, this.blockZ) instanceof BlockForgingTable && this.world.getBlockTileEntity(this.blockX, this.blockY, this.blockZ) instanceof TileEntityForgingTable) {
+            return player.getDistanceSq((double)this.blockX + 0.5D, (double)this.blockY + 0.5D, (double)this.blockZ + 0.5D) <= 64.0D;
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public void detectAndSendChanges() {
+        super.detectAndSendChanges();
+        for (Object o : this.crafters) {
+            ICrafting var2 = (ICrafting) o;
+            if (this.lastForgingTime != this.forgingTime) {
+                var2.sendProgressBarUpdate(this, 0, this.forgingTime);
+            }
+        }
+        this.lastForgingTime = this.forgingTime;
+    }
+
+//    private boolean tryMergeToolItemToSlot(ItemStack itemStack){
+//
+//    }
+
+    void finishForging(SPacketFinishForging.Status finishStatus){
+        this.player.sendPacket(new SPacketFinishForging(finishStatus));
+        if (!this.world.isRemote){
+            switch (finishStatus) {
+                case COMPLETED:
+                    this.player.sendPacket(new SPacketForgingTableInfo(SPacketForgingTableInfo.Succeed.getInstance()));
+                    break;
+                case FAILED:
+                    this.player.sendPacket(new SPacketForgingTableInfo(SPacketForgingTableInfo.Failed.getInstance()));
+                    break;
+                case CANCELED:
+                    break;
+            }
+        }
     }
 
     public List<ItemStack> getInventory() {
         List<ItemStack> nonnulllist = new ArrayList<>();
 
-        for (Object o : this.c) {
-            nonnulllist.add(((Slot) o).d());
+        for (Object o : this.inventorySlots) {
+            nonnulllist.add(((Slot) o).getStack());
         }
         return nonnulllist;
     }
 
+    public void b(int index, int value) {
+        if (index == 0){
+            this.forgingTime = value;
+        }
+    }
+
     @Override
     //onContainerClosed
-    public void b(EntityHuman par1EntityPlayer) {
-        super.b(par1EntityPlayer);
-        if (!this.world.I){
+    public void onContainerClosed(EntityPlayer par1EntityPlayer) {
+        super.onContainerClosed(par1EntityPlayer);
+        if (!this.world.isRemote){
             this.slots.onContainerClosed();
         }
     }
 
     @Override
-    public ItemStack b(EntityHuman playerIn, int index) {
+    public void onCraftGuiOpened(ICrafting par1ICrafting) {
+        super.onCraftGuiOpened(par1ICrafting);
+        par1ICrafting.sendProgressBarUpdate(this, 0, this.forgingTime);
+    }
+
+    //onCraftMatrixChanged
+    public void onCraftMatrixChanged(IInventory par1IInventory) {
+        this.detectAndSendChanges();
+        if (par1IInventory == this.slots){
+            this.slots.onItemsChanged();
+        }
+    }
+
+    //onlyInServer
+    void onCraftMatrixChanged(){
+        ((ServerPlayer) this.player).updateCraftingInventory(this,this.getInventory());
+        this.slots.onItemsChanged();
+    }
+
+    public void sendToolInfo(SPacketForgingTableInfo.ToolInfo.Tool tool) {
+        if (!this.world.isRemote){
+            this.player.sendPacket(new SPacketForgingTableInfo(SPacketForgingTableInfo.ToolInfo.of(tool)));
+        }
+    }
+
+    //OnlyInServer
+    public void startForging(){
+        if (!this.tileentity.startForging()) {
+            this.finishForging(SPacketFinishForging.Status.CANCELED);
+            ItemStack toolItem = this.slots.getToolItem();
+            if (toolItem != null){
+                ForgingRecipe recipeFromTool = this.slots.getRecipeFromTool(toolItem);
+                if (recipeFromTool != null && this.slots.getHammerItem() != null && this.slots.getAxeItem() != null && !this.world.isRemote){
+                    this.player.sendPacket(new SPacketForgingTableInfo(SPacketForgingTableInfo.ReqItems.of(this.slots.getNeedItems(recipeFromTool))));
+                }
+            }
+        }
+    }
+
+    @Override
+    public ItemStack transferStackInSlot(EntityPlayer playerIn, int index) {
         ItemStack itemstack = null/*ItemStack.EMPTY*/;
-        Slot slot = (Slot)this.c/*inventorySlots*/.get(index);
-        if (slot != null && slot.e()/*getHasStack()*/) {
+        Slot slot = (Slot)this.inventorySlots/*inventorySlots*/.get(index);
+        if (slot != null && slot.getHasStack()/*getHasStack()*/) {
             //ItemStack itemstack1 = slot.getStack();
-            ItemStack itemstack1 = slot.d();
+            ItemStack itemstack1 = slot.getStack();
             //itemstack = itemstack1.copy();
-            itemstack = itemstack1.m();
+            itemstack = itemstack1.copy();
 //            if (index == 2) {
 //                //  !this.mergeItemStack(itemstack1, 3, 39, true)
 //                if (!this.a(itemstack1, 3, 39, true)) {
@@ -91,30 +182,30 @@ public class ContainerForgingTable extends Container {
 //                return null;
 //            }
             if (index < this.slots.getSize()){
-                if (!this.a(itemstack1,this.slots.getSize(),this.c.size(),false)){
+                if (!this.mergeItemStack(itemstack1,this.slots.getSize(),this.inventorySlots.size(),false)){
                     return null;
                 }
             }else {
-                if (itemstack1.b() instanceof ItemAxe){
-                    if (!this.a(itemstack1,this.slots.getAxeSlotIndex(),this.slots.getAxeSlotIndex() + 1,false)){
-                        if (!this.a(itemstack1,this.slots.getToolItemSlotIndex(),this.slots.getToolItemSlotIndex() + 1,false)){
+                if (itemstack1.getItem() instanceof ItemAxe){
+                    if (!this.mergeItemStack(itemstack1,this.slots.getAxeSlotIndex(),this.slots.getAxeSlotIndex() + 1,false)){
+                        if (!this.mergeItemStack(itemstack1,this.slots.getToolItemSlotIndex(),this.slots.getToolItemSlotIndex() + 1,false)){
                             return null;
                         }
                     }
-                }else if (itemstack1.b() instanceof ItemWarHammer){
-                    if (!this.a(itemstack1,this.slots.getHammerSlotIndex(),this.slots.getHammerSlotIndex() + 1,false)){
-                        if (!this.a(itemstack1,this.slots.getToolItemSlotIndex(),this.slots.getToolItemSlotIndex() + 1,false)){
+                }else if (itemstack1.getItem() instanceof ItemWarHammer){
+                    if (!this.mergeItemStack(itemstack1,this.slots.getHammerSlotIndex(),this.slots.getHammerSlotIndex() + 1,false)){
+                        if (!this.mergeItemStack(itemstack1,this.slots.getToolItemSlotIndex(),this.slots.getToolItemSlotIndex() + 1,false)){
                             return null;
                         }
                     }
-                }else if (itemstack1.b() instanceof ItemTool || itemstack1.b() instanceof ItemArmor){
-                    if (!this.a(itemstack1,this.slots.getToolItemSlotIndex(),this.slots.getToolItemSlotIndex() + 1,false)){
-                        if (!this.a(itemstack1,0,this.slots.getSize(),false)){
+                }else if (itemstack1.getItem() instanceof ItemTool || itemstack1.getItem() instanceof ItemArmor){
+                    if (!this.mergeItemStack(itemstack1,this.slots.getToolItemSlotIndex(),this.slots.getToolItemSlotIndex() + 1,false)){
+                        if (!this.mergeItemStack(itemstack1,0,this.slots.getSize(),false)){
                             return null;
                         }
                     }
                 }else {
-                    if (!this.a(itemstack1,0,this.slots.getSize(),false)){
+                    if (!this.mergeItemStack(itemstack1,0,this.slots.getSize(),false)){
                         return null;
                     }
                 }
@@ -126,115 +217,24 @@ public class ContainerForgingTable extends Container {
                slot.onSlotChanged();
             }
  */
-            if (itemstack1.b == 0) {
-                slot.c(null)/*putStack(ItemStack.EMPTY)*/;
+            if (itemstack1.stackSize == 0) {
+                slot.putStack(null);/*putStack(ItemStack.EMPTY)*/
             } else {
-                slot.f()/*onSlotChanged*/;
+                slot.onSlotChanged();/*onSlotChanged*/
             }
             //  itemstack1.getCount() == itemstack.getCount()
-            if (itemstack1.b == itemstack.b) {
+            if (itemstack1.stackSize == itemstack.stackSize) {
                 return null;
             }
             //onTake
-            slot.a(playerIn, itemstack1);
+            slot.onPickupFromSlot(playerIn, itemstack1);
         }
 
         return itemstack;
     }
 
-//    private boolean tryMergeToolItemToSlot(ItemStack itemStack){
-//
-//    }
-
-    //onCraftMatrixChanged
-    public void a(IInventory par1IInventory) {
-        this.b();
-        if (par1IInventory == this.slots){
-            this.slots.onItemsChanged();
-        }
-    }
-
-    @Override
-    public void b() {
-        super.b();
-        for (Object o : this.e) {
-            ICrafting var2 = (ICrafting) o;
-            if (this.lastForgingTime != this.forgingTime) {
-                var2.a(this, 0, this.forgingTime);
-            }
-        }
-        this.lastForgingTime = this.forgingTime;
-    }
-
-    public void b(int index, int value) {
-        if (index == 0){
-            this.forgingTime = value;
-        }
-    }
-
-    @Override
-    public void a(ICrafting par1ICrafting) {
-        super.a(par1ICrafting);
-        par1ICrafting.a(this, 0, this.forgingTime);
-    }
-
-    public void addSlot(Slot slot){
-        this.a(slot);
-    }
-
-    @Override
-    public boolean a(EntityHuman player) {
-        if (this.world.getBlock(this.blockX, this.blockY, this.blockZ) instanceof BlockForgingTable && this.world.r(this.blockX, this.blockY, this.blockZ) instanceof TileEntityForgingTable) {
-            return player.e((double)this.blockX + 0.5D, (double)this.blockY + 0.5D, (double)this.blockZ + 0.5D) <= 64.0D;
-        } else {
-            return false;
-        }
-    }
-
-    //OnlyInServer
-    public void startForging(){
-        if (!this.tileentity.startForging()) {
-            this.finishForging(SPacketFinishForging.Status.CANCELED);
-            ItemStack toolItem = this.slots.getToolItem();
-            if (toolItem != null){
-                ForgingRecipe recipeFromTool = this.slots.getRecipeFromTool(toolItem);
-                if (recipeFromTool != null && this.slots.getHammerItem() != null && this.slots.getAxeItem() != null && !this.world.I){
-                    this.player.sendPacket(new SPacketForgingTableInfo(SPacketForgingTableInfo.ReqItems.of(this.slots.getNeedItems(recipeFromTool))));
-                }
-            }
-        }
-    }
-
-    void finishForging(SPacketFinishForging.Status finishStatus){
-        this.player.sendPacket(new SPacketFinishForging(finishStatus));
-        if (!this.world.I){
-            switch (finishStatus) {
-                case COMPLETED:
-                    this.player.sendPacket(new SPacketForgingTableInfo(SPacketForgingTableInfo.Succeed.getInstance()));
-                    break;
-                case FAILED:
-                    this.player.sendPacket(new SPacketForgingTableInfo(SPacketForgingTableInfo.Failed.getInstance()));
-                    break;
-                case CANCELED:
-                    break;
-            }
-        }
-    }
-
-    //onlyInServer
-    void onCraftMatrixChanged(){
-        ((EntityPlayer) this.player).a(this,this.getInventory());
-        this.slots.onItemsChanged();
-    }
-
-    void updateTime(int time){
-        this.forgingTime  = time;
-        this.b();
-    }
-
-
     void updateInfo(@Nullable ForgingRecipe recipe) {
-        if (!this.world.I){
+        if (!this.world.isRemote){
             if (recipe != null){
                 this.player.sendPacket(new SPacketForgingTableInfo(SPacketForgingTableInfo.EnhanceInfo.getInstance(recipe.getChanceOfFailure(),recipe.getFaultFeedback().getName(),recipe.getFaultFeedback().getData(),this.slots.getForgingTime(recipe),recipe.getHammerDurabilityCost(),recipe.getAxeDurabilityCost())));
             }else {
@@ -247,9 +247,8 @@ public class ContainerForgingTable extends Container {
         return forgingTime;
     }
 
-    public void sendToolInfo(SPacketForgingTableInfo.ToolInfo.Tool tool) {
-        if (!this.world.I){
-            this.player.sendPacket(new SPacketForgingTableInfo(SPacketForgingTableInfo.ToolInfo.of(tool)));
-        }
+    void updateTime(int time){
+        this.forgingTime  = time;
+        this.detectAndSendChanges();
     }
 }

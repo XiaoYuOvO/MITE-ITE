@@ -1,27 +1,27 @@
 package net.xiaoyu233.mitemod.miteite.trans.item;
 
 import net.minecraft.Material;
-import net.xiaoyu233.fml.asm.annotations.Link;
-import net.xiaoyu233.fml.asm.annotations.Transform;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 
-@Transform(Material.class)
+@Mixin(Material.class)
 public class MaterialTrans {
-    @Link
-    protected int min_harvest_level;
-    @Link
-    protected float durability;
-    @Link
-    protected String name;
+   @Shadow
+   protected float durability;
+   @Shadow
+   protected int min_harvest_level;
+   @Shadow
+   protected String name;
 
-    public float getDurability(){
-        return this.durability;
-    }
+   public float getDurability() {
+      return this.durability;
+   }
 
-    public String getName() {
-        return this.name;
-    }
+   public int getMinHarvestLevel() {
+      return this.min_harvest_level;
+   }
 
-    public int getMinHarvestLevel() {
-        return min_harvest_level;
-    }
+   public String getName() {
+      return this.name;
+   }
 }

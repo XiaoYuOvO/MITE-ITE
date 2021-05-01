@@ -2,164 +2,170 @@ package net.xiaoyu233.mitemod.miteite.trans.entity;
 
 import net.minecraft.*;
 import net.minecraft.server.MinecraftServer;
-import net.xiaoyu233.fml.asm.annotations.Link;
-import net.xiaoyu233.fml.asm.annotations.Transform;
-import net.xiaoyu233.mitemod.miteite.MITEITEMod;
-import net.xiaoyu233.mitemod.miteite.util.Config;
+import net.xiaoyu233.mitemod.miteite.util.Configs;
+import org.spongepowered.asm.mixin.Final;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Overwrite;
+import org.spongepowered.asm.mixin.Shadow;
 
 import java.util.List;
 import java.util.UUID;
 
-@Transform(EntityPigZombie.class)
+@Mixin(EntityPigZombie.class)
 public class EntityZombiePigmanTrans extends EntityZombie implements IRangedEntity {
-    @Link
-    protected static IAttribute bp;
-    @Link
-    public static AttributeModifier br;
-    @Link
-    private static final UUID bq = UUID.fromString("49455A49-7EC5-45BA-B886-3B90B23A1718");
-    private final PathfinderGoalArrowAttack arrowAttack = new PathfinderGoalArrowAttack((this), 1.0D, 20, 60, 15.0F);
-    private final PathfinderGoalMeleeAttack meleeAttack = new PathfinderGoalMeleeAttack(this, EntityHuman.class, 1D, false);
-    private int DATA_OBJ_ID_IS_BOOSTED;
-    private int effectCooldown;
+   @Shadow
+   @Final
+   public static final AttributeModifier field_110190_br;
+   @Shadow
+   @Final
+   private static final UUID field_110189_bq = UUID.fromString("49455A49-7EC5-45BA-B886-3B90B23A1718");
 
-    public void setHeldItemStack(ItemStack item_stack) {
-        super.setHeldItemStack(item_stack);
-    }
+   static {
+      field_110190_br = (new AttributeModifier(field_110189_bq, "Attacking speed boost", 0.1D, 0)).setSaved(false);
+   }
 
-    public void reCalcProfession() {
-        this.c.a(this.arrowAttack);
-        this.c.a(this.meleeAttack);
-        ItemStack var1 = this.getHeldItemStack();
-        if (var1 != null && var1.b() instanceof ItemBow) {
-            this.c.a(4, this.arrowAttack);
-            this.c.a(3, new EntityAISeekFiringPosition(this, 1.0F, true));
-        } else {
-            this.c.a(4, this.meleeAttack);
-        }
+   private final PathfinderGoalArrowAttack arrowAttack = new PathfinderGoalArrowAttack(this, 1.0D, 20, 60, 15.0F);
+   private final PathfinderGoalMeleeAttack meleeAttack = new PathfinderGoalMeleeAttack(this, EntityPlayer.class, 1.0D, false);
+   private int DATA_OBJ_ID_IS_BOOSTED;
+   private int effectCooldown;
 
-    }
+   public EntityZombiePigmanTrans(World par1World) {
+      super(par1World);
+      this.tasks.clear();
+      this.tasks.addTask(1, new EntityAIWatchAnimal(this));
+      this.tasks.addTask(0, new PathfinderGoalFloat(this));
+      this.tasks.addTask(1, new PathfinderGoalBreakDoor(this));
+      this.tasks.addTask(3, new PathfinderGoalMeleeAttack(this, EntityVillager.class, 1.0D, true));
+      this.tasks.addTask(4, new PathfinderGoalMoveTowardsRestriction(this, 1.0D));
+      this.tasks.addTask(5, new PathfinderGoalMoveThroughVillage(this, 1.0D, false));
+      this.tasks.addTask(6, new PathfinderGoalRandomStroll(this, 1.0D));
+      this.tasks.addTask(7, new PathfinderGoalLookAtPlayer(this, EntityPlayer.class, 8.0F));
+      this.tasks.addTask(7, new PathfinderGoalRandomLookaround(this));
+      this.targetTasks.addTask(1, new PathfinderGoalHurtByTarget(this, true));
+      this.targetTasks.addTask(2, new PathfinderGoalNearestAttackableTarget(this, EntityPlayer.class, 0, true));
+      this.targetTasks.addTask(2, new PathfinderGoalNearestAttackableTarget(this, EntityVillager.class, 0, false));
+      this.tasks.addTask(2, new EntityAIMoveToFoodItem(this, 1.0F, true));
+      this.tasks.addTask(4, new PathfinderGoalMeleeAttack(this, EntityAnimal.class, 1.0D, true));
+      this.targetTasks.addTask(3, new PathfinderGoalNearestAttackableTarget(this, EntityAnimal.class, 10, true));
+      this.tasks.addTask(3, new EntityAIMoveToTree(this, 1.0F));
+   }
 
-    public EntityZombiePigmanTrans(World par1World) {
-        super(par1World);
-        this.c.clear();
-        this.c.a(1, new EntityAIWatchAnimal(this));
-        this.c.a(0, new PathfinderGoalFloat(this));
-        this.c.a(1, new PathfinderGoalBreakDoor(this));
-//        this.c.a(2, new PathfinderGoalMeleeAttack(this, EntityHuman.class, 1.0D, false));
-        this.c.a(3, new PathfinderGoalMeleeAttack(this, EntityVillager.class, 1.0D, true));
-        this.c.a(4, new PathfinderGoalMoveTowardsRestriction(this, 1.0D));
-        this.c.a(5, new PathfinderGoalMoveThroughVillage(this, 1.0D, false));
-        this.c.a(6, new PathfinderGoalRandomStroll(this, 1.0D));
-        this.c.a(7, new PathfinderGoalLookAtPlayer(this, EntityHuman.class, 8.0F));
-        this.c.a(7, new PathfinderGoalRandomLookaround(this));
-        this.d.a(1, new PathfinderGoalHurtByTarget(this, true));
-        this.d.a(2, new PathfinderGoalNearestAttackableTarget(this, EntityHuman.class, 0, true));
-        this.d.a(2, new PathfinderGoalNearestAttackableTarget(this, EntityVillager.class, 0, false));
-        this.c.a(2, new EntityAIMoveToFoodItem(this, 1.0F, true));
-        this.c.a(4, new PathfinderGoalMeleeAttack(this, EntityAnimal.class, 1.0D, true));
-        this.d.a(3, new PathfinderGoalNearestAttackableTarget(this, EntityAnimal.class, 10, true));
-        this.c.a(3, new EntityAIMoveToTree(this, 1.0F));
+   @Overwrite
+   protected void applyEntityAttributes() {
+      super.applyEntityAttributes();
+      int day = this.getWorld() != null ? Math.max(this.getWorld().getDayOfWorld() - 64, 0) : 0;
+      this.setEntityAttribute(GenericAttributes.maxHealth, 50.0D + (double)day / 12.0D);
+      this.setEntityAttribute(GenericAttributes.followRange, 64.0D);
+      this.setEntityAttribute(GenericAttributes.movementSpeed, 0.25D);
+      this.setEntityAttribute(GenericAttributes.attackDamage, 10.0D + (double)day / 48.0D);
+      this.setEntityAttribute(EntityZombie.field_110186_bp, this.rand.nextDouble() * 0.10000000149011612D);
+   }
 
-    }
+   public void attackEntityWithRangedAttack(EntityLiving entityLiving, float par2) {
+      EntityArrow var3 = new EntityArrow(this.getWorld(), this, entityLiving, 1.6F, (float)(14 - this.getWorld().difficultySetting * 4), Item.arrowRustedIron, false);
+      int rawDay = this.getWorld() != null ? this.getWorld().getDayOfWorld() : 0;
+      int day = Math.max(rawDay - 64, 0);
+      int var4 = EnchantmentManager.getEnchantmentLevel(Enchantment.power.effectId, this.getHeldItemStack()) + 1;
+      int var5 = (int)((double)EnchantmentManager.getEnchantmentLevel(Enchantment.punch.effectId, this.getHeldItemStack()) + Math.min(1.0D + Math.floor((float)day / 48.0F), 5.0D));
+      double damage = (double)(par2 * 2.0F) + this.getRNG().nextGaussian() * 0.0D + (double)((float)this.getWorld().difficultySetting * 0.11F);
+      var3.setDamage(damage);
+      if (var4 > 0) {
+         var3.setDamage(var3.getDamage() + (double)var4 * 2.0D + 1.0D);
+      }
 
-    //Use new AI
-    protected boolean bf() {
-        return true;
-    }
+      if (var5 > 0) {
+         var3.setKnockbackStrength(var5);
+      }
 
-    public boolean canCatchFire() {
-        return false;
-    }
+      if (EnchantmentManager.getEnchantmentLevel(Enchantment.flame.effectId, this.getHeldItemStack()) > 0 || this.isInFire() && this.getRNG().nextInt(3) == 0 || rawDay > 196) {
+         var3.setFire(100);
+      }
 
-    public boolean willPickupAsValuable(ItemStack item_stack) {
-        return item_stack.getItemSubtype() == 0 && item_stack.k() == 0 && item_stack.hasMaterial(Material.gold);
-    }
+      this.playSound("random.bow", 1.0F, 1.0F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
+      this.getWorld().spawnEntityInWorld(var3);
+   }
 
-    @Override
-    public void a(EntityLiving entityLiving, float par2) {
-        EntityArrow var3 = new EntityArrow(this.getWorld(), this, entityLiving, 1.6F, (float) (14 - this.getWorld().r * 4), Item.arrowRustedIron, false);
-        int rawDay = this.getWorld() != null ? this.getWorld().getDayOfWorld() : 0;
-        int day = Math.max(rawDay - 64, 0);
-        int var4 = EnchantmentManager.a(Enchantment.v.z, this.getHeldItemStack()) + 1;
-        int var5 = (int) (EnchantmentManager.a(Enchantment.w.z, this.getHeldItemStack()) + Math.min((1 + Math.floor(day / 48F)), 5));
-        double damage = (double) (par2 * 2.0F) + this.aD().nextGaussian() * 0.0D + (double) ((float) this.getWorld().r * 0.11F);
-        var3.b(damage);
-        if (var4 > 0) {
-            var3.b(var3.c() + (double) var4 * 2.0D + 1);
-        }
+   public boolean canCatchFire() {
+      return false;
+   }
 
-        if (var5 > 0) {
-            var3.a(var5);
-        }
+   @Override
+   protected void entityInit() {
+      super.entityInit();
+      this.DATA_OBJ_ID_IS_BOOSTED = this.dataWatcher.addObject(this.dataWatcher.getNextAvailableId(), 0);
+   }
 
-        if ((EnchantmentManager.a(Enchantment.x.z, this.getHeldItemStack()) > 0 || (this.af() && this.aD().nextInt(3) == 0)) || rawDay > 196) {
-            var3.d(100);
-        }
+   protected boolean isAIEnabled() {
+      return true;
+   }
 
-        this.a("random.bow", 1.0F, 1.0F / (this.aD().nextFloat() * 0.4F + 0.8F));
-        this.getWorld().d(var3);
-    }
+   public GroupDataEntity onSpawnWithEgg(GroupDataEntity par1EntityLivingData) {
+      super.onSpawnWithEgg(par1EntityLivingData);
+      this.setVillager(false, 0);
+      this.dataWatcher.updateObject(this.DATA_OBJ_ID_IS_BOOSTED, (byte)((double)this.rand.nextFloat() < (Configs.Entities.ZOMBIE_PIGMAN_BOOST_CHANCE.get()) ? 1 : 0));
+      if (this.getWorld() != null && !this.getWorld().isRemote) {
+         if (this.randomUseBow() && (Configs.Entities.ZOMBIE_PIGMAN_USE_BOW.get())) {
+            this.tasks.addTask(4, this.arrowAttack);
+            this.tasks.addTask(3, new EntityAISeekFiringPosition(this, 1.0F, true));
+            this.setWornItem(0, (new ItemStack(Item.bow)).randomizeForMob(this, true));
+         } else {
+            this.tasks.addTask(4, this.meleeAttack);
+            this.tasks.addTask(2, this.meleeAttack);
+         }
+      }
 
-    protected void a() {
-        super.a();
-        this.DATA_OBJ_ID_IS_BOOSTED = this.ah.addObject(this.ah.getNextAvailableId(), (byte) 0);
-    }
+      this.reCalcProfession();
+      return par1EntityLivingData;
+   }
 
-    public GroupDataEntity a(GroupDataEntity par1EntityLivingData) {
-        super.a(par1EntityLivingData);
-        this.setVillager(false, 0);
-        this.ah.b(DATA_OBJ_ID_IS_BOOSTED, (byte) ((this.ab.nextFloat() < MITEITEMod.CONFIG.get(Config.ConfigEntry.ZOMBIE_PIGMAN_BOOST_CHANCE)) ? 1 : 0));
-        if (this.getWorld() != null && !this.getWorld().I) {
-            if (this.randomUseBow() && MITEITEMod.CONFIG.get(Config.ConfigEntry.ZOMBIE_PIGMAN_USE_BOW)) {
-                this.c.a(4, this.arrowAttack);
-                this.c.a(3, new EntityAISeekFiringPosition(this, 1.0F, true));
-                this.c(0, (new ItemStack(Item.m)).randomizeForMob(this, true));
-            } else {
-                this.c.a(4, this.meleeAttack);
-                this.c.a(2, meleeAttack);
+   @Overwrite
+   public void onUpdate() {
+      super.onUpdate();
+      if (this.getWorld().isWorldServer() && this.dataWatcher.getWatchableObjectByte(this.DATA_OBJ_ID_IS_BOOSTED) > 0) {
+         if (this.effectCooldown <= 0) {
+            int day = MinecraftServer.F().getOverworld().getWorld().getDayOfWorld();
+            if (day > 128) {
+               List<EntityPigZombie> nearbyZombie = this.worldObj.getEntitiesWithinAABB(EntityPigZombie.class, this.boundingBox.expand(16.0D, 8.0D, 16.0D));
+
+               for (EntityPigZombie entityPigZombie : nearbyZombie) {
+                  entityPigZombie.addPotionEffect(new MobEffect(1, 40 + day / 32 * 10, this.getRNG()
+                          .nextInt(Math.max((day - 96) / 96, 1)), false));
+                  entityPigZombie.addPotionEffect(new MobEffect(5, day / 32 * 10, this.getRNG()
+                          .nextInt(Math.max((day - 128) / 96, 1)), false));
+               }
+
+               this.entityFX(EnumEntityFX.smoke_and_steam);
+               this.effectCooldown = 30;
             }
-        }
-        this.reCalcProfession();
-        return par1EntityLivingData;
-    }
+         } else {
+            --this.effectCooldown;
+         }
+      }
 
-    protected void az() {
-        super.az();
-        int day = this.getWorld() != null ? Math.max(this.getWorld().getDayOfWorld() - 64, 0) : 0;
-        this.setEntityAttribute(GenericAttributes.a, 50.0D + day / 12D);
-        this.setEntityAttribute(GenericAttributes.b, 64D);
-        this.setEntityAttribute(GenericAttributes.d, 0.25D);
-        this.setEntityAttribute(GenericAttributes.e, 10D + day / 48D);
-        this.setEntityAttribute(EntityZombie.bp, this.ab.nextDouble() * (double) 0.1F);
-    }
+   }
 
-    public void c() {
-        super.c();
-        if (this.getWorld().isWorldServer() && this.ah.a(DATA_OBJ_ID_IS_BOOSTED) > 0) {
-            if (effectCooldown <= 0) {
-                int day = MinecraftServer.F().getOverworld().getWorld().getDayOfWorld();
-                if (day > 128) {
-                    List<EntityPigZombie> nearbyZombie = this.q.a(EntityPigZombie.class, this.E.b(16.0D, 8.0D, 16.0D));
-                    for (EntityPigZombie entityPigZombie : nearbyZombie) {
-                        entityPigZombie.c(new MobEffect(1, 40 + day / 32 * 10, this.aD().nextInt(Math.max(((day - 96) / 96), 1)), false));
-                        entityPigZombie.c(new MobEffect(5, day / 32 * 10, this.aD().nextInt(Math.max(((day - 128) / 96), 1)), false));
-                    }
+   public boolean randomUseBow() {
+      return this.rand.nextInt(10) > 8;
+   }
 
-                    entityFX(EnumEntityFX.smoke_and_steam);
-                    effectCooldown = 30;
-                }
-            } else {
-                effectCooldown--;
-            }
-        }
-    }
+   public void reCalcProfession() {
+      this.tasks.removeTask(this.arrowAttack);
+      this.tasks.removeTask(this.meleeAttack);
+      ItemStack var1 = this.getHeldItemStack();
+      if (var1 != null && var1.getItem() instanceof ItemBow) {
+         this.tasks.addTask(4, this.arrowAttack);
+         this.tasks.addTask(3, new EntityAISeekFiringPosition(this, 1.0F, true));
+      } else {
+         this.tasks.addTask(4, this.meleeAttack);
+      }
 
-    static {
-        br = (new AttributeModifier(bq, "Attacking speed boost", 0.1D, 0)).a(false);
-    }
+   }
 
-    public boolean randomUseBow() {
-        return this.ab.nextInt(10) > 8;
-    }
+   public void setHeldItemStack(ItemStack item_stack) {
+      super.setHeldItemStack(item_stack);
+   }
+
+   public boolean willPickupAsValuable(ItemStack item_stack) {
+      return item_stack.getItemSubtype() == 0 && item_stack.getItemDamage() == 0 && item_stack.hasMaterial(Material.gold);
+   }
 }

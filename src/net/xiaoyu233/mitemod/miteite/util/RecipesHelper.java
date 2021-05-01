@@ -5,12 +5,11 @@ import net.minecraft.*;
 import javax.annotation.Nullable;
 
 public class RecipesHelper {
-    public static void checkRecipe(Item item, int subtype_or_0,@Nullable Object marker) {
+    public static void checkRecipe(Item item, int subtype_or_0, @Nullable Object marker) {
         if ((item.isCraftingProduct() || item.isRepairable()) && item.getLowestCraftingDifficultyToProduce() == 3.4028235E38F) {
             if (item.hasMaterial(Material.rusted_iron)) {
                 Item peer;
                 if (item instanceof ItemArmor) {
-                    ItemArmor var10000 = (ItemArmor)item;
                     peer = ItemArmor.getMatchingArmor(item.getClass(), Material.copper, item.isChainMail());
                 } else {
                     peer = Item.getMatchingItem(item.getClass(), Material.copper);
@@ -22,7 +21,7 @@ public class RecipesHelper {
             }
 
             if (item.getLowestCraftingDifficultyToProduce() == 3.4028235E38F) {
-                Minecraft.setErrorMessage("Warning: " + item.l(null) + " [" + item.cv + "] is " + (item.isCraftingComponent(subtype_or_0) ? "a crafting product" : "repairable") + " but its lowest_crafting_difficulty_to_produce cannot be determined");
+                Minecraft.setErrorMessage("Warning: " + item.getItemDisplayName(null) + " [" + item.itemID + "] is " + (item.isCraftingComponent(subtype_or_0) ? "a crafting product" : "repairable") + " but its lowest_crafting_difficulty_to_produce cannot be determined");
             }
         }
 
@@ -31,7 +30,7 @@ public class RecipesHelper {
             if (lowest_crafting_difficulty_to_produce != 3.4028235E38F) {
                 item.setCraftingDifficultyAsComponent(lowest_crafting_difficulty_to_produce);
             } else {
-                Minecraft.setErrorMessage("Warning: " + item.l(null) + " [" + item.cv + "] is a crafting component but its crafting_difficulty_as_component has not been set");
+                Minecraft.setErrorMessage("Warning: " + item.getItemDisplayName(null) + " [" + item.itemID + "] is a crafting component but its crafting_difficulty_as_component has not been set");
             }
         }
 

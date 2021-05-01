@@ -1,33 +1,36 @@
 package net.xiaoyu233.mitemod.miteite.trans.entity;
 
 import net.minecraft.DamageSource;
-import net.minecraft.EntityCreeper;
 import net.minecraft.EntityInfernalCreeper;
 import net.minecraft.World;
-import net.xiaoyu233.fml.asm.annotations.Transform;
-import net.xiaoyu233.mitemod.miteite.MITEITEMod;
-import net.xiaoyu233.mitemod.miteite.util.Config;
+import net.xiaoyu233.mitemod.miteite.util.Configs;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Overwrite;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Transform(EntityInfernalCreeper.class)
-public class EntityInfernalCreeperTrans extends EntityCreeper {
-    public EntityInfernalCreeperTrans(World world) {
-        super(world);
-        this.a(this.O * getScale(), this.P * getScale());
-        if(MITEITEMod.CONFIG.get(Config.ConfigEntry.INFERNAL_CREEPER_BOOST)){
-            int day = this.getWorld() != null ? this.getWorld().getDayOfWorld() : 0;
-            this.bs *= 3.0F;
-            if (day > 256){
-                this.bs *=2;
-            }
-            this.setExplosionTime(Math.max(this.getExplosionTime() * 3 - (int)( day * 0.3),20) );
-        }
-    }
+@Mixin(EntityInfernalCreeper.class)
+public class EntityInfernalCreeperTrans extends EntityCreeperTrans {
+   public EntityInfernalCreeperTrans(World world) {
+      super(world);
+      this.setSize(this.width* getScale(), this.height* getScale());
+   }
 
-    public float getNaturalDefense(DamageSource damage_source) {
-        if(MITEITEMod.CONFIG.get(Config.ConfigEntry.INFERNAL_CREEPER_BOOST)) {
-            return super.getNaturalDefense(damage_source) + (damage_source.bypassesMundaneArmor() ? 0.0F : 2.0F) + (this.getWorld() != null ? this.getWorld().getDayOfWorld() * 0.075f : 0);
-        }else {
-            return super.getNaturalDefense(damage_source) + (damage_source.bypassesMundaneArmor() ? 0.0F : 2.0F);
-        }
-    }
+   @Overwrite
+   public float getNaturalDefense(DamageSource damage_source) {
+      return Configs.Entities.INFERNAL_CREEPER_BOOST.get() ? super.getNaturalDefense(damage_source) + (damage_source.bypassesMundaneArmor() ? 0.0F : 2.0F) + (this.getWorld() != null ? (float)this.getWorld().getDayOfWorld() * 0.075F : 0.0F) : super.getNaturalDefense(damage_source) + (damage_source.bypassesMundaneArmor() ? 0.0F : 2.0F);
+   }
+
+   @Inject(method = "<init>",at = @At("RETURN"))
+   private void injectCtorModifyExplosion(CallbackInfo callbackInfo){
+      if ((Configs.Entities.INFERNAL_CREEPER_BOOST.get())) {
+         int day = this.getWorld() != null ? this.getWorld().getDayOfWorld() : 0;
+         this.explosionRadius *= 3.0F;
+         if (day > 256) {
+            this.explosionRadius *= 2.0F;
+         }
+         this.setExplosionTime(Math.max(this.getExplosionTime() * 3 - (int)((double)day * 0.3D), 20));
+      }
+   }
 }

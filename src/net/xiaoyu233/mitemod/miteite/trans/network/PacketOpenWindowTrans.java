@@ -1,165 +1,170 @@
 package net.xiaoyu233.mitemod.miteite.trans.network;
 
 import net.minecraft.*;
-import net.xiaoyu233.fml.asm.annotations.Link;
-import net.xiaoyu233.fml.asm.annotations.Marker;
-import net.xiaoyu233.fml.asm.annotations.Transform;
 import net.xiaoyu233.mitemod.miteite.inventory.container.ForgingTableSlots;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Overwrite;
+import org.spongepowered.asm.mixin.Shadow;
 
 import java.io.DataInput;
 import java.io.IOException;
 
-@Transform(Packet100OpenWindow.class)
+@Mixin(Packet100OpenWindow.class)
 public class PacketOpenWindowTrans {
-    public static final int TYPE_FORGING_TABLE = 14;
-    @Link
-    public boolean e;
-    @Link
-    public int f;
-    @Link
-    public int a;
-    @Link
-    public int b;
-    @Link
-    public String c;
-    @Link
-    public int d;
-    @Link
-    public int x;
-    @Link
-    public int y;
-    @Link
-    public int z;
-    @Link
-    public boolean has_set_coords;
-    @Marker
-    private Entity getEntityByID(EntityHuman player, int id) {
-        return null;
-    }
-    @Marker
-    public boolean hasTileEntity() {
-        return false;
-    }
-    public void a(DataInput par1DataInput) throws IOException {
-        this.a = par1DataInput.readByte() & 255;
-        this.b = par1DataInput.readByte() & 255;
-        this.c = Packet.a(par1DataInput, 32767);
-        this.d = par1DataInput.readByte() & 255;
-        this.e = par1DataInput.readBoolean();
-        if (this.b == 11) {
-            this.f = par1DataInput.readInt();
-        }
+   private static final int TYPE_FORGING_TABLE = 14;
+   @Shadow
+   public int field_111008_f;
+   @Shadow
+   public boolean has_set_coords;
+   @Shadow
+   public int inventoryType;
+   @Shadow
+   public int slotsCount;
+   @Shadow
+   public boolean useProvidedWindowTitle;
+   @Shadow
+   public int windowId;
+   @Shadow
+   public String windowTitle;
+   @Shadow
+   public int x;
+   @Shadow
+   public int y;
+   @Shadow
+   public int z;
 
-        if (this.hasCoords()) {
-            this.x = par1DataInput.readInt();
-            this.y = par1DataInput.readInt();
-            this.z = par1DataInput.readInt();
-        }
+   @Shadow
+   private Entity getEntityByID(EntityPlayer player, int id) {
+      return null;
+   }
 
-    }
+   @Overwrite
+   public void handleOpenWindow(ClientPlayer player) {
+      bdd world = player.worldObj.getAsWorldClient();
+      TileEntity tile_entity = world.getBlockTileEntity(this.x, this.y, this.z);
+      if (this.hasTileEntity() && tile_entity == null) {
+         Minecraft.setErrorMessage("handleOpenWindow: no tile entity found at " + StringHelper.getCoordsAsString(this.x, this.y, this.z));
+      }
 
-    @Marker
-    public boolean hasCoords(){
-        return false;
-    }
+      if (this.inventoryType == 0) {
+         player.displayGUIChest(this.x, this.y, this.z, new InventorySubcontainer(this.windowTitle, this.useProvidedWindowTitle, this.slotsCount));
+         player.openContainer.windowId = this.windowId;
+      } else if (this.inventoryType == 1) {
+         player.displayGUIWorkbench(this.x, this.y, this.z);
+         player.openContainer.windowId = this.windowId;
+      } else if (this.inventoryType == 2) {
+         TileEntityFurnace var4 = (TileEntityFurnace)tile_entity;
+         if (this.useProvidedWindowTitle) {
+            var4.setCustomInvName(this.windowTitle);
+         }
 
-    public void handleOpenWindow(bdi player) {
-        bdd world = player.q.getAsWorldClient();
-        TileEntity tile_entity = world.r(this.x, this.y, this.z);
-        if (this.hasTileEntity() && tile_entity == null) {
-            Minecraft.setErrorMessage("handleOpenWindow: no tile entity found at " + StringHelper.getCoordsAsString(this.x, this.y, this.z));
-        }
+         player.displayGUIFurnace(var4);
+         player.openContainer.windowId = this.windowId;
+      } else if (this.inventoryType == 3) {
+         TileEntityDispenser var7 = (TileEntityDispenser)tile_entity;
+         if (this.useProvidedWindowTitle) {
+            var7.setCustomInvName(this.windowTitle);
+         }
 
-        if (this.b == 0) {
-            player.displayGUIChest(this.x, this.y, this.z, new InventorySubcontainer(this.c, this.e, this.d));
-            player.bp.d = this.a;
-        } else if (this.b == 1) {
-            player.b(this.x, this.y, this.z);
-            player.bp.d = this.a;
-        } else if (this.b == 2) {
-            TileEntityFurnace var4 = (TileEntityFurnace)tile_entity;
-            if (this.e) {
-                var4.setCustomInvName(this.c);
+         player.displayGUIDispenser(var7);
+         player.openContainer.windowId = this.windowId;
+      } else if (this.inventoryType == 4) {
+         player.displayGUIEnchantment(this.x, this.y, this.z, this.useProvidedWindowTitle ? this.windowTitle : null);
+         player.openContainer.windowId = this.windowId;
+      } else if (this.inventoryType == 5) {
+         TileEntityBrewingStand var5 = (TileEntityBrewingStand)tile_entity;
+         if (this.useProvidedWindowTitle) {
+            var5.setCustomInvName(this.windowTitle);
+         }
+
+         player.displayGUIBrewingStand(var5);
+         player.openContainer.windowId = this.windowId;
+      } else if (this.inventoryType == 6) {
+         player.displayGUIMerchant(new tz(player), this.useProvidedWindowTitle ? this.windowTitle : null);
+         player.openContainer.windowId = this.windowId;
+      } else if (this.inventoryType == 7) {
+         TileEntityBeacon var8 = (TileEntityBeacon)tile_entity;
+         player.displayGUIBeacon(var8);
+         if (this.useProvidedWindowTitle) {
+            var8.setCustomInvName(this.windowTitle);
+         }
+
+         player.openContainer.windowId = this.windowId;
+      } else if (this.inventoryType == 8) {
+         tile_entity.setCustomInvName(this.windowTitle);
+         player.displayGUIAnvil(this.x, this.y, this.z);
+         player.openContainer.windowId = this.windowId;
+      } else {
+         TileEntityHopper var3;
+         if (this.inventoryType == 9) {
+            var3 = (TileEntityHopper)tile_entity;
+            if (this.useProvidedWindowTitle) {
+               var3.setCustomInvName(this.windowTitle);
             }
 
-            player.a(var4);
-            player.bp.d = this.a;
-        } else if (this.b == 3) {
-            TileEntityDispenser var7 = (TileEntityDispenser)tile_entity;
-            if (this.e) {
-                var7.setCustomInvName(this.c);
+            player.displayGUIHopper(var3);
+            player.openContainer.windowId = this.windowId;
+         } else if (this.inventoryType == 10) {
+            TileEntityDropper var6 = (TileEntityDropper)tile_entity;
+            if (this.useProvidedWindowTitle) {
+               var6.setCustomInvName(this.windowTitle);
             }
 
-            player.a(var7);
-            player.bp.d = this.a;
-        } else if (this.b == 4) {
-            player.a(this.x, this.y, this.z, this.e ? this.c : null);
-            player.bp.d = this.a;
-        } else if (this.b == 5) {
-            TileEntityBrewingStand var5 = (TileEntityBrewingStand)tile_entity;
-            if (this.e) {
-                var5.setCustomInvName(this.c);
+            player.displayGUIDispenser(var6);
+            player.openContainer.windowId = this.windowId;
+         } else if (this.inventoryType == 11) {
+            Entity var9 = this.getEntityByID(player, this.field_111008_f);
+            if (var9 != null && var9 instanceof EntityHorse) {
+               player.displayGUIHorse((EntityHorse)var9, new InventoryHorseChest(this.windowTitle, this.useProvidedWindowTitle, this.slotsCount));
+               player.openContainer.windowId = this.windowId;
+            }
+         } else if (this.inventoryType == 12) {
+            player.displayGUIChestForMinecart(new InventorySubcontainer(this.windowTitle, this.useProvidedWindowTitle, this.slotsCount));
+            player.openContainer.windowId = this.windowId;
+         } else if (this.inventoryType == 13) {
+            var3 = new TileEntityHopper();
+            if (this.useProvidedWindowTitle) {
+               var3.setCustomInvName(this.windowTitle);
             }
 
-            player.a(var5);
-            player.bp.d = this.a;
-        } else if (this.b == 6) {
-            player.a(new tz(player), this.e ? this.c : null);
-            player.bp.d = this.a;
-        } else if (this.b == 7) {
-            TileEntityBeacon var8 = (TileEntityBeacon)tile_entity;
-            player.a(var8);
-            if (this.e) {
-                var8.setCustomInvName(this.c);
-            }
+            player.displayGUIHopper(var3);
+            player.openContainer.windowId = this.windowId;
+         } else if (this.inventoryType == TYPE_FORGING_TABLE) {
+            player.displayGUIForgingTable(this.x, this.y, this.z, new ForgingTableSlots(new InventorySubcontainer(this.windowTitle, this.useProvidedWindowTitle, this.slotsCount)));
+            player.openContainer.windowId = this.windowId;
+         } else {
+            Minecraft.setErrorMessage("handleOpenWindow: type not handled " + this.inventoryType);
+         }
+      }
 
-            player.bp.d = this.a;
-        } else if (this.b == 8) {
-            tile_entity.setCustomInvName(this.c);
-            player.c(this.x, this.y, this.z);
-            player.bp.d = this.a;
-        } else {
-            TileEntityHopper var3;
-            if (this.b == 9) {
-                var3 = (TileEntityHopper)tile_entity;
-                if (this.e) {
-                    var3.setCustomInvName(this.c);
-                }
+   }
 
-                player.a(var3);
-                player.bp.d = this.a;
-            } else if (this.b == 10) {
-                TileEntityDropper var6 = (TileEntityDropper)tile_entity;
-                if (this.e) {
-                    var6.setCustomInvName(this.c);
-                }
+   @Shadow
+   public boolean hasCoords() {
+      return false;
+   }
 
-                player.a(var6);
-                player.bp.d = this.a;
-            } else if (this.b == 11) {
-                Entity var9 = this.getEntityByID(player, this.f);
-                if (var9 != null && var9 instanceof EntityHorse) {
-                    player.a((EntityHorse)var9, new InventoryHorseChest(this.c, this.e, this.d));
-                    player.bp.d = this.a;
-                }
-            } else if (this.b == 12) {
-                player.displayGUIChestForMinecart(new InventorySubcontainer(this.c, this.e, this.d));
-                player.bp.d = this.a;
-            } else if (this.b == 13) {
-                var3 = new TileEntityHopper();
-                if (this.e) {
-                    var3.setCustomInvName(this.c);
-                }
+   @Shadow
+   public boolean hasTileEntity() {
+      return false;
+   }
 
-                player.a(var3);
-                player.bp.d = this.a;
-            } else if (this.b == TYPE_FORGING_TABLE){
-                player.displayGUIForgingTable(this.x, this.y, this.z,new ForgingTableSlots(new InventorySubcontainer(this.c, this.e, this.d)));
-                player.bp.d = this.a;
-            }else {
-                Minecraft.setErrorMessage("handleOpenWindow: type not handled " + this.b);
-            }
-        }
+   @Overwrite
+   public void readPacketData(DataInput par1DataInput) throws IOException {
+      this.windowId = par1DataInput.readByte() & 255;
+      this.inventoryType = par1DataInput.readByte() & 255;
+      this.windowTitle = Packet.readString(par1DataInput, 32767);
+      this.slotsCount = par1DataInput.readByte() & 255;
+      this.useProvidedWindowTitle = par1DataInput.readBoolean();
+      if (this.inventoryType == 11) {
+         this.field_111008_f = par1DataInput.readInt();
+      }
 
-    }
+      if (this.hasCoords()) {
+         this.x = par1DataInput.readInt();
+         this.y = par1DataInput.readInt();
+         this.z = par1DataInput.readInt();
+      }
+
+   }
 }

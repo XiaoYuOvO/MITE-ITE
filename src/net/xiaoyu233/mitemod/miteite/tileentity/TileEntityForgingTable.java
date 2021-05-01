@@ -24,73 +24,61 @@ public class TileEntityForgingTable extends TileEntity implements IInventory {
         this.items[index] = itemStack;
     }
 
-    public ItemStack getItem(int index) {
-        return items[index];
-    }
-
-    public ForgingTableSlots getSlots() {
-        return slots;
-    }
-
     @Override
-    //writeToNBT(NBTTagCompound)
-    public void b(NBTTagCompound par1NBTTagCompound) {
-        super.b(par1NBTTagCompound);
-        if (this.b()) {
-            par1NBTTagCompound.a("CustomName", this.customName);
-        }
-        this.slots.writeToNBT(par1NBTTagCompound);
+    //onContainerClosed
+    public void closeChest() {
+        this.finishForging();
+        this.isUsing = false;
     }
 
-    @Override
-    //tick
-    public void h() {
-        if (!this.az().I){
-            if (this.isForging){
-                this.forgingTime++;
-                this.slots.updateTime(this.forgingTime);
-                if (this.az().s.nextInt(100) < 1){
-                    this.az().getAsWorldServer().playSoundAtBlock(this.l,this.m,this.n,"random.anvil_land",1.0f,1.0f);
-                }
-                if (this.forgingTime == this.currentFailCheckTime){
-                    if (this.az().s.nextInt(100) < this.usedRecipe.getChanceOfFailure()) {
-                        this.failForging();
-                        this.finishForging();
-                    }
-                }else if (this.forgingTime >= this.maxTime){
-                    this.completeForging();
-                    this.finishForging();
-                }
-            }
-        }
-    }
-
-    private void failForging(){
-        //avoid for the change of setting items
-        ForgingRecipe currentRecipe = this.usedRecipe;
-        this.az().playSoundAtBlock(this.l,this.m,this.n,"random.anvil_break",1,1.1f);
-        this.slots.onFinishForging(SPacketFinishForging.Status.FAILED);
-        this.slots.damageHammerAndAxe(currentRecipe.getHammerDurabilityCost()/2,currentRecipe.getAxeDurabilityCost()/2);
-        this.slots.costItems(currentRecipe);
-        this.slots.setToolItem(currentRecipe.getFaultFeedback().accept(this.slots.getToolItem()));
-        this.slots.updateSlots();
-    }
-
-    private void completeForging(){
-        //avoid for the change of setting items
+    private void completeForging() {
         ForgingRecipe currentRecipe = this.usedRecipe;
         ItemStack toolItem = this.slots.getToolItem();
         toolItem.setForgingGrade(currentRecipe.getLevelToUpgrade() + 1);
-        this.az().playSoundAtBlock(this.l, this.m, this.n,"random.levelup",1.0f,1.0f);
+        this.getWorldObj().playSoundAtBlock(this.xCoord, this.yCoord, this.zCoord, "random.levelup", 1.0F, 1.0F);
         this.slots.setOutput(toolItem);
         this.slots.onFinishForging(SPacketFinishForging.Status.COMPLETED);
-        this.slots.damageHammerAndAxe(currentRecipe.getHammerDurabilityCost(),currentRecipe.getAxeDurabilityCost());
+        this.slots.damageHammerAndAxe(currentRecipe.getHammerDurabilityCost(), currentRecipe.getAxeDurabilityCost());
         this.slots.costItems(currentRecipe);
         this.slots.setToolItem(null);
         this.slots.updateSlots();
     }
 
-    private void finishForging(){
+    @Override
+    public ItemStack decrStackSize(int index, int count) {
+        if (this.items[index] != null) {
+            ItemStack var3;
+            if (this.items[index].stackSize <= count) {
+                var3 = this.items[index];
+                this.items[index] = null;
+            } else {
+                var3 = this.items[index].splitStack(count);
+                if (this.items[index].stackSize == 0) {
+                    this.items[index] = null;
+                }
+            }
+
+            return var3;
+        } else {
+            return null;
+        }
+    }
+
+    public void dropAllItems() {
+        this.slots.dropItems(this.worldObj, this.xCoord, this.yCoord, this.zCoord);
+    }
+
+    private void failForging() {
+        ForgingRecipe currentRecipe = this.usedRecipe;
+        this.getWorldObj().playSoundAtBlock(this.xCoord, this.yCoord, this.zCoord, "random.anvil_break", 1.0F, 1.1F);
+        this.slots.onFinishForging(SPacketFinishForging.Status.FAILED);
+        this.slots.damageHammerAndAxe(currentRecipe.getHammerDurabilityCost() / 2, currentRecipe.getAxeDurabilityCost() / 2);
+        this.slots.costItems(currentRecipe);
+        this.slots.setToolItem(currentRecipe.getFaultFeedback().accept(this.slots.getToolItem()));
+        this.slots.updateSlots();
+    }
+
+    private void finishForging() {
         this.isForging = false;
         this.forgingTime = 0;
         this.usedRecipe = null;
@@ -99,10 +87,12 @@ public class TileEntityForgingTable extends TileEntity implements IInventory {
     }
 
     @Override
-    //readFromNBT()
-    public void a(NBTTagCompound par1NBTTagCompound) {
-        super.a(par1NBTTagCompound);
-        this.slots.readFromNBT(par1NBTTagCompound,this);
+    public int getInventoryStackLimit() {
+        return 64;
+    }
+
+    public ItemStack getItem(int index) {
+        return this.items[index];
     }
 
     public boolean b() {
@@ -110,40 +100,23 @@ public class TileEntityForgingTable extends TileEntity implements IInventory {
     }
 
     @Override
-    //getSize
-    public int j_() {
+    public int getSizeInventory() {
         return ForgingTableSlots.slotSize;
+    }
+
+    public ForgingTableSlots getSlots() {
+        return this.slots;
     }
 
     @Override
     //getItemStack
-    public ItemStack a(int var1) {
+    public ItemStack getStackInSlot(int var1) {
         return this.items[var1];
     }
 
     @Override
-    //DecreaseItem
-    public ItemStack a(int index, int count) {
-        if (this.items[index] != null) {
-            ItemStack var3;
-            if (this.items[index].b <= count) {
-                var3 = this.items[index];
-                this.items[index] = null;
-            } else {
-                var3 = this.items[index].a(count);
-                if (this.items[index].b == 0) {
-                    this.items[index] = null;
-                }
-            }
-            return var3;
-        } else {
-            return null;
-        }
-    }
-
-    @Override
     //removeItem
-    public ItemStack a_(int par1) {
+    public ItemStack getStackInSlotOnClosing(int par1) {
         if (this.items[par1] != null) {
             ItemStack var2 = this.items[par1];
             this.items[par1] = null;
@@ -153,87 +126,105 @@ public class TileEntityForgingTable extends TileEntity implements IInventory {
         }
     }
 
-    @Override
-    //setItem
-    public void a(int var1, ItemStack var2) {
-        this.items[var1] = var2;
+    public boolean isItemValidForSlot(int var1, ItemStack var2) {
+        return this.slots.isItemValidForSlot(var1, var2);
     }
 
     @Override
-    //maxStackSize
-    public int d() {
-        return 64;
-    }
-
-    @Override
-    public boolean a(EntityHuman player) {
-        if (player.getWorld().getBlock(this.l, this.m, this.n) instanceof BlockForgingTable && player.getWorld().r(this.l, this.m, this.n) instanceof TileEntityForgingTable) {
-            return player.e((double)this.l + 0.5D, (double)this.m + 0.5D, (double)this.n + 0.5D) <= 64.0D;
+    public boolean isUseableByPlayer(EntityPlayer player) {
+        if (player.getWorld().getBlock(this.xCoord, this.yCoord, this.zCoord) instanceof BlockForgingTable && player.getWorld().getBlockTileEntity(this.xCoord, this.yCoord, this.zCoord) instanceof TileEntityForgingTable) {
+            return player.getDistance((double)this.xCoord + 0.5D, (double)this.yCoord + 0.5D, (double)this.zCoord + 0.5D) <= 64.0D;
         } else {
             return false;
         }
     }
 
     @Override
-    //onContainerOpened
-    public void k_() {
-        this.isUsing = true;
-    }
-
-    @Override
-    //onContainerClosed
-    public void g() {
-        this.finishForging();
-        this.isUsing = false;
-    }
-
-    @Override
-    //onContainerChanged
-    public void e() {
-        super.e();
+    public void onInventoryChanged() {
+        super.onInventoryChanged();
         ForgingRecipe usedRecipe = this.slots.getUsedRecipe();
         ItemStack toolItem = this.slots.getToolItem();
-        if (toolItem != null){
+        if (toolItem != null) {
             ForgingRecipe recipeFromTool = this.slots.getRecipeFromTool(toolItem);
             this.slots.updateInfo(recipeFromTool);
-        }else {
+        } else {
             this.slots.updateInfo(null);
         }
+
         if (this.usedRecipe != null) {
-            if (this.slots.getForgingTime(this.usedRecipe) != this.maxTime){
+            if (this.slots.getForgingTime(this.usedRecipe) != this.maxTime) {
                 this.finishForging();
                 this.slots.onFinishForging(SPacketFinishForging.Status.CANCELED);
             }
+
             if (usedRecipe == null && this.slots.getOutput() == null) {
                 this.finishForging();
                 this.slots.onFinishForging(SPacketFinishForging.Status.CANCELED);
             }
         }
+
     }
 
     @Override
-    public boolean b(int var1, ItemStack var2) {
-        return this.slots.b(var1, var2);
+    public void openChest() {
+        this.isUsing = true;
+    }
+
+    public void readFromNBT(NBTTagCompound par1NBTTagCompound) {
+        super.readFromNBT(par1NBTTagCompound);
+        this.slots.readFromNBT(par1NBTTagCompound, this);
     }
 
     @Override
+    //setItem
+    public void setInventorySlotContents(int var1, ItemStack var2) {
+        this.items[var1] = var2;
+    }
+
+    public boolean startForging() {
+        this.usedRecipe = this.slots.getUsedRecipe();
+        if (this.usedRecipe != null) {
+            this.isForging = true;
+            this.maxTime = Math.round((float)this.usedRecipe.getTimeReq() / this.slots.getEffectivityFactorFromTool());
+            this.currentFailCheckTime = this.getWorldObj().rand.nextInt(this.maxTime);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     public void destroyInventory() {
         Arrays.fill(this.items, null);
     }
 
-    public void dropAllItems() {
-        this.slots.dropItems(this.k,this.l,this.m,this.n);
+    public void updateEntity() {
+        if (!this.getWorldObj().isRemote && this.isForging) {
+            ++this.forgingTime;
+            this.slots.updateTime(this.forgingTime);
+            if (this.getWorldObj().rand.nextInt(100) < 1) {
+                this.getWorldObj().getAsWorldServer().playSoundAtBlock(this.xCoord, this.yCoord, this.zCoord, "random.anvil_land", 1.0F, 1.0F);
+            }
+
+            if (this.forgingTime == this.currentFailCheckTime) {
+                if (this.getWorldObj().rand.nextInt(100) < this.usedRecipe.getChanceOfFailure()) {
+                    this.failForging();
+                    this.finishForging();
+                }
+            } else if (this.forgingTime >= this.maxTime) {
+                this.completeForging();
+                this.finishForging();
+            }
+        }
+
     }
 
-    public boolean startForging() {
-        this.usedRecipe = slots.getUsedRecipe();
-        if (this.usedRecipe != null){
-            this.isForging = true;
-            this.maxTime = Math.round(this.usedRecipe.getTimeReq() / slots.getEffectivityFactorFromTool());
-            this.currentFailCheckTime = this.az().s.nextInt(this.maxTime);
-            return true;
+    public void writeToNBT(NBTTagCompound par1NBTTagCompound) {
+        super.writeToNBT(par1NBTTagCompound);
+        if (this.b()) {
+            par1NBTTagCompound.setString("CustomName", this.customName);
         }
-        return false;
+
+        this.slots.writeToNBT(par1NBTTagCompound);
     }
 
     public boolean isUsing() {

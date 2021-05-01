@@ -3,310 +3,335 @@ package net.xiaoyu233.mitemod.miteite.trans.item;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import net.minecraft.*;
-import net.xiaoyu233.fml.asm.annotations.Link;
-import net.xiaoyu233.fml.asm.annotations.Marker;
-import net.xiaoyu233.fml.asm.annotations.Transform;
 import net.xiaoyu233.mitemod.miteite.item.ArmorModifierTypes;
 import net.xiaoyu233.mitemod.miteite.item.ToolModifierTypes;
 import net.xiaoyu233.mitemod.miteite.util.Constant;
+import net.xiaoyu233.mitemod.miteite.util.ReflectHelper;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Overwrite;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import javax.annotation.Nonnull;
 
-import static net.xiaoyu233.mitemod.miteite.util.ReflectHelper.dyCast;
-
-@Transform(ItemStack.class)
+@Mixin(ItemStack.class)
 public class ItemStackTrans {
-    @Link
-    public int b;
-    @Link
-    public int c;
-    @Link
-    public int d;
-    @Link
-    public NBTTagCompound e;
-    @Link
-    private int damage;
-    @Link
-    private boolean is_artifact;
-    @Link
-    private EnumQuality quality;
-    @Link
-    private int subtype;
-    @Link
-    private boolean toolNbtFixed;
+   @Shadow
+   public int animationsToGo;
+   @Shadow
+   public int itemID;
+   @Shadow
+   public int stackSize;
+   @Shadow
+   public NBTTagCompound stackTagCompound;
+   @Shadow
+   private int damage;
+   @Shadow
+   private boolean is_artifact;
+   @Shadow
+   private EnumQuality quality;
+   @Shadow
+   private int subtype;
+   private boolean toolNbtFixed;
 
+   public ItemStackTrans(int id, int stack_size, int subtype) {
+      this.itemID = id;
+      this.stackSize = stack_size;
+      this.setItemSubtype(subtype);
+   }
 
-    public ItemStackTrans(int id, int stack_size, int subtype) {
-        this.d = id;
-        this.b = stack_size;
-        this.setItemSubtype(subtype);
-        if (this.b().hasExpAndLevel()) {
+   @Overwrite
+   public ItemStack copy() {
+      ItemStack var1 = new ItemStack(this.itemID, this.stackSize, this.subtype);
+      var1.setItemDamage(this.damage);
+      var1.setQuality(this.getQuality());
+      var1.setIsArtifact(this.is_artifact);
+      if (this.stackTagCompound != null) {
+         var1.stackTagCompound = (NBTTagCompound)this.stackTagCompound.copy();
+      }
+
+      if (this.getItem().hasExpAndLevel()) {
+         var1.fixNBT();
+      }
+
+      return ReflectHelper.dyCast(var1);
+   }
+
+   public void fixNBT() {
+      if (!this.toolNbtFixed) {
+         this.toolNbtFixed = true;
+         if (this.stackTagCompound == null) {
+            this.setTagCompound(new NBTTagCompound());
+            this.stackTagCompound.setInteger("tool_level", 0);
+            this.stackTagCompound.setInteger("tool_exp", 0);
+            this.stackTagCompound.setCompoundTag("modifiers", new NBTTagCompound());
+         } else if (!this.stackTagCompound.hasKey("tool_level")) {
+            this.stackTagCompound.setInteger("tool_level", 0);
+            this.stackTagCompound.setInteger("tool_exp", 0);
+            this.stackTagCompound.setCompoundTag("modifiers", new NBTTagCompound());
+         }
+
+         if (this.stackTagCompound.hasKey("modifiers")) {
+            NBTTagCompound compound = this.stackTagCompound.getCompoundTag("modifiers");
+            int var3;
+            int var4;
+            float origin;
+            if (this.getItem() instanceof ItemArmor) {
+               if (!compound.hasNoTags()) {
+                  ArmorModifierTypes[] var2 = ArmorModifierTypes.values();
+                  var3 = var2.length;
+
+                  for(var4 = 0; var4 < var3; ++var4) {
+                     ArmorModifierTypes value = var2[var4];
+                     if (compound.getTag(value.nbtName) instanceof NBTTagFloat) {
+                        origin = compound.getFloat(value.nbtName);
+                        compound.setInteger(value.nbtName, (int)(origin / value.levelAddition));
+                     }
+                  }
+               }
+            } else if (!compound.hasNoTags()) {
+               ToolModifierTypes[] var7 = ToolModifierTypes.values();
+               var3 = var7.length;
+
+               for(var4 = 0; var4 < var3; ++var4) {
+                  ToolModifierTypes value = var7[var4];
+                  if (compound.getTag(value.nbtName) instanceof NBTTagFloat) {
+                     origin = compound.getFloat(value.nbtName);
+                     compound.setInteger(value.nbtName, (int)(origin / value.levelAddition));
+                  }
+               }
+            }
+         }
+      }
+
+   }
+
+   @Overwrite
+   public Multimap<String, AttributeModifier> getAttributeModifiers() {
+      Multimap<String, AttributeModifier> var1 = HashMultimap.create();
+      if (this.hasTagCompound() && this.stackTagCompound.hasKey("AttributeModifiers")) {
+         NBTTagList var2 = this.stackTagCompound.getTagList("AttributeModifiers");
+
+         for(int var3 = 0; var3 < var2.tagCount(); ++var3) {
+            NBTTagCompound var4 = (NBTTagCompound)var2.tagAt(var3);
+            AttributeModifier var5 = GenericAttributes.func_111259_a(var4);
+            if (var5.getID().getLeastSignificantBits() != 0L && var5.getID().getMostSignificantBits() != 0L) {
+               var1.put(var4.getString("AttributeName"), var5);
+            }
+         }
+      } else {
+         var1.putAll(this.getItem().getAttrModifiers(ReflectHelper.dyCast(this)));
+      }
+
+      return var1;
+   }
+
+   public double getEnhanceFactor() {
+      return Constant.ENHANCE_FACTORS[this.getForgingGrade()];
+   }
+
+   public int getForgingGrade() {
+      return this.stackTagCompound != null ? this.stackTagCompound.getInteger("forging_grade") : 0;
+   }
+
+   public void setForgingGrade(int grade) {
+      if (this.stackTagCompound == null) {
+         this.stackTagCompound = new NBTTagCompound();
+      }
+
+      this.stackTagCompound.setInteger("forging_grade", grade);
+   }
+
+   @Shadow
+   private boolean getHasSubtypes() {
+      return false;
+   }
+
+   @Shadow
+   @Nonnull
+   private Item getItem() {
+      return null;
+   }
+
+   @Shadow
+   private int getMaxDamage() {
+      return 0;
+   }
+
+   @Overwrite
+   public float getMeleeDamageBonus() {
+      return this.getItem().getMeleeDamageBonus(ReflectHelper.dyCast(this));
+   }
+
+   @Shadow
+   @Nonnull
+   private EnumQuality getQuality() {
+      return null;
+   }
+
+   @Overwrite
+   public float getStrVsBlock(Block block, int metadata) {
+      return this.getItem().getStrVsBlock(block, metadata);
+   }
+
+   @Shadow
+   private boolean hasTagCompound() {
+      return false;
+   }
+
+   @Inject(method = "<init>(III)V",at = @At("RETURN"))
+   private void injectCtorFix(CallbackInfo callback){
+      if (this.getItem() != null){
+         if (this.getItem().hasExpAndLevel()) {
             this.fixNBT();
-        }
-    }
+         }
+      }
+   }
 
-    public void fixNBT(){
-        if (!this.toolNbtFixed) {
-            this.toolNbtFixed = true;
-            if (this.e == null) {
-                this.setTagCompound(new NBTTagCompound());
-                this.e.a("tool_level", 0);
-                this.e.a("tool_exp", 0);
-                this.e.a("modifiers", new NBTTagCompound());
-            } else if (!this.e.b("tool_level")) {
-                this.e.a("tool_level", 0);
-                this.e.a("tool_exp", 0);
-                this.e.a("modifiers", new NBTTagCompound());
-            }
-            if (this.e.b("modifiers")) {
-                NBTTagCompound compound = e.l("modifiers");
-                if (this.b() instanceof ItemArmor) {
-                    if (!compound.d()) {
-                        for (ArmorModifierTypes value : ArmorModifierTypes.values()) {
-                            if (compound.a(value.nbtName) instanceof NBTTagFloat) {
-                                float origin = compound.g(value.nbtName);
-                                compound.a(value.nbtName, ((int) (origin / value.levelAddition)));
-                            }
-                        }
-                    }
-                } else {
-                    if (!compound.d()) {
-                        for (ToolModifierTypes value : ToolModifierTypes.values()) {
-                            if (compound.a(value.nbtName) instanceof NBTTagFloat) {
-                                float origin = compound.g(value.nbtName);
-                                compound.a(value.nbtName, ((int) (origin / value.levelAddition)));
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
+   @Inject(method = "setTagCompound",at = @At(value = "FIELD",target = "Lnet/minecraft/ItemStack;stackTagCompound:Lnet/minecraft/NBTTagCompound;",shift = At.Shift.AFTER))
+   private void injectSetTagFix(CallbackInfoReturnable<ItemStack> callback){
+      if (this.getItem().hasExpAndLevel()) {
+         this.fixNBT();
+      }
+   }
 
-    public ItemStack m() {
-        ItemStack var1 = (new ItemStack(this.d, this.b, this.subtype));
-        var1.setItemDamage(this.damage);
-        var1.setQuality(this.getQuality());
-        var1.setIsArtifact( this.is_artifact);
-        if (this.e != null) {
-            var1.e = (NBTTagCompound)this.e.b();
-        }
-        if (this.b().hasExpAndLevel()) {
-            var1.fixNBT();
-        }
+   @Shadow
+   private boolean isItemStackDamageable() {
+      return false;
+   }
 
-        return dyCast( var1);
-    }
+   @Overwrite
+   public void readFromNBT(NBTTagCompound par1NBTTagCompound) {
+      this.itemID = par1NBTTagCompound.getShort("id");
+      this.stackSize = par1NBTTagCompound.getByte("Count");
+      if (this.itemID <= 0) {
+         (new Exception()).printStackTrace();
+      }
 
-    public void setIsArtifact(boolean is_artifact) {
-        this.is_artifact = is_artifact;
-    }
+      Item item;
+      if (par1NBTTagCompound.hasKey("subtype")) {
+         this.setItemSubtype(par1NBTTagCompound.getShort("subtype"));
+         this.setItemDamage(par1NBTTagCompound.getInteger("damage"));
+      } else {
+         if (Minecraft.inDevMode()) {
+            System.out.println("Importing item stack " + this.getItem() + ", id=" + this.itemID);
+         }
 
-    public Multimap<String, AttributeModifier> D() {
-        Multimap<String, AttributeModifier> var1;
-        if (this.p() && this.e.b("AttributeModifiers")) {
-            var1 = HashMultimap.create();
-            NBTTagList var2 = this.e.m("AttributeModifiers");
+         if (this.getItem().hasExpAndLevel() && this.stackTagCompound == null) {
+            NBTTagCompound tagCompound = new NBTTagCompound();
+            tagCompound.setInteger("tool_level", 0);
+            tagCompound.setInteger("tool_exp", 0);
+            tagCompound.setCompoundTag("modifiers", new NBTTagCompound());
+            tagCompound.setInteger("forging_grade", 0);
+            this.setTagCompound(tagCompound);
+         }
 
-            for (int var3 = 0; var3 < var2.c(); ++var3) {
-                NBTTagCompound var4 = (NBTTagCompound) var2.b(var3);
-                AttributeModifier var5 = GenericAttributes.a(var4);
-                if (var5.a().getLeastSignificantBits() != 0L && var5.a().getMostSignificantBits() != 0L) {
-                    var1.put(var4.i("AttributeName"), var5);
-                }
-            }
-        } else {
-            var1 = this.b().getAttrModifiers(dyCast(this));
-        }
-
-        return var1;
-    }
-
-    public int getForgingGrade(){
-        return this.e != null ? this.e.e("forging_grade") : 0;
-    }
-
-    public double getEnhanceFactor(){
-        return Constant.ENHANCE_FACTORS[this.getForgingGrade()];
-    }
-
-    public void setForgingGrade(int grade){
-        if (this.e == null) {
-            this.e = new NBTTagCompound();
-        }
-        this.e.a("forging_grade",grade);
-    }
-
-    //WriteToNBT
-    public NBTTagCompound b(NBTTagCompound par1NBTTagCompound) {
-        par1NBTTagCompound.a("id", (short) this.d);
-        par1NBTTagCompound.a("Count", (byte) this.b);
-        par1NBTTagCompound.a("damage", this.damage);
-        par1NBTTagCompound.a("subtype", (short) this.subtype);
-        if (this.e != null) {
-            NBTTagCompound effective_stackTagCompound = this.e;
-            if (ItemReferencedBook.isReferencedBook(dyCast(this))) {
-                effective_stackTagCompound = new NBTTagCompound();
-                effective_stackTagCompound.a("reference_index", ItemReferencedBook.getReferenceIndex(dyCast(this)));
-            }
-            if (!effective_stackTagCompound.b("forging_grade")){
-                effective_stackTagCompound.a("forging_grade",0);
-            }
-            par1NBTTagCompound.a("tag", effective_stackTagCompound);
-        } else if (this.b().hasExpAndLevel()) {
-            NBTTagCompound compound = new NBTTagCompound();
-            compound.a("tool_level", 0);
-            compound.a("tool_exp", 0);
-            compound.a("modifiers", new NBTTagCompound());
-            compound.a("forging_grade",0);
-            par1NBTTagCompound.a("tag", compound);
-        }
-
-        if (this.b().hasQuality()) {
-            par1NBTTagCompound.a("quality", (byte) this.getQuality().ordinal());
-        }
-
-
-        if (this.is_artifact) {
-            par1NBTTagCompound.a("is_artifact", this.is_artifact);
-        }
-
-        return par1NBTTagCompound;
-    }
-
-    @Marker
-    @Nonnull
-    private Item b() {
-        return null;
-    }
-
-    //ReadFromNBT
-    public void c(NBTTagCompound par1NBTTagCompound) {
-        this.d = par1NBTTagCompound.d("id");
-        this.b = par1NBTTagCompound.c("Count");
-        if (this.d <= 0) {
-            (new Exception()).printStackTrace();
-        }
-
-        Item item;
-        if (par1NBTTagCompound.b("subtype")) {
-            this.setItemSubtype(par1NBTTagCompound.d("subtype"));
-            this.setItemDamage(par1NBTTagCompound.e("damage"));
-        } else {
-            if (Minecraft.inDevMode()) {
-                System.out.println("Importing item stack " + this.b() + ", id=" + this.d);
-            }
-
-            if (this.b().hasExpAndLevel()) {
-                if (this.e == null) {
-                    NBTTagCompound tagCompound = new NBTTagCompound();
-                    tagCompound.a("tool_level", 0);
-                    tagCompound.a("tool_exp", 0);
-                    tagCompound.a("modifiers",new NBTTagCompound());
-                    tagCompound.a("forging_grade",0);
-                    this.setTagCompound(tagCompound);
-                }
-            }
-
-            if (this.g() && this.h()) {
-                item = this.b();
-                if (item instanceof ItemAnvil) {
-                    this.setItemSubtype(par1NBTTagCompound.d("Damage"));
-                } else {
-                    Minecraft.setErrorMessage("Unhandled item import, setting damage for: " + this);
-                    this.setItemDamage(par1NBTTagCompound.d("Damage"));
-                }
-            } else if (this.g()) {
-                this.setItemDamage(par1NBTTagCompound.d("Damage"));
+         if (this.isItemStackDamageable() && this.getHasSubtypes()) {
+            item = this.getItem();
+            if (item instanceof ItemAnvil) {
+               this.setItemSubtype(par1NBTTagCompound.getShort("Damage"));
             } else {
-                this.setItemSubtype(par1NBTTagCompound.d("Damage"));
+               Minecraft.setErrorMessage("Unhandled item import, setting damage for: " + this);
+               this.setItemDamage(par1NBTTagCompound.getShort("Damage"));
             }
-        }
+         } else if (this.isItemStackDamageable()) {
+            this.setItemDamage(par1NBTTagCompound.getShort("Damage"));
+         } else {
+            this.setItemSubtype(par1NBTTagCompound.getShort("Damage"));
+         }
+      }
 
-        if (par1NBTTagCompound.b("tag")) {
-            this.e = par1NBTTagCompound.l("tag");
-            if (ItemReferencedBook.isReferencedBook(dyCast(this))) {
-                this.setTagCompound(
-                        ItemReferencedBook.generateBookContents(ItemReferencedBook.getReferenceIndex(dyCast(this))));
-            }
-            if (this.b().hasExpAndLevel()) {
-                this.fixNBT();
-            }
-        }
-
-        item = this.b();
-        if (item == null) {
-            this.quality = null;
-        } else {
-            if (par1NBTTagCompound.b("quality")) {
-                this.setQuality(EnumQuality.values()[par1NBTTagCompound.c("quality")]);
-            } else {
-                this.setQuality(null);
-            }
-
-            if (this.g() && this.damage >= this.l()) {
-                this.setItemDamage(this.l() - 1);
-            }
-        }
-
-        this.is_artifact = par1NBTTagCompound.n("is_artifact");
-    }
-
-    @Marker
-    private boolean g() {
-        return false;
-    }
-
-    public float getMeleeDamageBonus() {
-        return this.b().getMeleeDamageBonus(dyCast(this));
-    }
-
-    @Marker
-    @Nonnull
-    private EnumQuality getQuality() {
-        return null;
-    }
-
-    public float getStrVsBlock(Block block, int metadata) {
-        return this.b().getStrVsBlock(block, metadata);
-    }
-
-    @Marker
-    private boolean h() {
-        return false;
-    }
-
-    @Marker
-    private int l() {
-        return 0;
-    }
-
-    @Marker
-    private boolean p() {
-        return false;
-    }
-
-    @Marker
-    private ItemStack setItemDamage(int damage) {
-        return null;
-    }
-
-    @Marker
-    private ItemStack setItemSubtype(int subtype) {
-        return null;
-    }
-
-    @Marker
-    public ItemStack setQuality(EnumQuality quality) {
-        return null;
-    }
-
-
-    public ItemStack setTagCompound(NBTTagCompound par1NBTTagCompound) {
-        this.e = par1NBTTagCompound;
-        if (this.b().hasExpAndLevel()) {
+      if (par1NBTTagCompound.hasKey("tag")) {
+         this.stackTagCompound = par1NBTTagCompound.getCompoundTag("tag");
+         if (ItemReferencedBook.isReferencedBook(ReflectHelper.dyCast(this))) {
+            this.setTagCompound(ItemReferencedBook.generateBookContents(ItemReferencedBook.getReferenceIndex(ReflectHelper.dyCast(this))));
+         }
+         if (this.getItem().hasExpAndLevel()) {
             this.fixNBT();
-        }
-        return dyCast(this);
-    }
+         }
+      }
+
+      item = this.getItem();
+      if (item == null) {
+         this.quality = null;
+      } else {
+         if (par1NBTTagCompound.hasKey("quality")) {
+            this.setQuality(EnumQuality.values()[par1NBTTagCompound.getByte("quality")]);
+         } else {
+            this.setQuality(null);
+         }
+
+         if (this.isItemStackDamageable() && this.damage >= this.getMaxDamage()) {
+            this.setItemDamage(this.getMaxDamage() - 1);
+         }
+      }
+
+      this.is_artifact = par1NBTTagCompound.getBoolean("is_artifact");
+   }
+
+   public void setIsArtifact(boolean is_artifact) {
+      this.is_artifact = is_artifact;
+   }
+
+   @Shadow
+   private ItemStack setItemDamage(int damage) {
+      return null;
+   }
+
+   @Shadow
+   private ItemStack setItemSubtype(int subtype) {
+      return null;
+   }
+
+   @Shadow
+   public ItemStack setQuality(EnumQuality quality) {
+      return null;
+   }
+
+   @Shadow
+   public ItemStack setTagCompound(NBTTagCompound par1NBTTagCompound) {
+      return null;
+   }
+
+   @Overwrite
+   public NBTTagCompound writeToNBT(NBTTagCompound par1NBTTagCompound) {
+      par1NBTTagCompound.setShort("id", (short)this.itemID);
+      par1NBTTagCompound.setByte("Count", (byte)this.stackSize);
+      par1NBTTagCompound.setInteger("damage", this.damage);
+      par1NBTTagCompound.setShort("subtype", (short)this.subtype);
+      NBTTagCompound effective_stackTagCompound;
+      if (this.stackTagCompound != null) {
+         effective_stackTagCompound = this.stackTagCompound;
+         if (ItemReferencedBook.isReferencedBook(ReflectHelper.dyCast(this))) {
+            effective_stackTagCompound = new NBTTagCompound();
+            effective_stackTagCompound.setInteger("reference_index", ItemReferencedBook.getReferenceIndex(ReflectHelper.dyCast(this)));
+         }
+
+         if (!effective_stackTagCompound.hasKey("forging_grade")) {
+            effective_stackTagCompound.setInteger("forging_grade", 0);
+         }
+
+         par1NBTTagCompound.setCompoundTag("tag", effective_stackTagCompound);
+      } else if (this.getItem().hasExpAndLevel()) {
+         effective_stackTagCompound = new NBTTagCompound();
+         effective_stackTagCompound.setInteger("tool_level", 0);
+         effective_stackTagCompound.setInteger("tool_exp", 0);
+         effective_stackTagCompound.setCompoundTag("modifiers", new NBTTagCompound());
+         effective_stackTagCompound.setInteger("forging_grade", 0);
+         par1NBTTagCompound.setCompoundTag("tag", effective_stackTagCompound);
+      }
+
+      if (this.getItem().hasQuality()) {
+         par1NBTTagCompound.setByte("quality", (byte)this.getQuality().ordinal());
+      }
+
+      if (this.is_artifact) {
+         par1NBTTagCompound.setBoolean("is_artifact", this.is_artifact);
+      }
+
+      return par1NBTTagCompound;
+   }
 }

@@ -4,20 +4,21 @@ import net.minecraft.EntityInvisibleStalker;
 import net.minecraft.EntityMonster;
 import net.minecraft.GenericAttributes;
 import net.minecraft.World;
-import net.xiaoyu233.fml.asm.annotations.Marker;
-import net.xiaoyu233.fml.asm.annotations.Transform;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Overwrite;
 
-@Transform(EntityInvisibleStalker.class)
+@Mixin(EntityInvisibleStalker.class)
 public class EntityInvisibleStalkerTrans extends EntityMonster {
-    @Marker
-    public EntityInvisibleStalkerTrans(World par1World) {
-        super(par1World);
-    }
 
-    protected void az() {
-        super.az();
-        this.a(GenericAttributes.b).a(40.0D);
-        this.a(GenericAttributes.d).a(0.23000000417232513D);
-        this.a(GenericAttributes.e).a(6.0D);
-    }
+   public EntityInvisibleStalkerTrans(World par1World) {
+      super(par1World);
+   }
+
+   @Overwrite
+   protected void applyEntityAttributes() {
+      super.applyEntityAttributes();
+      this.getEntityAttribute(GenericAttributes.followRange).setAttribute(40.0D);
+      this.getEntityAttribute(GenericAttributes.movementSpeed).setAttribute(0.23000000417232513D);
+      this.getEntityAttribute(GenericAttributes.attackDamage).setAttribute(6.0D);
+   }
 }

@@ -8,23 +8,20 @@ import java.io.DataOutput;
 import java.io.IOException;
 
 public class CPacketSyncItems extends Packet {
-    @Override
-    public void a(DataInput var1) throws IOException {
-
+    public CPacketSyncItems() {
     }
 
-    @Override
-    public void a(DataOutput var1) throws IOException {
-
+    public int getPacketSize() {
+        return 1;
     }
 
-    @Override
-    public void a(Connection var1) {
+    public void processPacket(Connection var1) {
         var1.handleSyncItems(this);
     }
 
-    @Override
-    public int a() {
-        return 1;
+    public void readPacketData(DataInput var1) throws IOException {
+    }
+
+    public void writePacketData(DataOutput var1) throws IOException {
     }
 }

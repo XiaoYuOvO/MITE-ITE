@@ -10,22 +10,24 @@ public class EntityZombiePigmanLord extends EntityPigZombie {
     }
 
     @Override
-    protected void az() {
-        super.az();
+    public void addRandomEquipment() {
         int day = this.getWorld().getDayOfWorld();
-        this.setEntityAttribute(GenericAttributes.e, 12.0D + (double)day / 48.0D);
-        this.setEntityAttribute(GenericAttributes.a, 50.0D + (double)day / 14.0D);
-        this.setEntityAttribute(GenericAttributes.d, 0.3D);
+        this.setCurrentItemOrArmor(0,new ItemStack(Items.VIBRANIUM_SWORD,1).randomizeForMob(this,day > 64));
+        this.setCurrentItemOrArmor(1,new ItemStack(Items.VIBRANIUM_HELMET,1).randomizeForMob(this,day > 64));
+        this.setCurrentItemOrArmor(2,new ItemStack(Items.VIBRANIUM_CHESTPLATE,1).randomizeForMob(this,day > 64));
+        this.setCurrentItemOrArmor(3,new ItemStack(Items.VIBRANIUM_LEGGINGS,1).randomizeForMob(this,day > 64));
+        this.setCurrentItemOrArmor(4,new ItemStack(Items.VIBRANIUM_BOOTS,1).randomizeForMob(this,day > 64));
+        this.addPotionEffect(new MobEffect(1,Integer.MAX_VALUE,0));
+        this.addPotionEffect(new MobEffect(5,Integer.MAX_VALUE,0));
     }
 
-    private void generateRandomParticles(EnumParticle particle) {
-        for(int var2 = 0; var2 < 5; ++var2) {
-            double var3 = this.ab.nextGaussian() * 0.02D;
-            double var5 = this.ab.nextGaussian() * 0.02D;
-            double var7 = this.ab.nextGaussian() * 0.02D;
-            this.q.spawnParticle(particle, this.u + (double)(this.ab.nextFloat() * this.O * 2.0F) - (double)this.O, this.v + (double)(this.ab.nextFloat() * this.P), this.w + (double)(this.ab.nextFloat() * this.O ) - (double)this.O, var3, var5, var7);
-        }
-
+    @Override
+    protected void applyEntityAttributes() {
+        super.applyEntityAttributes();
+        int day = this.getWorld().getDayOfWorld();
+        this.setEntityAttribute(GenericAttributes.attackDamage, 12.0D + (double)day / 48.0D);
+        this.setEntityAttribute(GenericAttributes.maxHealth, 50.0D + (double)day / 14.0D);
+        this.setEntityAttribute(GenericAttributes.movementSpeed, 0.3D);
     }
 
     @Override
@@ -37,14 +39,11 @@ public class EntityZombiePigmanLord extends EntityPigZombie {
     }
 
     @Override
-    public void l_() {
-        super.l_();
-        if (!this.getWorld().I){
-            if (fx_counter > 0){
-                fx_counter--;
-            }else {
-                this.fx_counter = 60;
-                this.q.setEntityState(this,EnumEntityState.unused0);
+    protected void dropFewItems(boolean recently_hit_by_player, DamageSource damage_source) {
+        if (recently_hit_by_player){
+            int diamond_count = 3;
+            for (int i1 = 0; i1 < diamond_count; i1++) {
+                this.dropItem(Item.diamond);
             }
         }
     }
@@ -54,14 +53,14 @@ public class EntityZombiePigmanLord extends EntityPigZombie {
         return false;
     }
 
-    @Override
-    protected void dropFewItems(boolean recently_hit_by_player, DamageSource damage_source) {
-        if (recently_hit_by_player){
-            int diamond_count = 3;
-            for (int i1 = 0; i1 < diamond_count; i1++) {
-                this.dropItem(Item.p);
-            }
+    private void generateRandomParticles(EnumParticle particle) {
+        for(int var2 = 0; var2 < 5; ++var2) {
+            double var3 = this.rand.nextGaussian() * 0.02D;
+            double var5 = this.rand.nextGaussian() * 0.02D;
+            double var7 = this.rand.nextGaussian() * 0.02D;
+            this.worldObj.spawnParticle(particle, this.posX + (double)(this.rand.nextFloat() * this.width * 2.0F) - (double)this.width, this.posY + 1.0D + (double)(this.rand.nextFloat() * this.height), this.posZ + (double)(this.rand.nextFloat() * this.width * 2.0F) - (double)this.width, var3, var5, var7);
         }
+
     }
 
     @Override
@@ -70,14 +69,15 @@ public class EntityZombiePigmanLord extends EntityPigZombie {
     }
 
     @Override
-    public void addRandomEquipment() {
-        int day = this.getWorld().getDayOfWorld();
-        this.c(0,new ItemStack(Items.VIBRANIUM_SWORD,1).randomizeForMob(this,day > 64));
-        this.c(1,new ItemStack(Items.VIBRANIUM_HELMET,1).randomizeForMob(this,day > 64));
-        this.c(2,new ItemStack(Items.VIBRANIUM_CHESTPLATE,1).randomizeForMob(this,day > 64));
-        this.c(3,new ItemStack(Items.VIBRANIUM_LEGGINGS,1).randomizeForMob(this,day > 64));
-        this.c(4,new ItemStack(Items.VIBRANIUM_BOOTS,1).randomizeForMob(this,day > 64));
-        this.c(new MobEffect(1,Integer.MAX_VALUE,0));
-        this.c(new MobEffect(5,Integer.MAX_VALUE,0));
+    public void onUpdate() {
+        super.onUpdate();
+        if (!this.getWorld().isRemote){
+            if (fx_counter > 0){
+                fx_counter--;
+            }else {
+                this.fx_counter = 60;
+                this.worldObj.setEntityState(this,EnumEntityState.unused0);
+            }
+        }
     }
 }

@@ -15,8 +15,8 @@ public class DurabilityFeedback implements IFaultFeedback {
 
     @Override
     public ItemStack accept(ItemStack itemStack) {
-        int rawDamage = itemStack.k();
-        int maxDamage = itemStack.l();
+        int rawDamage = itemStack.getItemDamage();
+        int maxDamage = itemStack.getMaxDamage();
         int resultDamage = maxDamage - this.feedbackType.acceptDurability(maxDamage - rawDamage);
         if (resultDamage > maxDamage){
             return null;

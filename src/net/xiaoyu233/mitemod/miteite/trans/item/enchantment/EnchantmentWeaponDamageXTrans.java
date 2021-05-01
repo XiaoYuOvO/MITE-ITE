@@ -1,67 +1,45 @@
 package net.xiaoyu233.mitemod.miteite.trans.item.enchantment;
 
 import net.minecraft.*;
-import net.xiaoyu233.fml.asm.annotations.Marker;
-import net.xiaoyu233.fml.asm.annotations.Transform;
 import net.xiaoyu233.mitemod.miteite.item.Materials;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 
-@Transform(EnchantmentWeaponDamage.class)
-public class EnchantmentWeaponDamageXTrans extends Enchantment{
-    @Marker
-    protected EnchantmentWeaponDamageXTrans(int id, yq rarity, int difficulty) {
-        super(id, rarity, difficulty);
-    }
-    //    public int getMinEnchantmentLevelsCost(int level) {
-//        if (level < 1) {
-//            atv.setErrorMessage("getMinEnchantmentLevelsCost: level < 1 for " + this);
-//            return 0;
-//        } else {
-//            if (!this.hasLevels()) {
-//                if (level != 3) {
-//                    atv.setErrorMessage("getMinEnchantmentLevelsCost: level must be 3 for " + this);
-//                    return 0;
-//                }
-//            } else if (level > this.getNumLevels()) {
-//                atv.setErrorMessage("getMinEnchantmentLevelsCost: level too high for " + this);
-//                return 0;
-//            }
-//
-//            return Math.max(this.difficulty - 10, 0) + this.difficulty * (level - 1) + 1;
-//        }
-//    }
+@Mixin(EnchantmentWeaponDamage.class)
+public abstract class EnchantmentWeaponDamageXTrans extends Enchantment {
+   protected EnchantmentWeaponDamageXTrans(int id, yq rarity, int difficulty) {
+      super(id, rarity, difficulty);
+   }
 
-    @Override
-    @Marker
-    public boolean isOnCreativeTab(CreativeModeTab creativeModeTab) {
-        return false;
-    }
+   public boolean canEnchantItem(Item item) {
+      if (this != Enchantment.sharpness) {
+         if (this == Enchantment.baneOfArthropods) {
+            return item instanceof ItemSword;
+         } else if (this != Enchantment.smite) {
+            return false;
+         } else {
+            return item.getClass() == ItemWarHammer.class || item.getHardestMetalMaterial() == Materials.vibranium && item.getClass() == ItemSword.class;
+         }
+      } else {
+         return item instanceof ItemSword || item.getClass() == ItemBattleAxe.class || item instanceof ItemScythe;
+      }
+   }
 
-    @Override
-    public int getNumLevelsForVibranium() {
-        return 7;
-    }
+   @Shadow
+   public String getNameSuffix() {
+      return null;
+   }
 
-    public boolean isCompatibleWith(Enchantment enchantment,Item item){
-        return item.getHardestMetalMaterial() == Materials.vibranium ? !(enchantment == this) : !(enchantment instanceof EnchantmentWeaponDamage);
-    }
+   public int getNumLevelsForVibranium() {
+      return 7;
+   }
 
-    public boolean canEnchantItem(Item item) {
-        if (this != Enchantment.l) {
-            if (this == Enchantment.n) {
-                return item instanceof ItemSword;
-            } else if (this == Enchantment.m) {
-                return item.getClass() == ItemWarHammer.class || (item.getHardestMetalMaterial() == Materials.vibranium && item.getClass() == ItemSword.class);
-            } else {
-                return false;
-            }
-        } else {
-            return item instanceof ItemSword || item.getClass() == ItemBattleAxe.class || item instanceof ItemScythe;
-        }
-    }
+   public boolean isCompatibleWith(Enchantment enchantment, Item item) {
+      return item.getHardestMetalMaterial() == Materials.vibranium ? enchantment != this : !(enchantment instanceof EnchantmentWeaponDamage);
+   }
 
-    @Override
-    @Marker
-    public String getNameSuffix() {
-        return null;
-    }
+   @Shadow
+   public boolean isOnCreativeTab(CreativeModeTab creativeModeTab) {
+      return false;
+   }
 }

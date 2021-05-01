@@ -12,10 +12,10 @@ public class BlockForgingTable extends Block implements IContainer {
     private IIcon TEXTURE_FRONT;
     private IIcon TEXTURE_BACK;
     protected BlockForgingTable(int par1) {
-        super(par1, Material.g, new BlockConstants());
-        this.a(CreativeModeTab.c);
+        super(par1, Material.anvil, new BlockConstants());
+        this.setCreativeTab(CreativeModeTab.tabDecorations);
         this.setMaxStackSize(1);
-        this.k(0);
+        this.setLightOpacity(0);
     }
 
     @Override
@@ -48,16 +48,18 @@ public class BlockForgingTable extends Block implements IContainer {
     }
 
     @Override
-    public TileEntity b(World world) {
-        return new TileEntityForgingTable();
+    public void breakBlock(World world, int x, int y, int z, int block_id, int metadata) {
+        super.breakBlock(world, x, y, z, block_id, metadata);
+        TileEntityForgingTable forgingTable = (TileEntityForgingTable)world.getBlockTileEntity(x, y, z);
+        forgingTable.dropAllItems();
+        world.removeBlockTileEntity(x, y, z);
     }
 
     //onBlockDestroyed
-    public void a(World world, int x, int y, int z, int block_id, int metadata) {
-        super.a(world, x, y, z, block_id, metadata);
-        TileEntityForgingTable forgingTable = (TileEntityForgingTable)world.r(x, y, z);
-        forgingTable.dropAllItems();
-        world.s(x, y, z);
+
+    @Override
+    public TileEntity createNewTileEntity(World world) {
+        return new TileEntityForgingTable();
     }
 
 
@@ -74,12 +76,12 @@ public class BlockForgingTable extends Block implements IContainer {
         return true;
     }
 
-    public boolean onBlockActivated(World world, int x, int y, int z, EntityHuman player, EnumFace face, float offset_x, float offset_y, float offset_z) {
+    public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, EnumFace face, float offset_x, float offset_y, float offset_z) {
         if (!world.isAirOrPassableBlock(x, y + 1, z, false)) {
             return false;
         } else {
             if (player.onServer()) {
-                TileEntityForgingTable tile_entity = (TileEntityForgingTable)world.r(x, y, z);
+                TileEntityForgingTable tile_entity = (TileEntityForgingTable)world.getBlockTileEntity(x, y, z);
                 if (tile_entity != null && !tile_entity.isUsing()) {
                     player.displayGUIForgingTable(x, y, z,tile_entity.getSlots());
                 }else {

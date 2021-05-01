@@ -9,25 +9,19 @@ import java.io.IOException;
 
 public class CPacketStartForging extends Packet {
     public CPacketStartForging() {
-
-    }
-    @Override
-    public void a(DataInput var1) throws IOException {
-
     }
 
-    @Override
-    public void a(DataOutput var1) throws IOException {
-
+    public int getPacketSize() {
+        return 3;
     }
 
-    @Override
-    public void a(Connection var1) {
+    public void processPacket(Connection var1) {
         var1.processStartForgingPacket(this);
     }
 
-    @Override
-    public int a() {
-        return 3;
+    public void readPacketData(DataInput var1) throws IOException {
+    }
+
+    public void writePacketData(DataOutput var1) throws IOException {
     }
 }

@@ -3,202 +3,188 @@ package net.xiaoyu233.mitemod.miteite.trans.item;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import net.minecraft.*;
-import net.xiaoyu233.fml.asm.annotations.Link;
-import net.xiaoyu233.fml.asm.annotations.Marker;
-import net.xiaoyu233.fml.asm.annotations.Transform;
-import net.xiaoyu233.mitemod.miteite.MITEITEMod;
 import net.xiaoyu233.mitemod.miteite.item.ItemModifierTypes;
 import net.xiaoyu233.mitemod.miteite.item.Items;
 import net.xiaoyu233.mitemod.miteite.item.Materials;
-import net.xiaoyu233.mitemod.miteite.util.Constant;
+import net.xiaoyu233.mitemod.miteite.util.Configs;
+import net.xiaoyu233.mitemod.miteite.util.ReflectHelper;
+import org.spongepowered.asm.mixin.Final;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Overwrite;
+import org.spongepowered.asm.mixin.Shadow;
 
-import static net.minecraft.Item.*;
-import static net.xiaoyu233.mitemod.miteite.util.Config.ConfigEntry.IRON_TO_MITHRIL_COOK_TIME;
-import static net.xiaoyu233.mitemod.miteite.util.Config.ConfigEntry.MITHRIL_TO_ADAMANTIUM_COOK_TIME;
-import static net.xiaoyu233.mitemod.miteite.util.ReflectHelper.dyCast;
+@Mixin(Item.class)
+public class ItemTrans {
+   @Shadow
+   private static Item[] itemsList;
+   @Shadow
+   @Final
+   private int itemID;
 
-@Transform(Item.class)
-public class ItemTrans{
-    @Link
-    private int cv;
+   public void addExpForTool(ItemStack stack, EntityPlayer player, int exp) {
+      stack.fixNBT();
+      NBTTagCompound tagCompound = stack.stackTagCompound;
+      if (tagCompound != null) {
+         if (tagCompound.hasKey("tool_exp")) {
+            tagCompound.setInteger("tool_exp", tagCompound.getInteger("tool_exp") + exp);
+            if (tagCompound.hasKey("tool_level")) {
+               int currentLevel = tagCompound.getInteger("tool_level");
+               int nextLevelExpReq = this.getExpReqForLevel(currentLevel + 1, this.isWeapon(stack.getItem()));
+               if (tagCompound.getInteger("tool_exp") >= nextLevelExpReq) {
+                  tagCompound.setInteger("tool_level", currentLevel + 1);
+                  tagCompound.setInteger("tool_exp", 0);
+                  if (!player.worldObj.isRemote) {
+                     player.sendChatToPlayer(ChatMessage.createFromTranslationKey("你的" + stack.getMITEStyleDisplayName() + "已升级,当前等级:" + (currentLevel + 1)).setColor(EnumChatFormat.DARK_AQUA));
+                  }
 
-    public int getHeatLevel(ItemStack item_stack) {
-        if (dyCast(this) == Items.BLAZE_COAL){
-            return 5;
-        }else if (dyCast(this) == bq) {
-            return 4;
-        } else {
-            return this.getBurnTime(item_stack) > 0 ? 1 : 0;
-        }
-    }
+                  if (!tagCompound.hasKey("modifiers")) {
+                     tagCompound.setCompoundTag("modifiers", new NBTTagCompound());
+                  }
 
-    public void addExpForTool(ItemStack stack, EntityHuman player, int exp) {
-        stack.fixNBT();
-        NBTTagCompound tagCompound = stack.e;
-        if (tagCompound != null) {
-            if (tagCompound.b("tool_exp")) {
-                tagCompound.a("tool_exp", tagCompound.e("tool_exp") + exp);
-                if (tagCompound.b("tool_level")) {
-                    int currentLevel = tagCompound.e("tool_level");
-                    int nextLevelExpReq = this.getExpReqForLevel(currentLevel + 1, this.isWeapon(stack.b()));
-                    if (tagCompound.e("tool_exp") >= nextLevelExpReq) {
-                        tagCompound.a("tool_level", currentLevel + 1);
-                        tagCompound.a("tool_exp", 0);
-                        if (!player.q.I) {
-                            player.a(ChatMessage.e(
-                                    "你的" + stack.getMITEStyleDisplayName() + "已升级,当前等级:" + (currentLevel + 1)).a(
-                                    EnumChatFormat.d));
-                        }
-                        if (!tagCompound.b("modifiers")) {
-                            tagCompound.a("modifiers", new NBTTagCompound());
-                        }
-                        this.onItemLevelUp(tagCompound,player,stack);
-                    }
-                }
+                  this.onItemLevelUp(tagCompound, player, stack);
+               }
             }
-        }else {
-            NBTTagCompound compound = new NBTTagCompound();
-            compound.a("tool_exp",0);
-            compound.a("tool_level",0);
-            stack.e = compound;
-        }
-    }
+         }
+      } else {
+         NBTTagCompound compound = new NBTTagCompound();
+         compound.setInteger("tool_exp", 0);
+         compound.setInteger("tool_level", 0);
+         stack.stackTagCompound = compound;
+      }
 
-    public boolean isMaxToolLevel(ItemStack itemStack) {
-        return false;
-    }
+   }
 
-    public int getToolLevel(ItemStack itemStack){
-        return itemStack.e != null? itemStack.q().e("tool_level") : 0;
-    }
+   public int addModifierLevelFor(NBTTagCompound modifiers, ItemModifierTypes modifierType) {
+      int effectLevel = modifiers.getInteger(modifierType.getNbtName()) + 1;
+      modifiers.setInteger(modifierType.getNbtName(), effectLevel);
+      return effectLevel;
+   }
 
-    public int addModifierLevelFor(NBTTagCompound modifiers, ItemModifierTypes modifierType){
-        int effectLevel = modifiers.e(modifierType.getNbtName()) + 1;
-        modifiers.a(modifierType.getNbtName(), effectLevel);
-        return effectLevel;
-    }
+   @Shadow
+   public ItemBlock getAsItemBlock() {
+      return null;
+   }
 
-    public void onItemLevelUp(NBTTagCompound tagCompound,EntityHuman player,ItemStack stack){}
+   public Multimap<String, AttributeModifier> getAttrModifiers(ItemStack stack) {
+      return HashMultimap.create();
+   }
 
-    public int getExpReqForLevel(int i, boolean weapon){
-        return 0;
-    }
+   @Shadow
+   private int getBurnTime(ItemStack item_stack) {
+      return 0;
+   }
 
-    public boolean isWeapon(Item b){
-        return false;
-    }
+   public int getCookTime() {
+      if (this.itemID == Block.blockMithril.blockID) {
+         return (Configs.Item.Recipes.MITHRIL_TO_ADAMANTIUM_COOK_TIME.get());
+      } else if (this.itemID == Block.blockIron.blockID) {
+         return (Configs.Item.Recipes.IRON_TO_MITHRIL_COOK_TIME.get());
+      } else if (this.itemID == Block.coalBlock.blockID) {
+         return 2000;
+      } else {
+         return this.isBlock() ? 200 * (this.getAsItemBlock().getBlock().getMinHarvestLevel(-1) + 1) : 200;
+      }
+   }
 
-    public Multimap<String,AttributeModifier> getAttrModifiers(ItemStack stack) {
-        return HashMultimap.create();
-    }
+   public int getExpReqForLevel(int i, boolean weapon) {
+      return 0;
+   }
 
-    public float getMeleeDamageBonus(ItemStack stack){
-        return 0.0F;
-    }
-    public float getStrVsBlock(Block block, int metadata,ItemStack itemStack,EntityHuman user) {
-        return 0.0F;
-    }
+   @Overwrite
+   public int getHeatLevel(ItemStack item_stack) {
+      if (ReflectHelper.dyCast(this) == Items.BLAZE_COAL) {
+         return 5;
+      } else if (ReflectHelper.dyCast(this) == Item.blazeRod) {
+         return 4;
+      } else {
+         return this.getBurnTime(item_stack) > 0 ? 1 : 0;
+      }
+   }
 
-    public int getCookTime(){
-        if (this.cv == Block.blockMithril.cF){
-            return MITEITEMod.CONFIG.get(MITHRIL_TO_ADAMANTIUM_COOK_TIME);
-        }else if (this.cv == Block.an.cF){
-            return MITEITEMod.CONFIG.get(IRON_TO_MITHRIL_COOK_TIME);
-        }else if (this.cv == Block.cE.cF){
-            return 2000;
-        }else if (this.isBlock()){
-            return 200 * (getAsItemBlock().getBlock().getMinHarvestLevel(-1) + 1);
-        }else{
-            return 200;
-        }
-    }
+   @Shadow
+   private Material getMaterialForRepairs() {
+      return null;
+   }
 
-    @Marker
-    public boolean isBlock() {
-        return false;
-    }
+   public float getMeleeDamageBonus(ItemStack stack) {
+      return 0.0F;
+   }
 
-    public boolean hasExpAndLevel(){
-        return false;
-    }
+   public Item getRepairItem() {
+      Material material_for_repairs = this.getMaterialForRepairs();
+      if (material_for_repairs == Material.copper) {
+         return Item.copperNugget;
+      } else if (material_for_repairs == Material.silver) {
+         return Item.silverNugget;
+      } else if (material_for_repairs == Material.gold) {
+         return Item.goldNugget;
+      } else if (material_for_repairs != Material.iron && material_for_repairs != Material.rusted_iron) {
+         if (material_for_repairs == Material.mithril) {
+            return Item.mithrilNugget;
+         } else if (material_for_repairs == Material.adamantium) {
+            return Item.adamantiumNugget;
+         } else if (material_for_repairs == Material.ancient_metal) {
+            return Item.ancientMetalNugget;
+         } else {
+            return material_for_repairs == Materials.vibranium ? Items.VIBRANIUM_NUGGET : null;
+         }
+      } else {
+         return Item.ironNugget;
+      }
+   }
 
-    @Marker
-    public ItemBlock getAsItemBlock() {
-        return null;
-    }
+   public String getResourceLocationPrefix() {
+      return "";
+   }
 
-    @Marker
-    private int getBurnTime(ItemStack item_stack) {
-        return 0;
-    }
+   public float getStrVsBlock(Block block, int metadata, ItemStack itemStack, EntityPlayer user) {
+      return 0.0F;
+   }
 
-    public Item getRepairItem() {
-        Material material_for_repairs = this.getMaterialForRepairs();
-        if (material_for_repairs == Material.copper) {
-            return copperNugget;
-        } else if (material_for_repairs == Material.silver) {
-            return silverNugget;
-        } else if (material_for_repairs == Material.gold) {
-            return bs;
-        } else if (material_for_repairs != Material.f && material_for_repairs != Material.rusted_iron) {
-            if (material_for_repairs == Material.mithril) {
-                return mithrilNugget;
-            } else if (material_for_repairs == Material.adamantium) {
-                return adamantiumNugget;
-            } else {
-                if (material_for_repairs == Material.ancient_metal) {
-                    return ancientMetalNugget;
-                }else if (material_for_repairs == Materials.vibranium){
-                    return Items.VIBRANIUM_NUGGET;
-                }else {
-                    return null;
-                }
-            }
-        } else {
-            return ironNugget;
-        }
-    }
+   public int getToolLevel(ItemStack itemStack) {
+      return itemStack.stackTagCompound != null ? itemStack.getTagCompound().getInteger("tool_level") : 0;
+   }
 
-    @Marker
-    private Material getMaterialForRepairs() {
-        return null;
-    }
+   public boolean hasExpAndLevel() {
+      return false;
+   }
 
-    @Link
-    private static Item[] g;
+   @Shadow
+   public boolean isBlock() {
+      return false;
+   }
 
-    public static int getNextItemID() {
-        return Constant.nextItemID++;
-    }
+   public boolean isMaxToolLevel(ItemStack itemStack) {
+      return false;
+   }
 
-    public String getResourceLocationPrefix() {
-        return "";
-    }
+   public boolean isWeapon(Item b) {
+      return false;
+   }
 
-    public void setResourceLocation(String location){
-        this.d(location);
-    }
+   public void onItemLevelUp(NBTTagCompound tagCompound, EntityPlayer player, ItemStack stack) {
+   }
 
-    @Marker
-    public Item d(String location) {
-        return null;
-    }
+   @Shadow
+   public Item setCreativeTab(CreativeModeTab table) {
+      return null;
+   }
 
-    public void setCreativeTable(CreativeModeTab table){
-        this.a(table);
-    }
+   public void setCreativeTable(CreativeModeTab table) {
+      this.setCreativeTab(table);
+   }
 
-    @Marker
-    public Item a(CreativeModeTab table){
-        return null;
-    }
+   @Shadow
+   public Item setMaxStackSize(int maxStackSize) {
+      return null;
+   }
 
-    public void setMaxStackSize(int maxStackSize){
-        this.d(maxStackSize);
-    }
+   public void setResourceLocation(String location) {
+      this.setTextureName(location);
+   }
 
-    @Marker
-    public Item d(int maxStackSize) {
-        return null;
-    }
+   @Shadow
+   public Item setTextureName(String location) {
+      return null;
+   }
 }

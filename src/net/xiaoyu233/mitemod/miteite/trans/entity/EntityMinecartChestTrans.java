@@ -1,55 +1,47 @@
 package net.xiaoyu233.mitemod.miteite.trans.entity;
 
 import net.minecraft.*;
-import net.xiaoyu233.fml.asm.annotations.Link;
-import net.xiaoyu233.fml.asm.annotations.Marker;
-import net.xiaoyu233.fml.asm.annotations.Transform;
+import net.xiaoyu233.fml.util.ReflectHelper;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 
-import static net.xiaoyu233.fml.util.ReflectHelper.dyCast;
+@Mixin(EntityMinecartChest.class)
+public class EntityMinecartChestTrans extends EntityMinecartContainerTrans {
+   private boolean isInPortal;
 
-@Transform(EntityMinecartChest.class)
-public class EntityMinecartChestTrans extends EntityMinecartContainer {
-    @Link
-    private ItemStack[] a;
-    @Link
-    private boolean b;
-    private boolean isInPortal;
-    @Marker
-    public EntityMinecartChestTrans(World par1World) {
-        super(par1World);
-    }
+   public EntityMinecartChestTrans(World par1World) {
+      super(par1World);
+   }
 
-    @Override
-    @Marker
-    public int l() {
-        return 0;
-    }
+   @Shadow
+   public int getMinecartType() {
+      return 0;
+   }
 
-    public boolean onEntityRightClicked(EntityHuman player, ItemStack item_stack) {
-        if (player.onServer() && !this.isInPortal()) {
-            player.displayGUIChestForMinecartEntity(dyCast(this));
-        }
+   @Shadow
+   public int getSizeInventory() {
+      return 0;
+   }
 
-        return true;
-    }
+   public boolean isInPortal() {
+      return this.isInPortal;
+   }
 
-    @Override
-    protected void a(NBTTagCompound par1NBTTagCompound) {
-        super.a(par1NBTTagCompound);
-        this.isInPortal = false;
-    }
+   public void setInPortal(int destination_dimension_id) {
+      this.isInPortal = true;
+      super.setInPortal(destination_dimension_id);
+   }
 
-    @Marker
-    public int j_(){return 0;}
+   public boolean onEntityRightClicked(EntityPlayer player, ItemStack item_stack) {
+      if (player.onServer() && !this.isInPortal()) {
+         player.displayGUIChestForMinecartEntity(ReflectHelper.dyCast(this));
+      }
 
-    public boolean isInPortal() {
-        return isInPortal;
-    }
+      return true;
+   }
 
-
-    @Override
-    public void setInPortal(int destination_dimension_id) {
-        this.isInPortal = true;
-        super.setInPortal(destination_dimension_id);
-    }
+   protected void readEntityFromNBT(NBTTagCompound par1NBTTagCompound) {
+      super.readEntityFromNBT(par1NBTTagCompound);
+      this.isInPortal = false;
+   }
 }

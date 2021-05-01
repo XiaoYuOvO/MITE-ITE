@@ -24,6 +24,6 @@ public class EnchantmentCrit extends Enchantment {
 
     @Override
     public boolean isOnCreativeTab(CreativeModeTab var1) {
-        return var1 == CreativeModeTab.j;
+        return var1 == CreativeModeTab.tabCombat;
     }
 }

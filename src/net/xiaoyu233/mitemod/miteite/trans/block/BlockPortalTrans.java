@@ -1,44 +1,23 @@
 package net.xiaoyu233.mitemod.miteite.trans.block;
 
 import net.minecraft.*;
-import net.xiaoyu233.fml.asm.annotations.Marker;
-import net.xiaoyu233.fml.asm.annotations.Transform;
-import net.xiaoyu233.mitemod.miteite.MITEITEMod;
-import net.xiaoyu233.mitemod.miteite.util.Config;
+import net.xiaoyu233.mitemod.miteite.util.Configs;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
-import static net.minecraft.BlockPortal.getDestinationDimensionIdForMetadata;
+@Mixin(BlockPortal.class)
+public class BlockPortalTrans extends Block {
+   protected BlockPortalTrans(int par1, Material par2Material, BlockConstants constants) {
+      super(par1, par2Material, constants);
+   }
 
-@Transform(BlockPortal.class)
-public class BlockPortalTrans extends Block{
-    @Marker
-    protected BlockPortalTrans(int par1, Material par2Material, BlockConstants constants) {
-        super(par1, par2Material, constants);
-    }
-    @Marker
-    public boolean isRunegate(int metadata) {return false;}
-    @Marker
-    public boolean isPortalToOverworldSpawn(World world, int metadata) {return false;}
-    @Marker
-    private void initiateRunegateTeleport(WorldServer world, int x, int y, int z, EntityPlayer player, boolean is_portal_to_world_spawn){}
-    public void a(World par1World, int par2, int par3, int par4, Entity par5Entity) {
-        EntityHuman player = par5Entity instanceof EntityHuman ? (EntityHuman)par5Entity : null;
-        if (player == null || !player.is_runegate_teleporting) {
-            int metadata = par1World.h(par2, par3, par4);
-            boolean is_runegate = this.isRunegate(metadata);
-            boolean is_portal_to_world_spawn = this.isPortalToOverworldSpawn(par1World, metadata);
-            if (!is_runegate && !is_portal_to_world_spawn) {
-                if (par5Entity.o == null && par5Entity.n == null) {
-                    par5Entity.setInPortal(getDestinationDimensionIdForMetadata(metadata));
-                }
-
-            } else if (!par1World.I && player != null) {
-                if (player.o == null && player.n == null) {
-                    if (MITEITEMod.CONFIG.get(Config.ConfigEntry.LOG_PLAYERS_INTERACT_WITH_PORTAL)){
-                        ((WorldServer) par1World).p().af().a(ChatMessage.b("gameplay.portal_door.interact",player.an()).a(EnumChatFormat.e));
-                    }
-                    this.initiateRunegateTeleport((WorldServer)par1World, par2, par3, par4, (EntityPlayer)player, is_portal_to_world_spawn);
-                }
-            }
-        }
-    }
+   @Inject(locals = LocalCapture.CAPTURE_FAILHARD,method = "onEntityCollidedWithBlock",at = @At(value = "INVOKE",shift = At.Shift.BEFORE,target = "Lnet/minecraft/BlockPortal;initiateRunegateTeleport(Lnet/minecraft/WorldServer;IIILnet/minecraft/ServerPlayer;Z)V"))
+   private void injectTeleportTips(World par1World, int par2, int par3, int par4, Entity par5Entity, CallbackInfo ci, EntityPlayer player, int metadata, boolean is_runegate, boolean is_portal_to_world_spawn){
+      if ((Configs.Misc.LOG_PLAYERS_INTERACT_WITH_PORTAL.get())) {
+         ((WorldServer)par1World).p().getConfigurationManager().sendChatMsg(ChatMessage.createFromTranslationWithSubstitutions("gameplay.portal_door.interact", player.getEntityName()).setColor(EnumChatFormat.DARK_RED));
+      }
+   }
 }

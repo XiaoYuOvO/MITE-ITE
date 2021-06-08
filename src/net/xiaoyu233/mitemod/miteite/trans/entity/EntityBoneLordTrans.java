@@ -7,7 +7,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 
 @Mixin(EntityBoneLord.class)
-public class EntityBoneLordTrans extends EntitySkeleton {
+public class EntityBoneLordTrans extends EntitySkeletonTrans {
    public EntityBoneLordTrans(World par1World) {
       super(par1World);
    }
@@ -16,7 +16,7 @@ public class EntityBoneLordTrans extends EntitySkeleton {
    protected void addRandomEquipment() {
       this.addRandomWeapon();
       int day = this.getWorld() != null ? Math.max(this.getWorld().getDayOfWorld() - 64, 0) : 0;
-      if (day < 128) {
+      if (day < 96) {
          this.setBoots((new ItemStack(Item.bootsRustedIron)).randomizeForMob(this, true));
          this.setLeggings((new ItemStack(Item.legsRustedIron)).randomizeForMob(this, true));
          this.setCuirass((new ItemStack(Item.plateRustedIron)).randomizeForMob(this, true));
@@ -24,7 +24,13 @@ public class EntityBoneLordTrans extends EntitySkeleton {
       } else {
          MonsterUtil.addDefaultArmor(day, this, true);
       }
+      this.initStockedWeapon();
 
+   }
+
+   @Override
+   protected boolean willChangeWeapon() {
+      return Configs.Entities.BONE_LORD_AND_LONGDEAD_CHANGE_WEAPON_CHANCE.get() > this.rand.nextFloat();
    }
 
    @Overwrite

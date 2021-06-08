@@ -53,16 +53,6 @@ public class EntityZombiePigmanLord extends EntityPigZombie {
         return false;
     }
 
-    private void generateRandomParticles(EnumParticle particle) {
-        for(int var2 = 0; var2 < 5; ++var2) {
-            double var3 = this.rand.nextGaussian() * 0.02D;
-            double var5 = this.rand.nextGaussian() * 0.02D;
-            double var7 = this.rand.nextGaussian() * 0.02D;
-            this.worldObj.spawnParticle(particle, this.posX + (double)(this.rand.nextFloat() * this.width * 2.0F) - (double)this.width, this.posY + 1.0D + (double)(this.rand.nextFloat() * this.height), this.posZ + (double)(this.rand.nextFloat() * this.width * 2.0F) - (double)this.width, var3, var5, var7);
-        }
-
-    }
-
     @Override
     public boolean canCatchFire() {
         return false;

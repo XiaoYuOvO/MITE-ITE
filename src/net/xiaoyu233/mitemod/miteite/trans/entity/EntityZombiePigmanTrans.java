@@ -45,8 +45,10 @@ public class EntityZombiePigmanTrans extends EntityZombie implements IRangedEnti
       this.targetTasks.addTask(2, new PathfinderGoalNearestAttackableTarget(this, EntityPlayer.class, 0, true));
       this.targetTasks.addTask(2, new PathfinderGoalNearestAttackableTarget(this, EntityVillager.class, 0, false));
       this.tasks.addTask(2, new EntityAIMoveToFoodItem(this, 1.0F, true));
-      this.tasks.addTask(4, new PathfinderGoalMeleeAttack(this, EntityAnimal.class, 1.0D, true));
-      this.targetTasks.addTask(3, new PathfinderGoalNearestAttackableTarget(this, EntityAnimal.class, 10, true));
+      if (Configs.Entities.ZOMBIE_PIGMAN_ATTACK_ANIMAILS.get()){
+         this.tasks.addTask(4, new PathfinderGoalMeleeAttack(this, EntityAnimal.class, 1.0D, true));
+         this.targetTasks.addTask(3, new PathfinderGoalNearestAttackableTarget(this, EntityAnimal.class, 10, true));
+      }
       this.tasks.addTask(3, new EntityAIMoveToTree(this, 1.0F));
    }
 

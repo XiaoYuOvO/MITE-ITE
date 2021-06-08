@@ -2,10 +2,7 @@ package net.xiaoyu233.mitemod.miteite.trans.network;
 
 import net.minecraft.*;
 import net.xiaoyu233.mitemod.miteite.gui.GuiForgingTable;
-import net.xiaoyu233.mitemod.miteite.network.SPacketCraftingBoost;
-import net.xiaoyu233.mitemod.miteite.network.SPacketFinishForging;
-import net.xiaoyu233.mitemod.miteite.network.SPacketForgingTableInfo;
-import net.xiaoyu233.mitemod.miteite.network.SPacketOverlayMessage;
+import net.xiaoyu233.mitemod.miteite.network.*;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
@@ -97,6 +94,11 @@ public class ClientNetworkManagerTrans extends NetworkManagerTrans{
          ((GuiForgingTable)openingGUI).enableButton();
       }
 
+   }
+
+   @Override
+   public void handleUpdateDefense(BiPacketUpdateDefense packet) {
+      this.h.h.setDefenseCooldown(packet.getTime());
    }
 
    @SoftOverride

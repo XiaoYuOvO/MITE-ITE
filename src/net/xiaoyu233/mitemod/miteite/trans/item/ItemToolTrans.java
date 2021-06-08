@@ -5,6 +5,7 @@ import net.minecraft.*;
 import net.xiaoyu233.mitemod.miteite.item.Materials;
 import net.xiaoyu233.mitemod.miteite.item.ToolModifierTypes;
 import net.xiaoyu233.mitemod.miteite.item.enchantment.Enchantments;
+import net.xiaoyu233.mitemod.miteite.util.Configs;
 import net.xiaoyu233.mitemod.miteite.util.ReflectHelper;
 import net.xiaoyu233.mitemod.miteite.util.StringUtil;
 import org.spongepowered.asm.mixin.Mixin;
@@ -155,7 +156,7 @@ public class ItemToolTrans extends Item {
 
    @Overwrite
    public int getMaxItemUseDuration(ItemStack par1ItemStack) {
-      return 72000;
+      return Configs.GameMechanics.PLAYER_DEFENCE_MAX_TIME.get();
    }
 
    public float getMeleeDamageBonus(ItemStack stack) {
@@ -253,12 +254,30 @@ public class ItemToolTrans extends Item {
 
    }
 
+   //Client+Server
    public boolean onItemRightClick(EntityPlayer player, float partial_tick, boolean ctrl_is_down) {
       if (this.getItemInUseAction(player.getHeldItemStack(), player) == EnumItemInUseAction.BLOCK) {
-         player.setHeldItemInUse();
-         return true;
-      } else {
-         return false;
+         if (player.canDefense()){
+            player.setHeldItemInUse();
+            return true;
+         }
+      }
+      return false;
+   }
+
+   @Override
+   public void onItemUseFinish(ItemStack item_stack, World world, EntityPlayer player) {
+      super.onItemUseFinish(item_stack, world, player);
+      if (player.onServer()){
+         player.setDefenseCooldown(Configs.GameMechanics.PLAYER_DEFENSE_COOLDOWN.get());
+      }
+   }
+
+   @Override
+   public void onPlayerStoppedUsing(ItemStack par1ItemStack, World par2World, EntityPlayer par3EntityPlayer, int par4) {
+      super.onPlayerStoppedUsing(par1ItemStack, par2World, par3EntityPlayer, par4);
+      if (par3EntityPlayer.onServer()){
+         par3EntityPlayer.setDefenseCooldown(Configs.GameMechanics.PLAYER_DEFENSE_COOLDOWN.get());
       }
    }
 }

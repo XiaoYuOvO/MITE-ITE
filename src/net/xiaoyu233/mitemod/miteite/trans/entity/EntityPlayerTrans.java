@@ -6,6 +6,7 @@ import net.xiaoyu233.mitemod.miteite.inventory.container.ForgingTableSlots;
 import net.xiaoyu233.mitemod.miteite.item.ArmorModifierTypes;
 import net.xiaoyu233.mitemod.miteite.item.Materials;
 import net.xiaoyu233.mitemod.miteite.item.enchantment.Enchantments;
+import net.xiaoyu233.mitemod.miteite.network.BiPacketUpdateDefense;
 import net.xiaoyu233.mitemod.miteite.network.CPacketSyncItems;
 import net.xiaoyu233.mitemod.miteite.network.SPacketCraftingBoost;
 import net.xiaoyu233.mitemod.miteite.network.SPacketOverlayMessage;
@@ -21,11 +22,8 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import javax.annotation.Nullable;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Random;
 
 @Mixin(EntityPlayer.class)
 public abstract class EntityPlayerTrans extends EntityLiving implements ICommandListener {
@@ -52,34 +50,26 @@ public abstract class EntityPlayerTrans extends EntityLiving implements ICommand
    private float craftingBoostFactor;
    private int craftingBoostTimer;
    private BlockPos currentEffectedBeaconPos;
-   private int emergencyCooldown;
    private int inRainCounter;
    private int netherDebuffTime;
    private int underworldDebuffTime;
    private int underworldRandomTeleportTime;
    private volatile boolean waitForItemSync;
+   private int defenseCooldown;
    public EntityPlayerTrans(World par1World, String par2Str) {
       super(par1World);
    }
 
-   @Overwrite
-   public static int getHealthLimit(int level) {
-      return Math.max(Math.min(6 + level / 5 * 2, 40), 6);
-   }
-
-   private void activeEmergency() {
+   private void activeEmergency(List<ItemStack> emergencyItemList) {
       this.addPotionEffect(new MobEffect(11, 60, 1));
       this.entityFX(EnumEntityFX.smoke_and_steam);
       this.makeSound("fireworks.largeBlast", 2.0F, 0.75F);
       this.makeSound("random.anvil_land", 0.4F, 0.4F);
-      this.emergencyCooldown = (Configs.Item.Enchantment.EMERGENCY_COOLDOWN.get());
+      double reduce = (1 - (emergencyItemList.size() - 1) * Configs.Item.Enchantment.EMERGENCY_COOLDOWN_REDUCE_EVERY_ARMOR.get());
+      for (ItemStack itemStack : emergencyItemList) {
+         itemStack.setEmergencyCooldown((int) (Configs.Item.Enchantment.EMERGENCY_COOLDOWN.get() * reduce));
+      }
    }
-
-   @Shadow
-   public void addHungerServerSide(float hunger) {
-   }
-
-   @Shadow public abstract void addStat(Statistic par1StatBase, int par2);
 
    @Overwrite
    public void attackTargetEntityWithCurrentItem(Entity target) {
@@ -122,7 +112,13 @@ public abstract class EntityPlayerTrans extends EntityLiving implements ICommand
             if (item_stack_to_drop != null && this.rand.nextFloat() < EnchantmentManager.getEnchantmentLevelFraction(Enchantment.disarming, this.getHeldItemStack()) && entity_living_base instanceof EntityInsentient) {
                EntityInsentient entity_living = (EntityInsentient)entity_living_base;
                if (entity_living.canBeDisarmed()) {
-                  entity_living.dropItemStack(item_stack_to_drop, entity_living.height / 2.0F);
+                  EntityItem entityItem = entity_living.dropItemStack(item_stack_to_drop, entity_living.height / 2.0F);
+                  //Only for natural generated weapons
+                  if (!entity_living.picked_up_a_held_item_array[0]) {
+                     entityItem.setCanBePickUpByPlayer(false);
+                     //Only exist for half a minute
+                     entityItem.age = 5400;
+                  }
                   entity_living.clearMatchingEquipmentSlot(item_stack_to_drop);
                   entity_living.ticks_disarmed = 40;
                }
@@ -201,24 +197,65 @@ public abstract class EntityPlayerTrans extends EntityLiving implements ICommand
 
    }
 
+   @Overwrite
+   public static int getHealthLimit(int level) {
+      return Math.max(Math.min(6 + level / 5 * 2, 40), 6);
+   }
+
+   public boolean canDefense(){
+      return this.defenseCooldown <= 0;
+   }
+
+   @Shadow
+   public void addHungerServerSide(float hunger) {
+   }
+
+   @Shadow public abstract void addStat(Statistic par1StatBase, int par2);
+
+   protected void checkForAfterDamage(Damage damage, EntityDamageResult result) {
+      if (result.entityWasDestroyed()) {
+         ItemStack[] var3 = this.getWornItems();
+         List<ItemStack> readyEmergencyItemList = new ArrayList<>();
+         for (ItemStack wornItem : var3) {
+            if (wornItem != null && wornItem.hasEnchantment(Enchantments.EMERGENCY, false)) {
+               if (wornItem.getEmergencyCooldown() <= 0){
+                  readyEmergencyItemList.add(wornItem);
+               }
+            }
+         }
+         if (readyEmergencyItemList.size() > 0){
+            result.setEntity_was_destroyed(false);
+            this.setHealth(this.getMaxHealth() * 0.2F, true, this.getHealFX());
+            this.activeEmergency(readyEmergencyItemList);
+         }
+      }
+
+   }
+
    @Shadow
    protected abstract float calcRawMeleeDamageVs(Entity var1, boolean var2, boolean var3);
 
-   protected void checkForAfterDamage(Damage damage, EntityDamageResult result) {
-      if (this.emergencyCooldown <= 0 && result.entityWasDestroyed()) {
-         ItemStack[] var3 = this.getWornItems();
+   @Inject(method = "readEntityFromNBT",at = @At("RETURN"))
+   public void injectReadNBT(NBTTagCompound par1NBTTagCompound,CallbackInfo ci) {
+      this.underworldRandomTeleportTime = par1NBTTagCompound.getInteger("UnderWorldTeleportTime");
+      this.underworldDebuffTime = par1NBTTagCompound.getInteger("UnderWorldDebuffTime");
+      this.netherDebuffTime = par1NBTTagCompound.getInteger("NetherDebuffTime");
+      this.inRainCounter = par1NBTTagCompound.getInteger("InRainCounter");
+      this.vision_dimming = par1NBTTagCompound.getFloat("vision_dimming");
+      if (par1NBTTagCompound.hasKey("AttackCountMap")) {
+         NBTTagList attackCountMap = par1NBTTagCompound.getTagList("AttackCountMap");
+         int count = attackCountMap.tagCount();
 
-         for (ItemStack wornItem : var3) {
-            if (wornItem != null && wornItem.hasEnchantment(Enchantments.EMERGENCY, false)) {
-               if (result.entityWasDestroyed()) {
-                  result.setEntity_was_destroyed(false);
-                  this.setHealth(this.getMaxHealth() * 0.2F, true, this.getHealFX());
-               }
-
-               this.activeEmergency();
-               break;
+         for(int i = 0; i < count; ++i) {
+            NBTTagCompound a = (NBTTagCompound)attackCountMap.tagAt(i);
+            Entity attacker = this.getWorldServer().getEntityByID(a.getInteger("Attacker"));
+            if (attacker != null) {
+               this.attackCountMap.put(attacker, a.getInteger("Count"));
             }
          }
+      }
+      if (par1NBTTagCompound.hasKey("DefenseCooldown")){
+         this.setDefenseCooldown(par1NBTTagCompound.getInteger("DefenseCooldown"));
       }
 
    }
@@ -496,29 +533,6 @@ public abstract class EntityPlayerTrans extends EntityLiving implements ICommand
       player.setPositionAndUpdate(runegate_destination_coords[0], runegate_destination_coords[1], runegate_destination_coords[2]);
    }
 
-   @Inject(method = "readEntityFromNBT",at = @At("RETURN"))
-   public void injectReadNBT(NBTTagCompound par1NBTTagCompound,CallbackInfo ci) {
-      this.underworldRandomTeleportTime = par1NBTTagCompound.getInteger("UnderWorldTeleportTime");
-      this.underworldDebuffTime = par1NBTTagCompound.getInteger("UnderWorldDebuffTime");
-      this.netherDebuffTime = par1NBTTagCompound.getInteger("NetherDebuffTime");
-      this.inRainCounter = par1NBTTagCompound.getInteger("InRainCounter");
-      this.emergencyCooldown = par1NBTTagCompound.getInteger("EmergencyCooldown");
-      this.vision_dimming = par1NBTTagCompound.getFloat("vision_dimming");
-      if (par1NBTTagCompound.hasKey("AttackCountMap")) {
-         NBTTagList attackCountMap = par1NBTTagCompound.getTagList("AttackCountMap");
-         int count = attackCountMap.tagCount();
-
-         for(int i = 0; i < count; ++i) {
-            NBTTagCompound a = (NBTTagCompound)attackCountMap.tagAt(i);
-            Entity attacker = this.getWorldServer().getEntityByID(a.getInteger("Attacker"));
-            if (attacker != null) {
-               this.attackCountMap.put(attacker, a.getInteger("Count"));
-            }
-         }
-      }
-
-   }
-
    @Inject(method = "onLivingUpdate",
            at = @At(value = "INVOKE",
                    target = "Lnet/minecraft/EntityLiving;onLivingUpdate()V",
@@ -568,7 +582,8 @@ public abstract class EntityPlayerTrans extends EntityLiving implements ICommand
             } else if (this.underworldDebuffTime == 1) {
                this.sendPacket(new SPacketOverlayMessage("§n---你已从地底世界的疲惫中恢复---", EnumChatFormat.DARK_GREEN.rgb, 200));
             }
-         } else {
+         }
+         else {
             if (Configs.GameMechanics.Underworld.UNDERWORLD_DEBUFF.get()) {
                ++this.underworldDebuffTime;
                debuff_time = Configs.GameMechanics.Underworld.UNDERWORLD_DEBUFF_PERIOD1.get();
@@ -623,8 +638,20 @@ public abstract class EntityPlayerTrans extends EntityLiving implements ICommand
             }
          }
 
-         if (this.emergencyCooldown > 0) {
-            --this.emergencyCooldown;
+         for (ItemStack wornItem : this.getWornItems()) {
+            if (wornItem != null){
+               int emergencyCooldown = wornItem.getEmergencyCooldown();
+               if (emergencyCooldown > 0){
+                  wornItem.setEmergencyCooldown(emergencyCooldown - 1);
+               }
+            }
+         }
+
+         if (this.defenseCooldown > 0){
+            this.defenseCooldown--;
+
+               this.sendPacket(new BiPacketUpdateDefense(this.defenseCooldown));
+
          }
       }
    }
@@ -635,7 +662,6 @@ public abstract class EntityPlayerTrans extends EntityLiving implements ICommand
       par1NBTTagCompound.setInteger("UnderWorldDebuffTime", this.underworldDebuffTime);
       par1NBTTagCompound.setInteger("NetherDebuffTime", this.netherDebuffTime);
       par1NBTTagCompound.setInteger("InRainCounter", this.inRainCounter);
-      par1NBTTagCompound.setInteger("EmergencyCooldown", this.emergencyCooldown);
       par1NBTTagCompound.setFloat("vision_dimming", this.vision_dimming);
       NBTTagList nbtTagList = new NBTTagList();
       for (Entry<Entity, Integer> integerEntry : this.attackCountMap.entrySet()) {
@@ -646,6 +672,42 @@ public abstract class EntityPlayerTrans extends EntityLiving implements ICommand
       }
 
       par1NBTTagCompound.setTag("AttackCountMap", nbtTagList);
+      par1NBTTagCompound.setInteger("DefenseCooldown",this.defenseCooldown);
+   }
+
+   @Redirect(method = "attackEntityFrom",
+           at = @At(value = "INVOKE",
+                   target = "Lnet/minecraft/EntityLiving;attackEntityFrom(Lnet/minecraft/Damage;)Lnet/minecraft/EntityDamageResult;"))
+   private EntityDamageResult redirectEntityAttack(EntityLiving caller,Damage damage){
+      double progress = Math.min(Configs.GameMechanics.STEPPED_MOB_DAMAGE_PROGRESS_MAX.get(),(Configs.GameMechanics.STEPPED_MOB_DAMAGE_PROGRESS_BASE.get()) + this.getWorld().getDayOfWorld() / (float)Configs.GameMechanics.STEPPED_MOB_DAMAGE_PROGRESS_INCREASE_DAY.get());
+      if (progress != 0.0D) {
+         Entity responsibleEntity = damage.getSource().getResponsibleEntity();
+         if (responsibleEntity != null && !(responsibleEntity instanceof EntityEnderDragon)) {
+            if (this.attackCountMap.containsKey(responsibleEntity)) {
+               this.attackCountMap.put(responsibleEntity, this.attackCountMap.get(responsibleEntity) + 1);
+               damage.setAmount((float) (damage.getAmount() + this.attackCountMap.get(responsibleEntity) * progress));
+            } else {
+               this.attackCountMap.put(responsibleEntity, 1);
+            }
+         }
+      }
+      EntityDamageResult entityDamageResult = super.attackEntityFrom(damage);
+      if (entityDamageResult != null && (double)this.getHealthFraction() <= 0.3D && !entityDamageResult.entityWasDestroyed()) {
+         ItemStack[] var5 = this.getWornItems();
+
+         List<ItemStack> readyEmergencyItems = new ArrayList<>();
+         for (ItemStack wornItem : var5) {
+            if (wornItem != null && wornItem.hasEnchantment(Enchantments.EMERGENCY, false)) {
+               if (wornItem.getEmergencyCooldown() <= 0){
+                  readyEmergencyItems.add(wornItem);
+               }
+            }
+         }
+         if (readyEmergencyItems.size() > 0){
+            this.activeEmergency(readyEmergencyItems);
+         }
+      }
+      return entityDamageResult;
    }
 
    @Shadow
@@ -758,34 +820,8 @@ public abstract class EntityPlayerTrans extends EntityLiving implements ICommand
 //      }
 //   }
 
-   @Redirect(method = "attackEntityFrom",
-           at = @At(value = "INVOKE",
-                   target = "Lnet/minecraft/EntityLiving;attackEntityFrom(Lnet/minecraft/Damage;)Lnet/minecraft/EntityDamageResult;"))
-   private EntityDamageResult redirectEntityAttack(EntityLiving caller,Damage damage){
-      double factor = (Configs.GameMechanics.STEPPED_MOB_DAMAGE_FACTOR.get());
-      if (factor != 0.0D) {
-         Entity responsibleEntity = damage.getSource().getResponsibleEntity();
-         if (responsibleEntity != null && !(responsibleEntity instanceof EntityEnderDragon)) {
-            if (this.attackCountMap.containsKey(responsibleEntity)) {
-               this.attackCountMap.put(responsibleEntity, this.attackCountMap.get(responsibleEntity) + 1);
-               damage.scaleAmount(1.0F + (float) this.attackCountMap.get(responsibleEntity) * (float)factor);
-            } else {
-               this.attackCountMap.put(responsibleEntity, 1);
-            }
-         }
-      }
-      EntityDamageResult entityDamageResult = super.attackEntityFrom(damage);
-      if (entityDamageResult != null && this.emergencyCooldown <= 0 && (double)this.getHealthFraction() <= 0.3D && !entityDamageResult.entityWasDestroyed()) {
-         ItemStack[] var5 = this.getWornItems();
-
-         for (ItemStack wornItem : var5) {
-            if (wornItem != null && wornItem.hasEnchantment(Enchantments.EMERGENCY, false)) {
-               this.activeEmergency();
-               break;
-            }
-         }
-      }
-      return entityDamageResult;
+   public void setDefenseCooldown(int time){
+      this.defenseCooldown = time;
    }
 
    @Shadow

@@ -150,7 +150,7 @@ public class EntityGiantZombieTrans extends EntityMonster {
 
    @Override
    public float getReach() {
-      return super.getReach() * 2.0F;
+      return super.getReach() * 2.1F;
    }
 
    @Inject(method = "<init>",at = @At("RETURN"))
@@ -168,6 +168,7 @@ public class EntityGiantZombieTrans extends EntityMonster {
       this.tasks.addTask(2, new PathfinderGoalNearestAttackableTarget(this, EntityVillager.class, 0, false));
       this.tasks.addTask(4, new PathfinderGoalMeleeAttack(this, EntityAnimal.class, 1.0D, true));
       this.tasks.addTask(3, new PathfinderGoalNearestAttackableTarget(this, EntityAnimal.class, 10, true));
+      this.setSize(this.width * 6.1F, this.height * 6.0F);
    }
 
    @Override
@@ -182,7 +183,7 @@ public class EntityGiantZombieTrans extends EntityMonster {
             ++this.spawnCounter;
          } else {
             EntityZombie zombie = new EntityZombie(this.worldObj);
-            zombie.setPosition(this.getBlockPosX(), this.getFootBlockPosY(), this.getBlockPosZ());
+            zombie.setPosition(this.posX, this.posY, this.posZ);
             zombie.refreshDespawnCounter(-9600);
             this.worldObj.spawnEntityInWorld(zombie);
             zombie.onSpawnWithEgg(null);

@@ -23,4 +23,7 @@ public class NetworkManagerTrans {
 
    public void processStartForgingPacket(CPacketStartForging packet) {
    }
+
+   public void handleUpdateDefense(BiPacketUpdateDefense packet){
+   }
 }

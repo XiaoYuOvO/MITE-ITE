@@ -14,6 +14,16 @@ public class EnchantmentDefence extends Enchantment {
     }
 
     @Override
+    public float enchantIndividualChance(int enchantmentLevel) {
+        return 0.25f + 0.5f * (enchantmentLevel / 158f);
+    }
+
+    @Override
+    public boolean enchantIndividually() {
+        return true;
+    }
+
+    @Override
     public String getNameSuffix() {
         return "defence";
     }

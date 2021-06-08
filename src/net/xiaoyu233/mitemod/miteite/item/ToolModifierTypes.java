@@ -46,7 +46,7 @@ public enum  ToolModifierTypes implements ItemModifierTypes{
     public final String displayName;
     public final EnumChatFormat color;
     public final int weight;
-    private final Predicate<ItemStack>  canApplyTo;
+    private final Predicate<ItemStack> canApplyTo;
     private final int maxLevel;
     ToolModifierTypes(float levelAddition, String displayName, EnumChatFormat color, int weight, Predicate<ItemStack> canApplyTo,int maxLevel){
         this.nbtName = this.name().toLowerCase();

@@ -29,7 +29,7 @@ public class RecipesFurnaceTrans {
             if (input_item_id == Block.sand.blockID) {
                result_item_stack = (heat_level != 1 || input_item_stack.stackSize >= 4) && input_item_stack.stackSize >= 4 ? new ItemStack(heat_level == 1 ? Block.sandStone : Block.glass) : null;
             } else if (input_item_id == Block.blockIron.blockID) {
-               result_item_stack = heat_level >= 4 && input_item_stack.stackSize >= 4 ? new ItemStack(Item.ingotMithril) : null;
+               result_item_stack = heat_level >= 3 && input_item_stack.stackSize >= Configs.Item.Recipes.IRON_BLOCK_COUNT_TO_MITHRIL.get() ? new ItemStack(Item.ingotMithril) : null;
             } else if (input_item_id == Block.blockMithril.blockID) {
                result_item_stack = heat_level >= 4 && input_item_stack.stackSize >= Configs.Item.Recipes.MITHRIL_BLOCK_COUNT_TO_ADAMANTIUM.get() ? new ItemStack(Item.ingotAdamantium) : null;
             } else {

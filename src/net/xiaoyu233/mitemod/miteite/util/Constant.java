@@ -12,12 +12,13 @@ public class Constant {
     public static int nextBlockID = 160;
     public static int nextEnchantmentID = 96;
     public static int nextAchievementID = 136;
-    public static final String MITE_ITE_VERSION = "v1.0.0-pre2";
+    public static final String MITE_ITE_VERSION = "v1.0.0-pre3-INTERNAL";
     public static final int MITE_ITE_VER_NUM = 1001;
     public static ItemArmor[] HELMETS = null;
     public static ItemArmor[] CHESTPLATES = null;
     public static ItemArmor[] LEGGINGS = null;
     public static ItemArmor[] BOOTS = null;
+    public static Item[] SWORDS = null;
     public static ItemArmor[][] ARMORS = null;
 
     static {
@@ -37,6 +38,7 @@ public class Constant {
         LEGGINGS = new ItemArmor[]{Item.legsLeather, Item.legsChainCopper, Item.legsCopper, Item.legsRustedIron, Item.legsChainIron, Item.legsIron, Item.legsChainAncientMetal, Item.legsAncientMetal, Item.legsChainMithril, Item.legsMithril, Item.legsAdamantium, Items.VIBRANIUM_LEGGINGS};
         BOOTS = new ItemArmor[]{Item.bootsLeather, Item.bootsChainCopper, Item.bootsCopper, Item.bootsRustedIron, Item.bootsChainIron, Item.bootsIron, Item.bootsChainAncientMetal, Item.bootsAncientMetal, Item.bootsChainMithril, Item.bootsMithril, Item.bootsAdamantium, Items.VIBRANIUM_BOOTS};
         ARMORS = new ItemArmor[][]{HELMETS, CHESTPLATES, LEGGINGS, BOOTS};
+        SWORDS = new Item[]{Item.swordRustedIron, Item.swordIron,Item.swordAncientMetal,Item.swordMithril,Item.swordAdamantium,Items.VIBRANIUM_SWORD};
     }
 
 }

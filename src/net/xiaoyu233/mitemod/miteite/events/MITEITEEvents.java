@@ -171,6 +171,7 @@ public class MITEITEEvents {
         event.register(137, true, false, SPacketOverlayMessage.class);
         event.register(138, false, true, CPacketSyncItems.class);
         event.register(139, true, false, SPacketCraftingBoost.class);
+        event.register(140, true, true, BiPacketUpdateDefense.class);
     }
 
 //    @Subscribe

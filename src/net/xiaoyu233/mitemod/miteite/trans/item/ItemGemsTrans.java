@@ -19,7 +19,7 @@ public class ItemGemsTrans extends Item {
       if (item == Item.dyePowder && item_stack.getItemSubtype() == 4) {
          return 40;
       } else {
-         return item == netherQuartz ? 35 : (item == emerald ? 250 : (item == diamond ? Configs.Item.DIAMOND_EXP.get() : 0));
+         return item == netherQuartz ? Configs.Item.QUARTZ_EXP.get() : (item == emerald ? 250 : (item == diamond ? Configs.Item.DIAMOND_EXP.get() : 0));
       }
    }
 
@@ -35,24 +35,4 @@ public class ItemGemsTrans extends Item {
          callbackInfoReturnable.cancel();
       }
    }
-
-//   @Overwrite
-//   public static boolean onItemRightClick(EntityPlayer player, ItemStack item_stack, float partial_tick, boolean ctrl_is_down) {
-//      int xp_value = getExperienceValueWhenSacrificed(item_stack);
-//      if (xp_value < 1) {
-//         return false;
-//      } else {
-//         if (player.onServer()) {
-//
-//
-//            player.causeBreakingItemEffect(item_stack.getItem(), player.bn.currentItem);
-//            player.convertOneOfHeldItem((ItemStack)null);
-//            player.s(xp_value);
-//         } else {
-//            player.bobItem();
-//         }
-//
-//         return true;
-//      }
-//   }
 }

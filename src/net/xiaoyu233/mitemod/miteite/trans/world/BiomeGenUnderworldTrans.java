@@ -15,9 +15,10 @@ public class BiomeGenUnderworldTrans extends BiomeBase {
 
    @Inject(method = "<init>",at = @At("RETURN"))
    public void injectCtor(CallbackInfo callbackInfo) {
-      this.spawnableMonsterList.add(new BiomeMeta(EntityCaveSpider.class, 40, 1, 2));
-      this.spawnableMonsterList.add(new BiomeMeta(EntityLongdead.class, 40, 1, 2));
-      this.spawnableMonsterList.add(new BiomeMeta(EntityAncientBoneLord.class, 5, 1, 1));
+      this.spawnableMonsterList.clear();
+      this.spawnableMonsterList.add(new BiomeMeta(EntityCaveSpider.class, 80, 1, 2));
+      this.spawnableMonsterList.add(new BiomeMeta(EntityLongdead.class, 80, 1, 2));
+      this.spawnableMonsterList.add(new BiomeMeta(EntityAncientBoneLord.class, 10, 1, 1));
       this.spawnableMonsterList.add(new BiomeMeta(EntityZombieLord.class, 1, 1, 1));
    }
 }

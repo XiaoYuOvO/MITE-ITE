@@ -4,7 +4,6 @@ import net.minecraft.CraftingManager;
 import net.xiaoyu233.mitemod.miteite.achievement.Achievements;
 import net.xiaoyu233.mitemod.miteite.block.Blocks;
 import net.xiaoyu233.mitemod.miteite.item.Items;
-import net.xiaoyu233.mitemod.miteite.item.enchantment.Enchantments;
 import net.xiaoyu233.mitemod.miteite.item.recipe.ForgingTableRecipes;
 import net.xiaoyu233.mitemod.miteite.trans.item.CraftingManagerInvoker;
 
@@ -18,7 +17,6 @@ public class RegisterHelper {
         Items.registerItems();
         Blocks.registerBlocks();
         Achievements.registerAchievements();
-        Enchantments.registerEnchantments();
     }
     public static void registerAllRecipes(CraftingManager crafters){
         RecipeRegister recipeRegister = new RecipeRegister();

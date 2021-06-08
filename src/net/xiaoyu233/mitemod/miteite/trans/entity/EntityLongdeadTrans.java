@@ -1,13 +1,14 @@
 package net.xiaoyu233.mitemod.miteite.trans.entity;
 
 import net.minecraft.*;
+import net.xiaoyu233.mitemod.miteite.util.Configs;
 import net.xiaoyu233.mitemod.miteite.util.MonsterUtil;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 
 @Mixin(EntityLongdead.class)
-public class EntityLongdeadTrans extends EntitySkeleton {
+public class EntityLongdeadTrans extends EntitySkeletonTrans {
    public EntityLongdeadTrans(World par1World) {
       super(par1World);
    }
@@ -16,7 +17,7 @@ public class EntityLongdeadTrans extends EntitySkeleton {
    protected void addRandomEquipment() {
       this.addRandomWeapon();
       int day = this.getWorld() != null ? Math.max(this.getWorld().getDayOfWorld() - 64, 0) : 0;
-      if (day < 160) {
+      if (day < 96) {
          this.setBoots((new ItemStack(Item.bootsChainAncientMetal)).randomizeForMob(this, true));
          this.setLeggings((new ItemStack(Item.legsChainAncientMetal)).randomizeForMob(this, true));
          this.setCuirass((new ItemStack(Item.plateChainAncientMetal)).randomizeForMob(this, true));
@@ -24,7 +25,13 @@ public class EntityLongdeadTrans extends EntitySkeleton {
       } else {
          MonsterUtil.addDefaultArmor(day, this, true);
       }
+      this.initStockedWeapon();
 
+   }
+
+   @Override
+   protected boolean willChangeWeapon() {
+      return Configs.Entities.BONE_LORD_AND_LONGDEAD_CHANGE_WEAPON_CHANCE.get() > this.rand.nextFloat();
    }
 
    @Overwrite

@@ -13,6 +13,11 @@ public class EnchantmentEmergency extends Enchantment {
     }
 
     @Override
+    public float enchantIndividualChance(int enchantmentLevel) {
+        return 0.01f + 0.09f * (enchantmentLevel / 158f);
+    }
+
+    @Override
     public String getNameSuffix() {
         return "emergency";
     }

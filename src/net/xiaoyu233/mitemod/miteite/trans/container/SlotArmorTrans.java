@@ -45,7 +45,7 @@ public class SlotArmorTrans extends Container {
             return Math.max(Math.round((float)enchantment_levels * fraction), 1);
          }
       } else {
-         return 2;
+         return 4;
       }
    }
 

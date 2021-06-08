@@ -15,10 +15,11 @@ public class BiomeHellTrans extends BiomeBase {
 
    @Inject(method = "<init>",at = @At("RETURN"))
    public void injectCtor(CallbackInfo callbackInfo) {
-      this.spawnableMonsterList.add(new BiomeMeta(EntityGhast.class, 50, 1, 2));
-      this.spawnableMonsterList.add(new BiomeMeta(EntityPigZombie.class, 100, 1, 4));
-      this.spawnableMonsterList.add(new BiomeMeta(EntityMagmaCube.class, 10, 4, 4));
-      this.spawnableMonsterList.add(new BiomeMeta(EntityEarthElemental.class, 40, 1, 1));
+      this.spawnableMonsterList.clear();
+      this.spawnableMonsterList.add(new BiomeMeta(EntityGhast.class, 100, 1, 2));
+      this.spawnableMonsterList.add(new BiomeMeta(EntityPigZombie.class, 200, 1, 4));
+      this.spawnableMonsterList.add(new BiomeMeta(EntityMagmaCube.class, 20, 4, 4));
+      this.spawnableMonsterList.add(new BiomeMeta(EntityEarthElemental.class, 80, 1, 1));
       this.spawnableMonsterList.add(new BiomeMeta(EntityZombiePigmanLord.class, 1, 1, 1));
    }
 }

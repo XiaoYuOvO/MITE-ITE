@@ -1,14 +1,10 @@
 package net.xiaoyu233.mitemod.miteite.trans.entity;
 
 import net.minecraft.*;
-import net.xiaoyu233.mitemod.miteite.util.Configs;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(EntityZombie.class)
 class EntityZombieTrans extends EntityAnimalWatcher {
@@ -31,22 +27,18 @@ class EntityZombieTrans extends EntityAnimalWatcher {
       this.setEntityAttribute(field_110186_bp, this.getRNG().nextDouble() * 0.10000000149011612D);
    }
 
-   @Inject(method = "attackEntityFrom",at = @At("HEAD"))
-   public void attackEntityFrom(Damage damage, CallbackInfoReturnable<EntityDamageResult> c) {
-      if ((Configs.Entities.ZOMBIE_DEFENSE.get())
-              && damage.getResponsibleEntityP() != null
-              && this.getHeldItem() != null && this.rand.nextInt(10) > 8) {
-         damage.scaleAmount(0.5F);
-         this.getWorld().playSoundAtEntity(this, "mob.irongolem.hit", 1.0F, 1.0F);
-      }
-//
+   @Override
+   protected float getChanceOfCausingFire() {
+      return Math.min(0.05f + this.worldObj.getDayOfWorld() / 800f,0.25f);
+   }
+
+   //
 //      EntityDamageResult result = super.attackEntityFrom(damage);
 //      if (result != null && !result.entityWasDestroyed() && result.entityWasNegativelyAffected() && damage.wasCausedByPlayer()) {
 //         this.is_smart = true;
 //      }
 //
 //      return result;
-   }
 
    @Override
    protected void enchantEquipment(ItemStack item_stack) {

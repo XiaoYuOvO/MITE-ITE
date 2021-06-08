@@ -2,6 +2,7 @@ package net.xiaoyu233.mitemod.miteite.trans.item.enchantment;
 
 import net.minecraft.*;
 import net.xiaoyu233.mitemod.miteite.item.Materials;
+import net.xiaoyu233.mitemod.miteite.item.enchantment.Enchantments;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 
@@ -10,7 +11,7 @@ import java.util.*;
 @Mixin(EnchantmentManager.class)
 public class EnchantmentManagerTrans {
    @Overwrite
-   public static List buildEnchantmentList(Random random, ItemStack item_stack, int enchantment_levels) {
+   public static List<EnchantmentInstance> buildEnchantmentList(Random random, ItemStack item_stack, int enchantment_levels) {
       Item item = item_stack.getItem();
       int enchantability = item.getItemEnchantability();
       int maxSize = item.getHardestMetalMaterial() == Materials.vibranium ? 3 : 2;
@@ -23,10 +24,10 @@ public class EnchantmentManagerTrans {
             adjusted_enchantment_levels = 1;
          }
 
-         ArrayList enchantments_for_item = new ArrayList();
+         ArrayList<EnchantmentInstance> enchantments_for_item = new ArrayList<>();
 
          do {
-            Map all_possible_enchantments = mapEnchantmentData(adjusted_enchantment_levels, item_stack);
+            Map<Integer, EnchantmentInstance> all_possible_enchantments = mapEnchantmentData(adjusted_enchantment_levels, item_stack);
             if (all_possible_enchantments == null) {
                break;
             }
@@ -42,21 +43,23 @@ public class EnchantmentManagerTrans {
             }
 
             Enchantment enchantment = enchantment_data.enchantmentobj;
-            if (enchantments_for_item.size() < 2 && all_possible_enchantments.size() > 1 && enchantment.hasLevels() && random.nextInt(2) == 0) {
-               enchantment_data.enchantmentLevel = random.nextInt(enchantment_data.enchantmentLevel) + 1;
-            }
 
-            enchantments_for_item.add(enchantment_data);
-            adjusted_enchantment_levels -= enchantment.hasLevels() ? enchantment.getMinEnchantmentLevelsCost(enchantment_data.enchantmentLevel) : enchantment.getMinEnchantmentLevelsCost();
-            adjusted_enchantment_levels -= 5;
+            if (!enchantment.enchantIndividually()){
+               if (enchantments_for_item.size() < 2 && all_possible_enchantments.size() > 1 && enchantment.hasLevels() && random.nextInt(2) == 0) {
+                  enchantment_data.enchantmentLevel = random.nextInt(enchantment_data.enchantmentLevel) + 1;
+               }
+               enchantments_for_item.add(enchantment_data);
+               adjusted_enchantment_levels -= enchantment.hasLevels() ? enchantment.getMinEnchantmentLevelsCost(enchantment_data.enchantmentLevel) : enchantment.getMinEnchantmentLevelsCost();
+               adjusted_enchantment_levels -= 5;
+            }
          } while(adjusted_enchantment_levels >= 5 && enchantments_for_item.size() <= maxSize);
 
-         ArrayList<EnchantmentInstance> enchantments_for_item_shuffled = new ArrayList();
+         ArrayList<EnchantmentInstance> enchantments_for_item_shuffled = new ArrayList<>();
          int n = enchantments_for_item.size();
 
          while(n > 0) {
             int index = random.nextInt(enchantments_for_item.size());
-            EnchantmentInstance enchantment_data = (EnchantmentInstance)enchantments_for_item.get(index);
+            EnchantmentInstance enchantment_data = enchantments_for_item.get(index);
             if (enchantment_data != null) {
                enchantments_for_item_shuffled.add(enchantment_data);
                enchantments_for_item.set(index, null);
@@ -64,16 +67,31 @@ public class EnchantmentManagerTrans {
             }
          }
 
+         List<Enchantment> added = new ArrayList<>();
+         for (Enchantment individualEnchantment : Enchantments.individualEnchantments) {
+            if (individualEnchantment.canEnchantItem(item)) {
+               int level = 0;
+               while (level < individualEnchantment.getNumLevels()){
+                  if (individualEnchantment.enchantIndividualChance(enchantment_levels) < random.nextFloat()){
+                     level++;
+                  }
+               }
+               if (level > 0 && !added.contains(individualEnchantment)){
+                  enchantments_for_item_shuffled.add(new EnchantmentInstance(individualEnchantment,level));
+                  added.add(individualEnchantment);
+               }
+            }
+         }
          return enchantments_for_item_shuffled.size() == 0 ? null : enchantments_for_item_shuffled;
       }
    }
 
    @Overwrite
-   private static Map mapEnchantmentData(int enchantment_levels, ItemStack item_stack) {
+   private static Map<Integer, EnchantmentInstance> mapEnchantmentData(int enchantment_levels, ItemStack item_stack) {
       Item item = item_stack.getItem();
       boolean is_vibranium = item.getHardestMetalMaterial() == Materials.vibranium;
       boolean is_book = item == Item.book;
-      HashMap<Integer, EnchantmentInstance> map = new HashMap();
+      HashMap<Integer, EnchantmentInstance> map = new HashMap<>();
 
       for(int i = 0; i < Enchantment.enchantmentsList.length; ++i) {
          Enchantment enchantment = Enchantment.get(i);
@@ -95,14 +113,13 @@ public class EnchantmentManagerTrans {
       return map.size() == 0 ? null : map;
    }
 
-    private static void removeEnchantmentsFromMapThatConflict(Map map, ArrayList enchantments,Item item) {
-       for (Object o : enchantments) {
-          EnchantmentInstance enchantment_data = (EnchantmentInstance) o;
-          Enchantment enchantment = enchantment_data.enchantmentobj;
-          Iterator iterator = map.keySet().iterator();
+    private static void removeEnchantmentsFromMapThatConflict(Map<Integer,EnchantmentInstance> map, ArrayList<EnchantmentInstance> enchantments, Item item) {
+       for (EnchantmentInstance o : enchantments) {
+          Enchantment enchantment = o.enchantmentobj;
+          Iterator<? extends Integer> iterator = map.keySet().iterator();
 
           while (iterator.hasNext()) {
-             int id = (Integer) iterator.next();
+             int id = iterator.next();
              if (enchantment instanceof EnchantmentWeaponDamage) {
                 if (!((EnchantmentWeaponDamage) enchantment).isCompatibleWith(Enchantment.get(id), item)) {
                    iterator.remove();

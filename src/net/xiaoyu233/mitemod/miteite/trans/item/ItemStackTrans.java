@@ -137,6 +137,18 @@ public class ItemStackTrans {
       return this.stackTagCompound != null ? this.stackTagCompound.getInteger("forging_grade") : 0;
    }
 
+   public int getEmergencyCooldown(){
+      return this.stackTagCompound != null && this.stackTagCompound.hasKey("emergencyCooldown") ? this.stackTagCompound.getInteger("emergencyCooldown") : 0;
+   }
+
+   public void setEmergencyCooldown(int cooldown){
+      if (this.stackTagCompound == null) {
+         this.stackTagCompound = new NBTTagCompound();
+      }
+
+      this.stackTagCompound.setInteger("emergencyCooldown", cooldown);
+   }
+
    public void setForgingGrade(int grade) {
       if (this.stackTagCompound == null) {
          this.stackTagCompound = new NBTTagCompound();
@@ -226,6 +238,7 @@ public class ItemStackTrans {
             tagCompound.setInteger("tool_exp", 0);
             tagCompound.setCompoundTag("modifiers", new NBTTagCompound());
             tagCompound.setInteger("forging_grade", 0);
+            tagCompound.setInteger("emergencyCooldown",0);
             this.setTagCompound(tagCompound);
          }
 

@@ -19,18 +19,25 @@ public class EntityInfernalCreeperTrans extends EntityCreeperTrans {
 
    @Overwrite
    public float getNaturalDefense(DamageSource damage_source) {
-      return Configs.Entities.INFERNAL_CREEPER_BOOST.get() ? super.getNaturalDefense(damage_source) + (damage_source.bypassesMundaneArmor() ? 0.0F : 2.0F) + (this.getWorld() != null ? (float)this.getWorld().getDayOfWorld() * 0.075F : 0.0F) : super.getNaturalDefense(damage_source) + (damage_source.bypassesMundaneArmor() ? 0.0F : 2.0F);
+      if (Configs.Entities.INFERNAL_CREEPER_BOOST.get()) {
+         if (damage_source.bypassesMundaneArmor()) {
+            if (this.getWorld() != null) {
+               return super.getNaturalDefense(damage_source) + (float) this.getWorld().getDayOfWorld() * 0.075F;
+            }
+            return super.getNaturalDefense(damage_source);
+         }
+         if (this.getWorld() != null) {
+            return super.getNaturalDefense(damage_source) + 2.0F + (float) this.getWorld().getDayOfWorld() * 0.075F;
+         }
+         return super.getNaturalDefense(damage_source) + 2.0F;
+      }
+      return super.getNaturalDefense(damage_source) + (damage_source.bypassesMundaneArmor() ? 0F : 2.0F);
    }
 
    @Inject(method = "<init>",at = @At("RETURN"))
    private void injectCtorModifyExplosion(CallbackInfo callbackInfo){
       if ((Configs.Entities.INFERNAL_CREEPER_BOOST.get())) {
-         int day = this.getWorld() != null ? this.getWorld().getDayOfWorld() : 0;
-         this.explosionRadius *= 3.0F;
-         if (day > 256) {
-            this.explosionRadius *= 2.0F;
-         }
-         this.setExplosionTime(Math.max(this.getExplosionTime() * 3 - (int)((double)day * 0.3D), 20));
+         this.explosionRadius *= 2.0F;
       }
    }
 }

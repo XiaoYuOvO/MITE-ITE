@@ -5,9 +5,9 @@ import net.minecraft.Item;
 import net.minecraft.ItemStack;
 import net.minecraft.Material;
 
-public class ItemBlazeCoal extends Item {
-    public ItemBlazeCoal(int par1) {
-        super(par1, Material.coal, "blaze_coal");
+public class ItemBlazeCoalPowder extends Item {
+    public ItemBlazeCoalPowder(int par1) {
+        super(par1, Material.coal, "blaze_coal_powder");
         this.setMaxStackSize(16);
         this.setCreativeTab(CreativeModeTab.tabMaterials);
     }

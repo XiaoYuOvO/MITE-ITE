@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(EntityEarthElemental.class)
-public class EntityEarthElementalTrans extends EntityAnimalWatcher {
+public abstract class EntityEarthElementalTrans extends EntityAnimalWatcher {
    @Shadow
    @Final
    public static int CLAY_HARDENED;
@@ -51,6 +51,18 @@ public class EntityEarthElementalTrans extends EntityAnimalWatcher {
       }
 
       return super.attackEntityFrom(damage);
+   }
+
+   protected void applyEntityAttributes() {
+      super.applyEntityAttributes();
+      this.setEntityAttribute(GenericAttributes.followRange, 20.0D);
+      this.setEntityAttribute(GenericAttributes.movementSpeed, 0.20000000298023224D);
+      this.setEntityAttribute(GenericAttributes.attackDamage, 12.0D);
+      if (this.getWorld().isTheNether()){
+         this.setEntityAttribute(GenericAttributes.maxHealth, 60.0D);
+      }else {
+         this.setEntityAttribute(GenericAttributes.maxHealth, 30.0D);
+      }
    }
 
    @Overwrite
@@ -139,6 +151,10 @@ public class EntityEarthElementalTrans extends EntityAnimalWatcher {
    private int setType(int i) {
       return i;
    }
+
+   @Shadow @Final public static int NETHERRACK_MAGMA;
+
+   @Shadow protected abstract void entityInit();
 
    @Overwrite
    public void setTypeForBlock(Block block, boolean heated) {

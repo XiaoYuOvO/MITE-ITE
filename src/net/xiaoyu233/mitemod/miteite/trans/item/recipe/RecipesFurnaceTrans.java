@@ -1,4 +1,4 @@
-package net.xiaoyu233.mitemod.miteite.trans.item;
+package net.xiaoyu233.mitemod.miteite.trans.item.recipe;
 
 import net.minecraft.*;
 import net.xiaoyu233.mitemod.miteite.util.Configs;

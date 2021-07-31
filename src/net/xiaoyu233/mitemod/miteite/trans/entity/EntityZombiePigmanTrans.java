@@ -52,14 +52,22 @@ public class EntityZombiePigmanTrans extends EntityZombie implements IRangedEnti
       this.tasks.addTask(3, new EntityAIMoveToTree(this, 1.0F));
    }
 
+   @Override
+   public EntityDamageResult attackEntityAsMob(Entity target) {
+      if (target != null && target.isEntityAlive() && rand.nextFloat() < Configs.Entities.NETHER_MOD_ATTACK_FIRE_CHANCE.get()){
+         target.setFire(100);
+      }
+      return super.attackEntityAsMob(target);
+   }
+
    @Overwrite
    protected void applyEntityAttributes() {
       super.applyEntityAttributes();
-      int day = this.getWorld() != null ? Math.max(this.getWorld().getDayOfWorld() - 64, 0) : 0;
-      this.setEntityAttribute(GenericAttributes.maxHealth, 50.0D + (double)day / 12.0D);
+      int day = this.getWorld() != null ? Math.max(this.getWorld().getDayOfWorld(), 0) : 0;
+      this.setEntityAttribute(GenericAttributes.maxHealth, 50.0D + (double)day / 16.0D);
       this.setEntityAttribute(GenericAttributes.followRange, 64.0D);
       this.setEntityAttribute(GenericAttributes.movementSpeed, 0.25D);
-      this.setEntityAttribute(GenericAttributes.attackDamage, 10.0D + (double)day / 48.0D);
+      this.setEntityAttribute(GenericAttributes.attackDamage, 12.0D + (double)day / 20.0D);
       this.setEntityAttribute(EntityZombie.field_110186_bp, this.rand.nextDouble() * 0.10000000149011612D);
    }
 
@@ -94,7 +102,7 @@ public class EntityZombiePigmanTrans extends EntityZombie implements IRangedEnti
    @Override
    protected void entityInit() {
       super.entityInit();
-      this.DATA_OBJ_ID_IS_BOOSTED = this.dataWatcher.addObject(this.dataWatcher.getNextAvailableId(), 0);
+      this.DATA_OBJ_ID_IS_BOOSTED = this.dataWatcher.addObject(this.dataWatcher.getNextAvailableId(), (byte)0);
    }
 
    protected boolean isAIEnabled() {
@@ -109,7 +117,7 @@ public class EntityZombiePigmanTrans extends EntityZombie implements IRangedEnti
          if (this.randomUseBow() && (Configs.Entities.ZOMBIE_PIGMAN_USE_BOW.get())) {
             this.tasks.addTask(4, this.arrowAttack);
             this.tasks.addTask(3, new EntityAISeekFiringPosition(this, 1.0F, true));
-            this.setWornItem(0, (new ItemStack(Item.bow)).randomizeForMob(this, true));
+            this.setCurrentItemOrArmor(0, (new ItemStack(Item.bow)).randomizeForMob(this, true));
          } else {
             this.tasks.addTask(4, this.meleeAttack);
             this.tasks.addTask(2, this.meleeAttack);
@@ -151,8 +159,8 @@ public class EntityZombiePigmanTrans extends EntityZombie implements IRangedEnti
    }
 
    public void reCalcProfession() {
-      this.tasks.removeTask(this.arrowAttack);
-      this.tasks.removeTask(this.meleeAttack);
+      this.tasks.removeTask(this.tasks.getTask(PathfinderGoalArrowAttack.class));
+      this.tasks.removeTask(this.tasks.getTask(PathfinderGoalMeleeAttack.class));
       ItemStack var1 = this.getHeldItemStack();
       if (var1 != null && var1.getItem() instanceof ItemBow) {
          this.tasks.addTask(4, this.arrowAttack);
@@ -161,6 +169,11 @@ public class EntityZombiePigmanTrans extends EntityZombie implements IRangedEnti
          this.tasks.addTask(4, this.meleeAttack);
       }
 
+   }
+
+   @Override
+   public boolean canBeTargetTo(EntityLiving from) {
+      return !(from instanceof EntityPigZombie);
    }
 
    public void setHeldItemStack(ItemStack item_stack) {

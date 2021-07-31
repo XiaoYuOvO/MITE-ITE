@@ -22,8 +22,8 @@ class EntityZombieTrans extends EntityAnimalWatcher {
       int day = this.getWorld() != null ? Math.max(this.getWorld().getDayOfWorld() - 64, 0) : 0;
       this.setEntityAttribute(GenericAttributes.followRange, 64.0D);
       this.setEntityAttribute(GenericAttributes.movementSpeed, 0.23000000417232513D);
-      this.setEntityAttribute(GenericAttributes.attackDamage, 10.0D + (double)day / 48.0D);
-      this.setEntityAttribute(GenericAttributes.maxHealth, 50.0D + (double)day / 14.0D);
+      this.setEntityAttribute(GenericAttributes.attackDamage, 8D + (double)day / 24.0D);
+      this.setEntityAttribute(GenericAttributes.maxHealth, 30D + (double)day / 16.0D);
       this.setEntityAttribute(field_110186_bp, this.getRNG().nextDouble() * 0.10000000149011612D);
    }
 

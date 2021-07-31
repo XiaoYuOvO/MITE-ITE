@@ -2,7 +2,9 @@ package net.xiaoyu233.mitemod.miteite.trans.item;
 
 import net.minecraft.*;
 import net.xiaoyu233.mitemod.miteite.item.ArmorModifierTypes;
+import net.xiaoyu233.mitemod.miteite.item.IUpgradableItem;
 import net.xiaoyu233.mitemod.miteite.item.Materials;
+import net.xiaoyu233.mitemod.miteite.item.ModifierUtils;
 import net.xiaoyu233.mitemod.miteite.util.ItemUtil;
 import net.xiaoyu233.mitemod.miteite.util.ReflectHelper;
 import net.xiaoyu233.mitemod.miteite.util.StringUtil;
@@ -10,11 +12,15 @@ import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.List;
+import java.util.function.Function;
 
 @Mixin(ItemArmor.class)
-public abstract class ItemArmorTrans extends Item implements IDamageableItem {
+public abstract class ItemArmorTrans extends Item implements IDamageableItem, IUpgradableItem {
    @Shadow
    @Final
    public int armorType;
@@ -23,6 +29,32 @@ public abstract class ItemArmorTrans extends Item implements IDamageableItem {
    @Shadow
    @Final
    private boolean is_chain_mail;
+
+   @Final
+   private Function<Integer,Integer> expForLevel;
+
+   @Inject(method = "<init>",at = @At("RETURN"))
+   private void injectInitExpForLevel(int par1, Material material,int par2,boolean is_chain_mail, CallbackInfo callbackInfo){
+      if (material == Material.copper || material == Material.silver){
+         this.expForLevel = this.createExpForLevel(16,8);
+      }else if (material == Material.gold){
+         this.expForLevel = this.createExpForLevel(18,9);
+      }else if (material == Material.iron || material == Material.ancient_metal){
+         this.expForLevel = this.createExpForLevel(20,10);
+      } else if (material == Material.mithril) {
+         this.expForLevel = this.createExpForLevel(24,12);
+      }else if (material == Material.adamantium){
+         this.expForLevel = this.createExpForLevel(28,14);
+      }else if (material == Materials.vibranium){
+         this.expForLevel = this.createExpForLevel(32,16);
+      }else {
+         this.expForLevel = this.createExpForLevel(150,75);
+      }
+   }
+
+   private Function<Integer, Integer> createExpForLevel(int base,int increase){
+      return (level) -> base + level * increase;
+   }
 
    @Overwrite
    public static float getTotalArmorProtection(ItemStack[] armors, DamageSource damage_source, boolean include_enchantments, EntityLiving owner) {
@@ -72,12 +104,13 @@ public abstract class ItemArmorTrans extends Item implements IDamageableItem {
       if (itemStack.hasTagCompound()) {
          int toolLevel = itemStack.getTagCompound().getInteger("tool_level");
          if (itemStack.getTagCompound().hasKey("tool_level")) {
+            int maxArmorLevel = this.getMaxToolLevel(itemStack);
             if (this.isMaxToolLevel(itemStack)) {
-               info.add("装备等级:§6已达到最高级" + toolLevel);
+               info.add("装备等级:§6已达到最高级" + maxArmorLevel);
             } else {
-               info.add("装备等级:" + toolLevel);
+               info.add("装备等级:" + toolLevel + "/" + maxArmorLevel);
                if (itemStack.getTagCompound().hasKey("tool_exp")) {
-                  info.add("装备经验" + EnumChatFormat.WHITE + itemStack.getTagCompound().getInteger("tool_exp") + "/" + this.getExpReqForLevel(toolLevel + 1, this.armorType, ReflectHelper.dyCast(this)));
+                  info.add("装备经验" + EnumChatFormat.WHITE + itemStack.getTagCompound().getInteger("tool_exp") + "/" + this.getExpReqForLevel(toolLevel, this.armorType, ReflectHelper.dyCast(this)));
                }
             }
          }
@@ -85,7 +118,7 @@ public abstract class ItemArmorTrans extends Item implements IDamageableItem {
          if (itemStack.getTagCompound().hasKey("forging_grade") && (forgingGrade = itemStack.getTagCompound().getInteger("forging_grade")) != 0) {
             info.add("§5强化等级:§6" + StringUtil.intToRoman(forgingGrade));
             if (extended_info) {
-               info.add("  §7耐久增加:§a" + 10 * forgingGrade + "%");
+               info.add("  §7装备经验增加:§a" +  ItemStack.field_111284_a.format(this.getEquipmentExpBounce(itemStack) * 100) + "%");
                info.add("  §9护甲增加:§6" + ItemStack.field_111284_a.format(this.getEnhancedProtection(itemStack)));
             }
          }
@@ -123,19 +156,24 @@ public abstract class ItemArmorTrans extends Item implements IDamageableItem {
       return (float)(itemStack.getEnhanceFactor() * (double)this.getRawProtection() * 0.68f + (double)((float)itemStack.getForgingGrade() / 3.0F));
    }
 
-   private int getExpReqForLevel(int tool_level, int slotIndexl, ItemArmor armor) {
+   public int getExpReqForLevel(int tool_level, int slotIndexl, ItemArmor armor) {
       switch(slotIndexl) {
-      case 0:
-         return (int)(7.0F * (float)armor.getMaterialProtection() * (float)tool_level);
-      case 1:
-         return (int)(10.0F * (float)armor.getMaterialProtection() * (float)tool_level);
-      case 2:
-         return (int)(9.0D * (double)armor.getMaterialProtection() * (double)tool_level);
-      case 3:
-         return (int)(6.0F * (float)armor.getMaterialProtection() * (float)tool_level);
-      default:
-         return 64 * tool_level;
+          case 0:
+             return 2 * this.expForLevel.apply(tool_level);
+          case 1:
+             return 4 * this.expForLevel.apply(tool_level);
+          case 2:
+             return 3 * this.expForLevel.apply(tool_level);
+          case 3:
+             return this.expForLevel.apply(tool_level);
+          default:
+             return 64 * tool_level;
       }
+   }
+
+   @Override
+   public void addExpForTool(ItemStack stack, EntityPlayer player, int exp) {
+      super.addExpForTool(stack, player, (int) (exp * (this.getEquipmentExpBounce(stack) + 1)));
    }
 
    public int getExpReqForLevel(int i, boolean weapon) {
@@ -180,7 +218,7 @@ public abstract class ItemArmorTrans extends Item implements IDamageableItem {
 
    @Override
    public int getMaxDamage(ItemStack item_stack) {
-      return Math.round((float)super.getMaxDamage(item_stack) * (1.0F + 0.1F * (float)item_stack.getForgingGrade()));
+      return super.getMaxDamage(item_stack);
    }
 
    @Overwrite
@@ -226,13 +264,17 @@ public abstract class ItemArmorTrans extends Item implements IDamageableItem {
       return this.getMaterialForDurability().getMinHarvestLevel() * 3 <= this.getToolLevel(itemStack);
    }
 
+   public int getMaxToolLevel(ItemStack itemStack){
+      return 15 + itemStack.getForgingGrade();
+   }
+
    public boolean isWeapon(Item b) {
       return false;
    }
 
    public void onItemLevelUp(NBTTagCompound tagCompound, EntityPlayer player, ItemStack stack) {
       NBTTagCompound modifiers = tagCompound.getCompoundTag("modifiers");
-      ArmorModifierTypes modifierType = ArmorModifierTypes.getModifierWithWeight(player.getRNG(), stack);
+      ArmorModifierTypes modifierType = ModifierUtils.getModifierWithWeight(ModifierUtils.getAllCanBeAppliedArmorModifiers(stack),player.getRNG());
       if (modifierType != null) {
          if (modifiers.hasKey(modifierType.nbtName)) {
             player.sendChatToPlayer(ChatMessage.createFromTranslationKey("你的" + stack.getMITEStyleDisplayName() + "的" + modifierType.color.toString() + modifierType.displayName + "§r属性已升级到" + this.addModifierLevelFor(modifiers, modifierType) + "级"

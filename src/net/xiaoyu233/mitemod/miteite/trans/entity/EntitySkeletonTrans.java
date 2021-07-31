@@ -2,7 +2,6 @@ package net.xiaoyu233.mitemod.miteite.trans.entity;
 
 import net.minecraft.*;
 import net.minecraft.server.MinecraftServer;
-import net.xiaoyu233.mitemod.miteite.item.ToolModifierTypes;
 import net.xiaoyu233.mitemod.miteite.util.Configs;
 import net.xiaoyu233.mitemod.miteite.util.Constant;
 import net.xiaoyu233.mitemod.miteite.util.MonsterUtil;
@@ -75,6 +74,11 @@ public class EntitySkeletonTrans extends EntityMonster implements IRangedEntity 
       }
    }
 
+   @Override
+   public float getWeaponDamageBoost() {
+      return 2.0f;
+   }
+
    @Overwrite
    public void attackEntityWithRangedAttack(EntityLiving target, float par2) {
       EntityArrow center = new EntityArrow(this.getWorld(), this, target, 1.6F, (float)(14 - this.getWorld().difficultySetting * 4), this.isLongdead() ? Item.arrowAncientMetal : Item.arrowRustedIron, false);
@@ -116,7 +120,7 @@ public class EntitySkeletonTrans extends EntityMonster implements IRangedEntity 
 
    void initStockedWeapon(){
       this.willChangeWeapon = this.willChangeWeapon();
-      int day = this.worldObj.getDayOfWorld();
+      int day = this.getWorld() != null ? this.getWorld().getDayOfWorld() : 0;
       if (this.getHeldItem() instanceof ItemBow) {
          this.stowed_item_stack = (new ItemStack(this.getWeapon(day))).randomizeForMob(this, true);
       }else if (this.getHeldItem() instanceof ItemSword){
@@ -185,12 +189,12 @@ public class EntitySkeletonTrans extends EntityMonster implements IRangedEntity 
    @Overwrite
    protected void applyEntityAttributes() {
       super.applyEntityAttributes();
-      int day = this.getWorld() != null ? Math.max(this.getWorld().getDayOfWorld() - 64, 0) : 0;
+      int day = this.getWorld() != null ? this.getWorld().getDayOfWorld() : 0;
       this.setEntityAttribute(GenericAttributes.followRange, 64.0D);
       if (this.getSkeletonType() == WITHER_SKELETON_ID) {
-         this.setEntityAttribute(GenericAttributes.maxHealth, 50.0D + (double)day / 12.0D);
+         this.setEntityAttribute(GenericAttributes.maxHealth, 45D + (double)day / 16.0D);
          this.setEntityAttribute(GenericAttributes.movementSpeed, 0.25D);
-         this.setEntityAttribute(GenericAttributes.attackDamage, 10.0D + (double)day / 48.0D);
+         this.setEntityAttribute(GenericAttributes.attackDamage, 15.0D + (double)day / 24.0D);
       } else {
          this.setEntityAttribute(GenericAttributes.maxHealth, 15.0D + (double)day / 14.0D);
          this.setEntityAttribute(GenericAttributes.movementSpeed, 0.30000001192092896D);
@@ -218,26 +222,17 @@ public class EntitySkeletonTrans extends EntityMonster implements IRangedEntity 
       int looting = damage_source.getLootingModifier();
       int num_drops;
       int i;
-      if (this.getSkeletonType() == 1) {
+      if (this.getSkeletonType() == WITHER_SKELETON_ID) {
          num_drops = this.rand.nextInt(3 + looting) - 1;
          if (num_drops > 0 && !recently_hit_by_player) {
             num_drops -= this.rand.nextInt(num_drops + 1);
-         }
-
-         boolean dropHead = false;
-         Entity responsibleEntity = damage_source.getResponsibleEntity();
-         if (responsibleEntity instanceof EntityPlayer) {
-            float modifierValue = ToolModifierTypes.BEHEADING_MODIFIER.getModifierValue(((EntityPlayer)responsibleEntity).getHeldItemStack().getTagCompound());
-            if (modifierValue > 0.0F) {
-               dropHead = (float)this.rand.nextInt(100) < modifierValue * 100.0F;
-            }
          }
 
          for(i = 0; i < num_drops; ++i) {
             this.dropItem(Item.coal.itemID, 1);
          }
 
-         if (recently_hit_by_player && !this.has_taken_massive_fall_damage && (this.rand.nextInt(this.getBaseChanceOfRareDrop()) < 5 + looting * 2 || dropHead)) {
+         if (recently_hit_by_player && !this.has_taken_massive_fall_damage && (this.rand.nextInt(this.getBaseChanceOfRareDrop()) < 5 + looting * 2)) {
             this.dropItemStack(new ItemStack(Item.skull.itemID, 1, 1), 0.0F);
          }
       } else if (this.getSkeletonType() != 2) {
@@ -306,14 +301,14 @@ public class EntitySkeletonTrans extends EntityMonster implements IRangedEntity 
             skeleton.refreshDespawnCounter(-9600);
             this.worldObj.spawnEntityInWorld(skeleton);
             skeleton.onSpawnWithEgg(null);
-            skeleton.getDataWatcher().updateObject(DATA_OBJ_ID_COMPRESSED,(byte)0);
+//            skeleton.getDataWatcher().updateObject(DATA_OBJ_ID_COMPRESSED,(byte)0);
             skeleton.setAttackTarget(this.getTarget());
             skeleton.entityFX(EnumEntityFX.summoned);
             int dayOfWorld = this.worldObj.getDayOfWorld();
             if (dayOfWorld > 64) {
                skeleton.setCurrentItemOrArmor(1, new ItemStack(Constant.HELMETS[MathHelper.clamp_int(1,MonsterUtil.getRandomItemTier(this.rand, dayOfWorld),Constant.HELMETS.length - 1)]).randomizeForMob(skeleton,true));
             }
-            int standTime = 40;
+            int standTime = Configs.Entities.COMPRESSED_SKELETON_CRACK_STAND_TIME.get();
             skeleton.addPotionEffect(new MobEffect(MobEffectList.weakness.id,standTime,127,true));
             skeleton.addPotionEffect(new MobEffect(MobEffectList.moveSlowdown.id,standTime,127,true));
             skeleton.addPotionEffect(new MobEffect(MobEffectList.resistance.id,standTime,127,true));
@@ -346,7 +341,7 @@ public class EntitySkeletonTrans extends EntityMonster implements IRangedEntity 
             this.setSkeletonType(ARROW_SKELETON_ID);
             this.tasks.addTask(4, this.aiArrowAttack);
             this.dataWatcher.updateObject(this.DATA_OBJ_ID_CAN_USE_FIRE_ARROW, (byte)(this.rand.nextInt(10) > 5 ? 1 : 0));
-            this.dataWatcher.updateObject(this.DATA_OBJ_ID_CAN_USE_TRIPLE_ARROW, (byte)(this.rand.nextInt(10) > 6 ? 1 : 0));
+            this.dataWatcher.updateObject(this.DATA_OBJ_ID_CAN_USE_TRIPLE_ARROW, (byte)(this.rand.nextInt(100) > 85 ? 1 : 0));
          } else {
             Minecraft.setErrorMessage("onSpawnWithEgg: Unrecognized skeleton type " + skeleton_type);
          }

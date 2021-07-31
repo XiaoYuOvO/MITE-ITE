@@ -4,6 +4,7 @@ import net.minecraft.*;
 import net.xiaoyu233.mitemod.miteite.block.BlockForgingTable;
 import net.xiaoyu233.mitemod.miteite.inventory.container.ForgingTableSlots;
 import net.xiaoyu233.mitemod.miteite.item.recipe.ForgingRecipe;
+import net.xiaoyu233.mitemod.miteite.item.recipe.IFaultFeedback;
 import net.xiaoyu233.mitemod.miteite.network.SPacketFinishForging;
 
 import java.util.Arrays;
@@ -35,6 +36,10 @@ public class TileEntityForgingTable extends TileEntity implements IInventory {
         ForgingRecipe currentRecipe = this.usedRecipe;
         ItemStack toolItem = this.slots.getToolItem();
         toolItem.setForgingGrade(currentRecipe.getLevelToUpgrade() + 1);
+        EnumQuality qualityReward = currentRecipe.getQualityReward();
+        if (qualityReward != null){
+            toolItem.setQuality(qualityReward);
+        }
         this.getWorldObj().playSoundAtBlock(this.xCoord, this.yCoord, this.zCoord, "random.levelup", 1.0F, 1.0F);
         this.slots.setOutput(toolItem);
         this.slots.onFinishForging(SPacketFinishForging.Status.COMPLETED);
@@ -74,7 +79,11 @@ public class TileEntityForgingTable extends TileEntity implements IInventory {
         this.slots.onFinishForging(SPacketFinishForging.Status.FAILED);
         this.slots.damageHammerAndAxe(currentRecipe.getHammerDurabilityCost() / 2, currentRecipe.getAxeDurabilityCost() / 2);
         this.slots.costItems(currentRecipe);
-        this.slots.setToolItem(currentRecipe.getFaultFeedback().accept(this.slots.getToolItem()));
+        ItemStack result = this.slots.getToolItem();
+        for (IFaultFeedback iFaultFeedback : currentRecipe.getFaultFeedback()) {
+            result = iFaultFeedback.accept(result);
+        }
+        this.slots.setToolItem(result);
         this.slots.updateSlots();
     }
 
@@ -142,7 +151,7 @@ public class TileEntityForgingTable extends TileEntity implements IInventory {
     @Override
     public void onInventoryChanged() {
         super.onInventoryChanged();
-        ForgingRecipe usedRecipe = this.slots.getUsedRecipe();
+        ForgingRecipe usedRecipe = this.slots.getUsedRecipe(this.getBlockMetadata());
         ItemStack toolItem = this.slots.getToolItem();
         if (toolItem != null) {
             ForgingRecipe recipeFromTool = this.slots.getRecipeFromTool(toolItem);
@@ -182,7 +191,7 @@ public class TileEntityForgingTable extends TileEntity implements IInventory {
     }
 
     public boolean startForging() {
-        this.usedRecipe = this.slots.getUsedRecipe();
+        this.usedRecipe = this.slots.getUsedRecipe(this.getBlockMetadata());
         if (this.usedRecipe != null) {
             this.isForging = true;
             this.maxTime = Math.round((float)this.usedRecipe.getTimeReq() / this.slots.getEffectivityFactorFromTool());

@@ -1,9 +1,13 @@
 package net.xiaoyu233.mitemod.miteite.trans.entity;
 
 import net.minecraft.*;
+import net.xiaoyu233.mitemod.miteite.util.Configs;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.List;
 
@@ -23,6 +27,7 @@ public class EntityEnderDragonTrans extends EntityInsentient implements IComplex
    private double targetY;
    @Shadow
    private double targetZ;
+   private int weaknessCountdown;
 
    public EntityEnderDragonTrans(World par1World) {
       super(par1World);
@@ -31,7 +36,35 @@ public class EntityEnderDragonTrans extends EntityInsentient implements IComplex
 
    protected void applyEntityAttributes() {
       super.applyEntityAttributes();
-      this.getEntityAttribute(GenericAttributes.maxHealth).setAttribute(500.0D);
+      this.getEntityAttribute(GenericAttributes.maxHealth).setAttribute(1250D);
+   }
+
+   @Override
+   public void readEntityFromNBT(NBTTagCompound par1NBTTagCompound) {
+      super.readEntityFromNBT(par1NBTTagCompound);
+      if(par1NBTTagCompound.hasKey("WeaknessCountDown")){
+         this.weaknessCountdown = par1NBTTagCompound.getInteger("WeaknessCountDown");
+      }
+   }
+
+   @Override
+   public void writeEntityToNBT(NBTTagCompound par1NBTTagCompound) {
+      super.writeEntityToNBT(par1NBTTagCompound);
+      par1NBTTagCompound.setInteger("WeaknessCountDown",this.weaknessCountdown);
+   }
+
+   @Inject(method = "onLivingUpdate",at = @At("HEAD"))
+   private void injectUpdate(CallbackInfo callback){
+      if (this.onServer() && this.getHealth() < this.getMaxHealth() / 2){
+         if (this.weaknessCountdown > 0){
+            this.weaknessCountdown--;
+         }else {
+            for (Object playerEntity : this.worldObj.playerEntities) {
+               ((EntityPlayer) playerEntity).addPotionEffect(new MobEffect(MobEffectList.weakness.id, 600,0));
+            }
+            this.weaknessCountdown = 1200;
+         }
+      }
    }
 
    @Overwrite
@@ -39,6 +72,9 @@ public class EntityEnderDragonTrans extends EntityInsentient implements IComplex
       for (Object value : par1List) {
          Entity var3 = (Entity) value;
          if (var3 instanceof EntityLiving) {
+            if (var3 instanceof EntityPlayer && Configs.Entities.ENDER_DRAGON_ATTACK_SLOWNESS.get()){
+               ((EntityPlayer) var3).addPotionEffect(new MobEffect(MobEffectList.moveSlowdown.id, 15 * 20,0));
+            }
             var3.attackEntityFrom(new Damage(DamageSource.causeMobDamage(this), 20.0F));
          }
       }
@@ -49,6 +85,15 @@ public class EntityEnderDragonTrans extends EntityInsentient implements IComplex
    public EntityDamageResult attackEntityFromPart(EntityComplexPart par1EntityDragonPart, Damage damage) {
       if (par1EntityDragonPart != this.dragonPartHead && damage.getAmount() > 1.0F) {
          damage.scaleAmount(0.2F, 0.5F);
+      }
+
+      Entity responsibleEntityP = damage.getResponsibleEntityP();
+      if (responsibleEntityP instanceof EntityPlayer && rand.nextFloat() < Configs.Entities.ENDER_DRAGON_HURT_WITHER_CHANCE.get()){
+         ((EntityPlayer) responsibleEntityP).addPotionEffect(new MobEffect(MobEffectList.wither.id,20 * 10,0));
+      }
+
+      if (damage.isArrowDamage() && this.getHealth() < this.getMaxHealth() * Configs.Entities.ENDER_DRAGON_IMMUNE_TO_ARROW_HEALTH_PERCENT.get()){
+         damage.setAmount(0);
       }
 
       float var4 = super.rotationYaw * 3.1415927F / 180.0F;

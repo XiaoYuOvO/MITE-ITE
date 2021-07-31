@@ -3,8 +3,7 @@ package net.xiaoyu233.mitemod.miteite.item.recipe;
 import com.google.common.base.Objects;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import net.minecraft.ItemStack;
-import net.minecraft.Material;
+import net.minecraft.*;
 import net.xiaoyu233.mitemod.miteite.item.Items;
 import net.xiaoyu233.mitemod.miteite.item.Materials;
 
@@ -21,113 +20,143 @@ public class ForgingTableRecipes {
         return RECIPES.get(new RecipeKey(toolItem,forgingLevel));
     }
 
-    public static void registerAll(){
-        ForgingRecipe.Builder.of(Materials.vibranium,0).
-                setChanceOfFailure(0).
+    public static void registerZeroToThreeRecipes(Material material, ForgingTableLevel level){
+        ForgingRecipe.Builder.of(material,0,level).
+                setChanceOfFailure(Items.IRON_ENHANCE_STONE.getFailChance()).
                 setAxeDurabilityCost(2048).
                 setHammerDurabilityCost(2048).
-                setTimeReq(1200).
-                setFaultFeedback(DurabilityFeedback.of(DurabilityFeedback.Type.ofPercentage(10))).
-                addMaterials(new ItemStack(Items.ghastTear,1),
-                        new ItemStack(Items.ingotMithril,1),
-                        new ItemStack(Items.ENHANCE_STONE,1)).
+                setTimeReq(20 * 20).
+                addMaterials(new ItemStack(Items.ingotGold,1),
+                        new ItemStack(Items.ingotIron,1),
+                        new ItemStack(Items.IRON_ENHANCE_STONE,1)).
                 build(regiseterer);
-        ForgingRecipe.Builder.of(Materials.vibranium,1).
-                setChanceOfFailure(10).
+        ForgingRecipe.Builder.of(material,1,level).
+                setChanceOfFailure(Items.IRON_ENHANCE_STONE.getFailChance()).
                 setAxeDurabilityCost(2048).
                 setHammerDurabilityCost(3072).
-                setTimeReq(1800).
-                setFaultFeedback(DurabilityFeedback.of(DurabilityFeedback.Type.ofPercentage(15))).
-                addMaterials(new ItemStack(Items.ghastTear,2),
-                        new ItemStack(Items.ingotMithril,1),
-                        new ItemStack(Items.ENHANCE_STONE,1)).
+                setTimeReq(30 * 20).
+                setQualityReward(EnumQuality.fine).
+                addMaterials(new ItemStack(Items.ingotGold,1),
+                        new ItemStack(Items.ingotIron,2),
+                        new ItemStack(Items.IRON_ENHANCE_STONE,1)).
                 build(regiseterer);
-        ForgingRecipe.Builder.of(Materials.vibranium,2).
-                setChanceOfFailure(20).
+        ForgingRecipe.Builder.of(material,2,level).
+                setChanceOfFailure(Items.IRON_ENHANCE_STONE.getFailChance()).
                 setAxeDurabilityCost(3072).
                 setHammerDurabilityCost(3072).
-                setTimeReq(2400).
-                setFaultFeedback(DurabilityFeedback.of(DurabilityFeedback.Type.ofPercentage(20))).
-                addMaterials(new ItemStack(Items.ghastTear,2),
-                        new ItemStack(Items.ingotMithril,2),
-                        new ItemStack(Items.ENHANCE_STONE,1)).
+                setTimeReq(40 * 20).
+                setQualityReward(EnumQuality.fine).
+                addMaterials(new ItemStack(Items.ingotGold,2),
+                        new ItemStack(Items.ingotIron,2),
+                        new ItemStack(Items.IRON_ENHANCE_STONE,1)).
                 build(regiseterer);
-        ForgingRecipe.Builder.of(Materials.vibranium,3).
-                setChanceOfFailure(30).
+        ForgingRecipe.Builder.of(material,3,level).
+                setChanceOfFailure(Items.IRON_ENHANCE_STONE.getFailChance()).
                 setAxeDurabilityCost(3072).
                 setHammerDurabilityCost(4096).
-                setTimeReq(3000).
-                setFaultFeedback(DurabilityFeedback.of(DurabilityFeedback.Type.ofPercentage(20))).
-                addMaterials(new ItemStack(Items.ghastTear,2),
-                        new ItemStack(Items.ingotMithril,2),
-                        new ItemStack(Items.ENHANCE_STONE,2)).
+                setTimeReq(50 * 20).
+                setQualityReward(EnumQuality.excellent).
+                addMaterials(new ItemStack(Items.ingotGold,2),
+                        new ItemStack(Items.ingotIron,2),
+                        new ItemStack(Items.IRON_ENHANCE_STONE,2)).
                 build(regiseterer);
-        ForgingRecipe.Builder.of(Materials.vibranium,4).
-                setChanceOfFailure(40).
+
+    }
+
+    private static void registerThreeToSix(Material material, ForgingTableLevel level){
+        ForgingRecipe.Builder.of(material,4,level).
+                setChanceOfFailure(Items.MITHRIL_ENHANCE_STONE.getFailChance()).
                 setAxeDurabilityCost(4096).
                 setHammerDurabilityCost(4096).
-                setTimeReq(3600).
-                setFaultFeedback(DowngradeFeedback.of(1)).
-                addMaterials(new ItemStack(Items.ghastTear,2),
-                        new ItemStack(Items.ingotAdamantium,2),
-                        new ItemStack(Items.ENHANCE_STONE,2)).
+                setTimeReq(60 * 20).
+                setQualityReward(EnumQuality.excellent).
+                addFaultFeedback(DowngradeFeedback.of(1)).
+                addMaterials(new ItemStack(Items.ingotGold,1),
+                        new ItemStack(Items.ingotMithril,1),
+                        new ItemStack(Items.redstone,1),
+                        new ItemStack(Items.MITHRIL_ENHANCE_STONE,1)).
                 build(regiseterer);
-        ForgingRecipe.Builder.of(Materials.vibranium,5).
-                setChanceOfFailure(50).
+        ForgingRecipe.Builder.of(material,5,level).
+                setChanceOfFailure(Items.MITHRIL_ENHANCE_STONE.getFailChance()).
                 setAxeDurabilityCost(4096).
                 setHammerDurabilityCost(6144).
-                setTimeReq(4800).
-                setFaultFeedback(DowngradeFeedback.of(1)).
-                addMaterials(new ItemStack(Items.ghastTear,1),
-                        new ItemStack(Items.ingotAdamantium,2),
-                        new ItemStack(Items.ENHANCE_STONE,2)).
+                setTimeReq(70 * 20).
+                setQualityReward(EnumQuality.superb).
+                addFaultFeedback(DowngradeFeedback.of(1)).
+                addMaterials(new ItemStack(Items.ingotGold,2),
+                        new ItemStack(Items.ingotMithril,1),
+                        new ItemStack(Items.redstone,2),
+                        new ItemStack(Items.MITHRIL_ENHANCE_STONE,1)).
                 build(regiseterer);
-        ForgingRecipe.Builder.of(Materials.vibranium,6).
-                setChanceOfFailure(60).
+        ForgingRecipe.Builder.of(material,6,level).
+                setChanceOfFailure(Items.MITHRIL_ENHANCE_STONE.getFailChance()).
                 setAxeDurabilityCost(6144).
                 setHammerDurabilityCost(6144).
-                setTimeReq(5400).
-                setFaultFeedback(DowngradeFeedback.of(2)).
-                addMaterials(new ItemStack(Items.ghastTear,2),
-                        new ItemStack(Items.ingotAdamantium,2),
-                        new ItemStack(Items.ENHANCE_STONE,2),
-                        new ItemStack(Items.enderPearl,8)).
+                setTimeReq(80 * 20).
+                setQualityReward(EnumQuality.superb).
+                addFaultFeedback(DowngradeFeedback.of(1)).
+                addMaterials(new ItemStack(Items.ingotGold,2),
+                        new ItemStack(Items.ingotMithril,2),
+                        new ItemStack(Block.blockRedstone,1),
+                        new ItemStack(Items.MITHRIL_ENHANCE_STONE,1)).
                 build(regiseterer);
-        ForgingRecipe.Builder.of(Materials.vibranium,7).
-                setChanceOfFailure(70).
-                setAxeDurabilityCost(6144).
-                setHammerDurabilityCost(8192).
-                setTimeReq(6000).
-                setFaultFeedback(DowngradeFeedback.of(2)).
-                addMaterials(new ItemStack(Items.ghastTear,2),
-                        new ItemStack(Items.ingotAdamantium,4),
-                        new ItemStack(Items.ENHANCE_STONE,2),
-                        new ItemStack(Items.eyeOfEnder,8),
-                        new ItemStack(Items.skull,1,1)).
-                build(regiseterer);
-        ForgingRecipe.Builder.of(Materials.vibranium,8).
-                setChanceOfFailure(80).
-                setAxeDurabilityCost(8192).
-                setHammerDurabilityCost(10240).
-                setTimeReq(6600).
-                setFaultFeedback(DowngradeFeedback.of(3)).
-                addMaterials(new ItemStack(Items.ghastTear,4),
-                        new ItemStack(Items.ingotAdamantium,2),
-                        new ItemStack(Items.ENHANCE_STONE,2),
-                        new ItemStack(Items.skull,2,0)).
-                build(regiseterer);
-        ForgingRecipe.Builder.of(Materials.vibranium,9).
-                setChanceOfFailure(90).
-                setAxeDurabilityCost(8192).
-                setHammerDurabilityCost(10240).
-                setTimeReq(7200).
-                setFaultFeedback(DowngradeFeedback.of(4)).
-                addMaterials(new ItemStack(Items.ghastTear,4),
-                        new ItemStack(Items.ingotAdamantium,2),
-                        new ItemStack(Items.ENHANCE_STONE,2),
-                        new ItemStack(Items.skull,4,4),
-                        new ItemStack(Items.BLAZE_COAL,2)).
-                build(regiseterer);
+
+    }
+
+    public static void registerAll(){
+        //Iron Ancient metal Mithril
+        registerZeroToThreeRecipes(Material.iron,ForgingTableLevel.IRON);
+        registerZeroToThreeRecipes(Material.ancient_metal,ForgingTableLevel.MITHRIL);
+        registerZeroToThreeRecipes(Material.mithril,ForgingTableLevel.MITHRIL);
+        //Vibrantium
+        {
+            registerZeroToThreeRecipes(Materials.vibranium,ForgingTableLevel.VIBRANTIUM);
+            registerThreeToSix(Materials.vibranium,ForgingTableLevel.VIBRANTIUM);
+            ForgingRecipe.Builder.of(Materials.vibranium,7,ForgingTableLevel.VIBRANTIUM).
+                    setChanceOfFailure(Items.ADAMANTIUM_ENHANCE_STONE.getFailChance()).
+                    setAxeDurabilityCost(6144).
+                    setHammerDurabilityCost(8192).
+                    setTimeReq(90 * 20).
+                    setQualityReward(EnumQuality.masterwork).
+                    addFaultFeedback(DowngradeFeedback.of(1)).
+                    addFaultFeedback(DurabilityFeedback.of(DurabilityFeedback.Type.ofPercentage(10))).
+                    addMaterials(new ItemStack(Items.ghastTear,1),
+                            new ItemStack(Items.ingotAdamantium,1),
+                            new ItemStack(Item.ingotMithril,2),
+                            new ItemStack(Items.ADAMANTIUM_ENHANCE_STONE,1)).
+                    build(regiseterer);
+            ForgingRecipe.Builder.of(Materials.vibranium,8,ForgingTableLevel.VIBRANTIUM).
+                    setChanceOfFailure(Items.ADAMANTIUM_ENHANCE_STONE.getFailChance()).
+                    setAxeDurabilityCost(8192).
+                    setHammerDurabilityCost(10240).
+                    setTimeReq(100 * 20).
+                    setQualityReward(EnumQuality.masterwork).
+                    addFaultFeedback(DowngradeFeedback.of(1)).
+                    addFaultFeedback(DurabilityFeedback.of(DurabilityFeedback.Type.ofPercentage(10))).
+                    addMaterials(new ItemStack(Items.ghastTear,2),
+                            new ItemStack(Items.ingotAdamantium,1),
+                            new ItemStack(Item.ingotMithril,2),
+                            new ItemStack(Items.ADAMANTIUM_ENHANCE_STONE,1)).
+                    build(regiseterer);
+            ForgingRecipe.Builder.of(Materials.vibranium,9,ForgingTableLevel.VIBRANTIUM).
+                    setChanceOfFailure(Items.ADAMANTIUM_ENHANCE_STONE.getFailChance()).
+                    setAxeDurabilityCost(8192).
+                    setHammerDurabilityCost(10240).
+                    setTimeReq(110 * 20).
+                    setQualityReward(EnumQuality.legendary).
+                    addFaultFeedback(DowngradeFeedback.of(1)).
+                    addFaultFeedback(DurabilityFeedback.of(DurabilityFeedback.Type.ofPercentage(10))).
+                    addMaterials(new ItemStack(Items.ghastTear,2),
+                            new ItemStack(Items.ingotAdamantium,2),
+                            new ItemStack(Item.ingotMithril,2),
+                            new ItemStack(Items.ADAMANTIUM_ENHANCE_STONE,1)).
+                    build(regiseterer);
+        }
+        //Adamantium
+        {
+            registerZeroToThreeRecipes(Material.adamantium,ForgingTableLevel.ADAMANTIUM);
+            registerThreeToSix(Material.adamantium,ForgingTableLevel.ADAMANTIUM);
+        }
     }
 
     public static class RecipeKey{

@@ -1,21 +1,49 @@
 package net.xiaoyu233.mitemod.miteite.block;
 
 import net.minecraft.*;
+import net.xiaoyu233.mitemod.miteite.item.recipe.ForgingTableLevel;
 import net.xiaoyu233.mitemod.miteite.tileentity.TileEntityForgingTable;
+import org.spongepowered.asm.mixin.SoftOverride;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
+import java.util.stream.Collectors;
 
-public class BlockForgingTable extends Block implements IContainer {
+public class BlockForgingTable extends Block implements IContainer,IBlockWithSubtypes {
+    private final BlockSubtypes subtypes = new BlockSubtypes(Arrays.stream(ForgingTableLevel.values()).map(value -> value.name().toLowerCase(Locale.ROOT)).collect(Collectors.toList()).toArray(new String[0]));
     private IIcon TEXTURE_TOP;
-    private IIcon TEXTURE_BOTOTM;
+    private IIcon TEXTURE_BOTTOM;
     private IIcon TEXTURE_SIDE;
     private IIcon TEXTURE_FRONT;
     private IIcon TEXTURE_BACK;
+
     protected BlockForgingTable(int par1) {
         super(par1, Material.anvil, new BlockConstants());
         this.setCreativeTab(CreativeModeTab.tabDecorations);
         this.setMaxStackSize(1);
         this.setLightOpacity(0);
+    }
+
+    @Override
+    public boolean isValidMetadata(int metadata) {
+        return 0 <= metadata && metadata < ForgingTableLevel.values().length ;
+    }
+
+    @Override
+    public int getBlockSubtypeUnchecked(int metadata) {
+        return metadata;
+    }
+
+    @Override
+    @SoftOverride
+    public String getItemDisplayName(ItemStack itemStack) {
+        return Translator.get("tile.forging_table." + this.getNames()[itemStack.getItemSubtype()] + ".name");
+    }
+
+    @Override
+    public String getMetadataNotes() {
+        return "metadata is the level of the forging table,min is 0 and max is " + subtypes.getNames().length;
     }
 
     @Override
@@ -26,7 +54,7 @@ public class BlockForgingTable extends Block implements IContainer {
                 return TEXTURE_TOP;
             //bottom
             case 0:
-                return TEXTURE_BOTOTM;
+                return TEXTURE_BOTTOM;
             case 2:
                 return TEXTURE_FRONT;
             case 3:
@@ -41,7 +69,7 @@ public class BlockForgingTable extends Block implements IContainer {
     @Override
     public void a(mt mt) {
         this.TEXTURE_TOP = mt.a("forgingTable/top");
-        this.TEXTURE_BOTOTM = mt.a("forgingTable/bottom");
+        this.TEXTURE_BOTTOM = mt.a("forgingTable/bottom");
         this.TEXTURE_FRONT = mt.a("forgingTable/front");
         this.TEXTURE_SIDE = mt.a("forgingTable/side");
         this.TEXTURE_BACK = mt.a("forgingTable/back");
@@ -70,6 +98,16 @@ public class BlockForgingTable extends Block implements IContainer {
 
     public void addItemBlockMaterials(ItemBlock item_block) {
         item_block.addMaterial(Material.adamantium);
+    }
+
+    @Override
+    public String[] getTextures() {
+        return this.subtypes.getTextures();
+    }
+
+    @Override
+    public String[] getNames() {
+        return this.subtypes.getNames();
     }
 
     public boolean isPortable(World world, EntityLiving entity_living_base, int x, int y, int z) {

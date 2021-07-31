@@ -16,7 +16,7 @@ public class EntityLongdeadTrans extends EntitySkeletonTrans {
    @Overwrite
    protected void addRandomEquipment() {
       this.addRandomWeapon();
-      int day = this.getWorld() != null ? Math.max(this.getWorld().getDayOfWorld() - 64, 0) : 0;
+      int day = this.getWorld() != null ? Math.max(this.getWorld().getDayOfWorld(), 0) : 0;
       if (day < 96) {
          this.setBoots((new ItemStack(Item.bootsChainAncientMetal)).randomizeForMob(this, true));
          this.setLeggings((new ItemStack(Item.legsChainAncientMetal)).randomizeForMob(this, true));
@@ -37,10 +37,11 @@ public class EntityLongdeadTrans extends EntitySkeletonTrans {
    @Overwrite
    protected void applyEntityAttributes() {
       super.applyEntityAttributes();
+      int day = this.getWorld() != null ? this.getWorld().getDayOfWorld() : 0;
       this.setEntityAttribute(GenericAttributes.followRange, 40.0D);
-      this.setEntityAttribute(GenericAttributes.maxHealth, this.isGuardian() ? 26.0D : 14.0D);
+      this.setEntityAttribute(GenericAttributes.maxHealth, (this.isGuardian() ? 26.0D : 15.0D) + day / 16D);
       this.setEntityAttribute(GenericAttributes.movementSpeed, 0.28999999165534973D);
-      this.setEntityAttribute(GenericAttributes.attackDamage, this.isGuardian() ? 10.0D : 8.0D);
+      this.setEntityAttribute(GenericAttributes.attackDamage, (this.isGuardian() ? 12.0D : 10.0D) + day / 20D);
    }
 
    protected void enchantEquipment(ItemStack item_stack) {

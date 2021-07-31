@@ -2,7 +2,7 @@ package net.xiaoyu233.mitemod.miteite.trans.entity;
 
 import net.minecraft.*;
 import net.xiaoyu233.fml.util.ReflectHelper;
-import net.xiaoyu233.mitemod.miteite.item.ToolModifierTypes;
+import net.xiaoyu233.mitemod.miteite.item.enchantment.Enchantments;
 import net.xiaoyu233.mitemod.miteite.util.Configs;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -14,7 +14,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 @Mixin(EntityLiving.class)
-public class EntityLivingTrans extends Entity {
+public abstract class EntityLivingTrans extends Entity {
+   @Shadow public abstract void e(float par1);
+
    @Shadow
    public int attackTime;
    @Shadow
@@ -83,7 +85,7 @@ public class EntityLivingTrans extends Entity {
       if (var2 instanceof EntityPlayer) {
          ItemStack heldItemStack = ((EntityPlayer) var2).getHeldItemStack();
          if (heldItemStack != null) {
-            float modifierValue = ToolModifierTypes.BEHEADING_MODIFIER.getModifierValue(heldItemStack.getTagCompound());
+            float modifierValue = EnchantmentManager.getEnchantmentLevel(Enchantments.BEHEADING,heldItemStack) * Configs.Item.Enchantment.BEHEADING_CHANCE_BOOST_PER_LVL.get();
             if (modifierValue > 0.0F) {
                boolean dropHead = (float) this.rand.nextInt(100) < modifierValue * 100.0F;
                if (dropHead) {
@@ -98,7 +100,11 @@ public class EntityLivingTrans extends Entity {
                   }
 
                   if (thisLiving instanceof EntitySkeleton) {
-                     headItemStack = new ItemStack(Item.skull, 1, 0);
+                     if (((EntitySkeleton) thisLiving).getSkeletonType() == 1){
+                        headItemStack = new ItemStack(Item.skull, 1, 1);
+                     }else {
+                        headItemStack = new ItemStack(Item.skull, 1, 0);
+                     }
                   }
 
                   if (thisLiving instanceof EntityPlayer) {
@@ -112,6 +118,10 @@ public class EntityLivingTrans extends Entity {
             }
          }
       }
+   }
+
+   public boolean canBeTargetTo(EntityLiving from){
+      return true;
    }
 
    @Redirect(method = "onEntityUpdate",at = @At(ordinal = 1,value = "INVOKE",target = "Lnet/minecraft/EntityLiving;attackEntityFrom(Lnet/minecraft/Damage;)Lnet/minecraft/EntityDamageResult;"))

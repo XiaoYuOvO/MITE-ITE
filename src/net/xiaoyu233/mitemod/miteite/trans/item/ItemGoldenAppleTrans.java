@@ -17,7 +17,7 @@ public class ItemGoldenAppleTrans extends ItemFood {
         if (par1ItemStack.getItemSubtype() > 0) {
             if (!par2World.isRemote) {
                 par3EntityPlayer.addPotionEffect(new MobEffect(MobEffectList.regeneration.id, 1200, 1));
-                par3EntityPlayer.addPotionEffect(new MobEffect(MobEffectList.resistance.id, 1200, 1));
+                par3EntityPlayer.addPotionEffect(new MobEffect(MobEffectList.resistance.id, 600, 1));
                 par3EntityPlayer.addPotionEffect(new MobEffect(MobEffectList.fireResistance.id, 1200, 0));
                 if (!(par3EntityPlayer.isPotionActive(MobEffectList.field_76444_x) && par3EntityPlayer.getActivePotionEffect(MobEffectList.field_76444_x).getAmplifier() > 0)) {
                     par3EntityPlayer.addPotionEffect(new MobEffect(MobEffectList.heal.id, 2, 0));

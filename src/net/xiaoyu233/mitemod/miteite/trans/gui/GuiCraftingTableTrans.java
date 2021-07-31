@@ -4,6 +4,9 @@ import net.minecraft.*;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(axk.class)
 public class GuiCraftingTableTrans extends axp {
@@ -15,6 +18,12 @@ public class GuiCraftingTableTrans extends axp {
 
    @Shadow
    protected void a(float v, int i, int i1) {
+   }
+
+   @Inject(method = "a",at = @At(value = "INVOKE",target = "Lnet/minecraft/Container;getSlot(I)Lnet/minecraft/Slot;",shift = At.Shift.BEFORE),cancellable = true)
+   private void injectRemoveChooseQualityIcon(float par1, int par2, int par3, CallbackInfo callback){
+      //Do nothing,just cancel
+      callback.cancel();
    }
 
    @Overwrite

@@ -238,20 +238,28 @@ public class ForgingTableSlots extends InventorySubcontainer {
         this.tool.putStack(toolItem);
     }
 
-    public ForgingRecipe getUsedRecipe() {
+    public ForgingRecipe getUsedRecipe(int blockLevel) {
         ItemStack toolStack = this.tool.getStack();
         if (toolStack != null) {
-            if (this.hammer.getStack() != null) {
-                if (this.axe.getStack() != null) {
-                    ForgingRecipe recipe = this.getRecipeFromTool(toolStack);
-                    if (recipe != null && this.getNeedItems(recipe).isEmpty()) {
-                        return recipe;
+            ForgingRecipe recipe = this.getRecipeFromTool(toolStack);
+            if (recipe != null) {
+                if (blockLevel >= recipe.getForgingTableLevelReq().getLevel()) {
+                    if (this.hammer.getStack() != null) {
+                        if (this.axe.getStack() != null) {
+                            if (this.getNeedItems(recipe).isEmpty()) {
+                                return recipe;
+                            }
+                        } else {
+                            this.container.sendToolInfo(SPacketForgingTableInfo.ToolInfo.Tool.AXE);
+                        }
+                    } else {
+                        this.container.sendToolInfo(SPacketForgingTableInfo.ToolInfo.Tool.HAMMER);
                     }
                 } else {
-                    this.container.sendToolInfo(SPacketForgingTableInfo.ToolInfo.Tool.AXE);
+                    this.container.sendTableInfo(SPacketForgingTableInfo.TableLevelInfo.of(recipe.getForgingTableLevelReq()));
                 }
-            } else {
-                this.container.sendToolInfo(SPacketForgingTableInfo.ToolInfo.Tool.HAMMER);
+            }else {
+                this.container.sendToolInfo(SPacketForgingTableInfo.ToolInfo.Tool.MAX_LEVEL);
             }
         }
 

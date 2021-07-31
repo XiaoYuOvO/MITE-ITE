@@ -120,12 +120,8 @@ public abstract class ServerPlayerTrans extends EntityPlayer implements ICraftin
          float health = this.getHealth();
          int satiation = this.getSatiation();
          int nutrition = this.getNutrition();
-         float hunger = this.foodStats.getHunger();
          if (health != this.lastHealth || satiation != this.last_satiation || nutrition != this.last_nutrition || this.vision_dimming > 0.0F || this.phytonutrients != this.last_phytonutrients || this.protein != this.last_protein) {
-            Packet8UpdateHealth par1Packet = new Packet8UpdateHealth(health, satiation, nutrition, this.vision_dimming
-                    //TODO
-//                    ,protein,phytonutrients
-            );
+            Packet8UpdateHealth par1Packet = new Packet8UpdateHealth(health, satiation, nutrition, this.vision_dimming);
             par1Packet.setPhytonutrients(this.phytonutrients);
             par1Packet.setProtein(this.protein);
             this.playerNetServerHandler.sendPacket(par1Packet);

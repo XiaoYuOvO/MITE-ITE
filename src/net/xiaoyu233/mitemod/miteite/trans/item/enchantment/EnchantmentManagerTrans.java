@@ -72,8 +72,10 @@ public class EnchantmentManagerTrans {
             if (individualEnchantment.canEnchantItem(item)) {
                int level = 0;
                while (level < individualEnchantment.getNumLevels()){
-                  if (individualEnchantment.enchantIndividualChance(enchantment_levels) < random.nextFloat()){
+                  if (individualEnchantment.enchantIndividualChance(enchantment_levels) > random.nextFloat()){
                      level++;
+                  }else {
+                     break;
                   }
                }
                if (level > 0 && !added.contains(individualEnchantment)){
@@ -95,7 +97,7 @@ public class EnchantmentManagerTrans {
 
       for(int i = 0; i < Enchantment.enchantmentsList.length; ++i) {
          Enchantment enchantment = Enchantment.get(i);
-         if (enchantment != null && (is_book || enchantment.canEnchantItem(item))) {
+         if (enchantment != null && (is_book || enchantment.canEnchantItem(item)) && !enchantment.enchantIndividually()) {
             if (enchantment.hasLevels()) {
                for(int level =
                    is_vibranium ? enchantment.getNumLevelsForVibranium() : enchantment.getNumLevels(); level > 0; --level) {

@@ -5,6 +5,7 @@ import net.xiaoyu233.mitemod.miteite.achievement.Achievements;
 import net.xiaoyu233.mitemod.miteite.inventory.container.ForgingTableSlots;
 import net.xiaoyu233.mitemod.miteite.item.ArmorModifierTypes;
 import net.xiaoyu233.mitemod.miteite.item.Materials;
+import net.xiaoyu233.mitemod.miteite.item.ToolModifierTypes;
 import net.xiaoyu233.mitemod.miteite.item.enchantment.Enchantments;
 import net.xiaoyu233.mitemod.miteite.network.BiPacketUpdateDefense;
 import net.xiaoyu233.mitemod.miteite.network.CPacketSyncItems;
@@ -27,7 +28,15 @@ import java.util.Map.Entry;
 
 @Mixin(EntityPlayer.class)
 public abstract class EntityPlayerTrans extends EntityLiving implements ICommandListener {
-   private final Map<Entity, Integer> attackCountMap = new HashMap();
+   @Shadow public int experience;
+
+   @Shadow public abstract ItemStack getCurrentArmor(int par1);
+
+   @Shadow public abstract boolean tryPlaceHeldItemAsBlock(RaycastCollision rc, Block block);
+
+   @Shadow public abstract void convertOneOfHeldItem(ItemStack created_item_stack);
+
+   private final Map<Entity, Integer> attackCountMap = new HashMap<>();
    @Shadow
    public ChunkCoordinates bed_location;
    @Shadow
@@ -56,12 +65,14 @@ public abstract class EntityPlayerTrans extends EntityLiving implements ICommand
    private int underworldRandomTeleportTime;
    private volatile boolean waitForItemSync;
    private int defenseCooldown;
+   private boolean cooldownEmergencyNextTick;
    public EntityPlayerTrans(World par1World, String par2Str) {
       super(par1World);
    }
 
    private void activeEmergency(List<ItemStack> emergencyItemList) {
       this.addPotionEffect(new MobEffect(11, 60, 1));
+      this.setHealth(Configs.Item.Enchantment.EMERGENCY_HEALTH_RECOVER_AMOUNT.get(), true, this.getHealFX());
       this.entityFX(EnumEntityFX.smoke_and_steam);
       this.makeSound("fireworks.largeBlast", 2.0F, 0.75F);
       this.makeSound("random.anvil_land", 0.4F, 0.4F);
@@ -71,13 +82,52 @@ public abstract class EntityPlayerTrans extends EntityLiving implements ICommand
       }
    }
 
+   protected float getDisarmingChance(ItemStack itemStack){
+      return EnchantmentManager.getEnchantmentLevelFraction(Enchantment.disarming, itemStack) * 0.4f;
+   }
+
+   protected void tryDisarmTarget(Entity target){
+      if (this.onServer() && target instanceof EntityLiving) {
+         EntityLiving entity_living_base = (EntityLiving)target;
+         ItemStack item_stack_to_drop = entity_living_base.getHeldItemStack();
+         if (item_stack_to_drop != null && this.rand.nextFloat() < this.getDisarmingChance(this.getHeldItemStack())) {
+            if (entity_living_base instanceof EntityInsentient){
+               EntityInsentient entity_living = (EntityInsentient)entity_living_base;
+               if (entity_living.canBeDisarmed()) {
+                  EntityItem entityItem = entity_living.dropItemStack(item_stack_to_drop, entity_living.height / 2.0F);
+                  //Only for natural generated weapons
+                  if (!entity_living.picked_up_a_held_item_array[0]) {
+                     entityItem.setCanBePickUpByPlayer(false);
+                     //Only exist for half a minute
+                     entityItem.age = 5400;
+                  }
+                  entity_living.clearMatchingEquipmentSlot(item_stack_to_drop);
+                  entity_living.ticks_disarmed = 40;
+               }
+            }else if (entity_living_base instanceof EntityPlayer){
+               EntityPlayer player = (EntityPlayer) entity_living_base;
+               if (!player.isBlocking()){
+                  EntityItem entityItem = player.dropItemStack(item_stack_to_drop, player.height / 2.0F);
+                  Vec3D lookVec = player.getLookVec();
+                  entityItem.delayBeforeCanPickup = 20;
+                  //Rotate 90 degrees,to the right side of the player
+                  entityItem.addVelocity(-lookVec.zCoord * 0.4,0,lookVec.xCoord  * 0.4);
+                  player.setHeldItemStack(null);
+               }
+            }
+         }
+      }
+   }
+
    @Overwrite
    public void attackTargetEntityWithCurrentItem(Entity target) {
       if (!this.isImmuneByGrace() && target.canAttackWithItem()) {
          boolean critical = this.willDeliverCriticalStrike();
          float critBouns = 0.0F;
-         if (EnchantmentManager.hasEnchantment(this.getHeldItemStack(), Enchantments.CRIT)) {
-            int critLevel = EnchantmentManager.getEnchantmentLevel(Enchantments.CRIT, this.getHeldItemStack());
+         ItemStack heldItemStack = this.getHeldItemStack();
+         //Check for crit enchantment
+         if (EnchantmentManager.hasEnchantment(heldItemStack, Enchantments.CRIT)) {
+            int critLevel = EnchantmentManager.getEnchantmentLevel(Enchantments.CRIT, heldItemStack);
             critical = this.rand.nextInt(10) < (Configs.Item.Enchantment.CRIT_ENCHANTMENT_CHANCE_BOOST_PER_LVL.get()) * critLevel;
             if (critical) {
                critBouns = (float)critLevel * (Configs.Item.Enchantment.CRIT_ENCHANTMENT_DAMAGE_BOOST_PER_LVL.get())
@@ -85,7 +135,25 @@ public abstract class EntityPlayerTrans extends EntityLiving implements ICommand
             }
          }
 
-         float damage = critBouns + this.calcRawMeleeDamageVs(target, critical, this.isSuspendedInLiquid());
+         //Check for indomitable modifier
+         float indomitableAmp = 1;
+         float healthPercent = this.getHealth() / this.getMaxHealth();
+         if (healthPercent <= 0.5f){
+            ItemStack chestplate = this.getCurrentArmor(1);
+            if (chestplate != null){
+               float value = ArmorModifierTypes.INDOMITABLE.getModifierValue(chestplate.getTagCompound());
+               if (value != 0){
+                  indomitableAmp = this.getIndomitableAmp(healthPercent);
+               }
+            }
+         }
+
+         float demonHunterAmp = 1;
+         if (!target.getWorld().isOverworld() && heldItemStack != null){
+            demonHunterAmp += ToolModifierTypes.DEMON_POWER.getModifierValue(heldItemStack.getTagCompound());
+         }
+
+         float damage = (critBouns + this.calcRawMeleeDamageVs(target, critical, this.isSuspendedInLiquid())) * indomitableAmp * demonHunterAmp;
          if (damage <= 0.0F) {
             return;
          }
@@ -106,24 +174,7 @@ public abstract class EntityPlayerTrans extends EntityLiving implements ICommand
             target.setFire(1);
          }
 
-         if (this.onServer() && target instanceof EntityLiving) {
-            EntityLiving entity_living_base = (EntityLiving)target;
-            ItemStack item_stack_to_drop = entity_living_base.getHeldItemStack();
-            if (item_stack_to_drop != null && this.rand.nextFloat() < EnchantmentManager.getEnchantmentLevelFraction(Enchantment.disarming, this.getHeldItemStack()) && entity_living_base instanceof EntityInsentient) {
-               EntityInsentient entity_living = (EntityInsentient)entity_living_base;
-               if (entity_living.canBeDisarmed()) {
-                  EntityItem entityItem = entity_living.dropItemStack(item_stack_to_drop, entity_living.height / 2.0F);
-                  //Only for natural generated weapons
-                  if (!entity_living.picked_up_a_held_item_array[0]) {
-                     entityItem.setCanBePickUpByPlayer(false);
-                     //Only exist for half a minute
-                     entityItem.age = 5400;
-                  }
-                  entity_living.clearMatchingEquipmentSlot(item_stack_to_drop);
-                  entity_living.ticks_disarmed = 40;
-               }
-            }
-         }
+         this.tryDisarmTarget(target);
 
          EntityDamageResult result = target.attackEntityFrom(new Damage(DamageSource.causeMobDamage(this).setFireAspectP(fire_aspect > 0), damage));
          boolean target_was_harmed = result != null && result.entityWasNegativelyAffected();
@@ -149,7 +200,7 @@ public abstract class EntityPlayerTrans extends EntityLiving implements ICommand
                this.onCriticalHit(target);
             }
 
-            if (target instanceof EntityLiving && EnchantmentWeaponDamage.getDamageModifiers(this.getHeldItemStack(), (EntityLiving)target) > 0.0F) {
+            if (target instanceof EntityLiving && EnchantmentWeaponDamage.getDamageModifiers(heldItemStack, (EntityLiving)target) > 0.0F) {
                this.onEnchantmentCritical(target);
             }
 
@@ -168,7 +219,7 @@ public abstract class EntityPlayerTrans extends EntityLiving implements ICommand
             }
          }
 
-         ItemStack held_item_stack = this.getHeldItemStack();
+         ItemStack held_item_stack = heldItemStack;
          Object var10 = target;
          if (target instanceof EntityComplexPart) {
             IComplex var11 = ((EntityComplexPart)target).entityDragonObj;
@@ -195,6 +246,31 @@ public abstract class EntityPlayerTrans extends EntityLiving implements ICommand
          }
       }
 
+   }
+
+   private float getIndomitableAmp(float healthPercent){
+      if (healthPercent <= 0.1f){
+         return 2.0f;
+      }else if (healthPercent <= 0.2f) {
+         return 1.6f;
+      }else if (healthPercent <= 0.35f){
+         return 1.35f;
+      }else if (healthPercent <= 0.5f){
+         return 1.25f;
+      }
+      return 1.0f;
+   }
+
+   @Override
+   public void addPotionEffect(MobEffect par1PotionEffect) {
+      ItemStack helmet = this.getHelmet();
+      if (helmet != null &&
+              //Bad only
+              MobEffectList.get(par1PotionEffect.getPotionID()).f()
+      ){
+         par1PotionEffect.setDuration((int) (par1PotionEffect.getDuration() * (1 - ArmorModifierTypes.IMMUNITY.getModifierValue(helmet.getTagCompound()))));
+      }
+      super.addPotionEffect(par1PotionEffect);
    }
 
    @Overwrite
@@ -225,7 +301,6 @@ public abstract class EntityPlayerTrans extends EntityLiving implements ICommand
          }
          if (readyEmergencyItemList.size() > 0){
             result.setEntity_was_destroyed(false);
-            this.setHealth(this.getMaxHealth() * 0.2F, true, this.getHealFX());
             this.activeEmergency(readyEmergencyItemList);
          }
       }
@@ -588,25 +663,18 @@ public abstract class EntityPlayerTrans extends EntityLiving implements ICommand
                ++this.underworldDebuffTime;
                debuff_time = Configs.GameMechanics.Underworld.UNDERWORLD_DEBUFF_PERIOD1.get();
                int period2 = Configs.GameMechanics.Underworld.UNDERWORLD_DEBUFF_PERIOD2.get();
-               int period3 = Configs.GameMechanics.Underworld.UNDERWORLD_DEBUFF_PERIOD3.get();
                if (this.underworldDebuffTime > debuff_time && this.underworldDebuffTime < period2) {
                   if (this.underworldDebuffTime == debuff_time + 1) {
                      this.sendPacket(new SPacketOverlayMessage("§l---你在地底世界中感到有些疲惫---", EnumChatFormat.GRAY.rgb, 400));
                   }
 
                   this.addPotionEffect(new MobEffect(2, 1200, 0));
-               } else if (this.underworldDebuffTime > period2 && this.underworldDebuffTime < period3) {
+               } else if (this.underworldDebuffTime > period2) {
                   if (this.underworldDebuffTime == period2 + 1) {
                      this.sendPacket(new SPacketOverlayMessage("§l---你在地底世界中感到更加疲惫---", EnumChatFormat.YELLOW.rgb, 400));
                   }
 
                   this.addPotionEffect(new MobEffect(2, 2400, 1));
-               } else if (this.underworldDebuffTime > period3) {
-                  if (this.underworldDebuffTime == period3 + 1) {
-                     this.sendPacket(new SPacketOverlayMessage("§l§n---你在地底世界中感到非常疲惫---", EnumChatFormat.DARK_RED.rgb, 400));
-                  }
-
-                  this.addPotionEffect(new MobEffect(2, 3600, 2));
                }
             }
 
@@ -626,7 +694,7 @@ public abstract class EntityPlayerTrans extends EntityLiving implements ICommand
                   this.sendPacket(new SPacketOverlayMessage("§l§n!!!你将于" + (int)timeToTeleport / 20 + "秒后被随机传送!!!", EnumChatFormat.RED.rgb, 200));
                }
 
-               if ((double)this.underworldRandomTeleportTime > randomTeleportTime) {
+               if (this.underworldRandomTeleportTime > randomTeleportTime) {
                   if (ReflectHelper.dyCast(EntityPlayer.class, this) instanceof EntityPlayer) {
                      this.initiateRunegateTeleport(this.worldObj.getAsWorldServer(), this.getBlockPosX(), this.getBlockPosY(), this.getBlockPosZ(), ReflectHelper.dyCast(this));
                   }
@@ -638,11 +706,14 @@ public abstract class EntityPlayerTrans extends EntityLiving implements ICommand
             }
          }
 
-         for (ItemStack wornItem : this.getWornItems()) {
-            if (wornItem != null){
-               int emergencyCooldown = wornItem.getEmergencyCooldown();
-               if (emergencyCooldown > 0){
-                  wornItem.setEmergencyCooldown(emergencyCooldown - 1);
+         //To avoid slot locking due to emergency cooldown
+         if (ticksExisted % 2 == 0){
+            for (ItemStack wornItem : this.getWornItems()) {
+               if (wornItem != null){
+                  int emergencyCooldown = wornItem.getEmergencyCooldown();
+                  if (emergencyCooldown > 0){
+                     wornItem.setEmergencyCooldown(emergencyCooldown - 2);
+                  }
                }
             }
          }
@@ -684,12 +755,15 @@ public abstract class EntityPlayerTrans extends EntityLiving implements ICommand
          Entity responsibleEntity = damage.getSource().getResponsibleEntity();
          if (responsibleEntity != null && !(responsibleEntity instanceof EntityEnderDragon)) {
             if (this.attackCountMap.containsKey(responsibleEntity)) {
+               damage.setAmount((float) (damage.getAmount() + (this.attackCountMap.get(responsibleEntity))));
                this.attackCountMap.put(responsibleEntity, this.attackCountMap.get(responsibleEntity) + 1);
-               damage.setAmount((float) (damage.getAmount() + this.attackCountMap.get(responsibleEntity) * progress));
             } else {
                this.attackCountMap.put(responsibleEntity, 1);
             }
          }
+      }
+      if (damage.getResponsibleEntityP() != null && this.getHeldItem() != null && this.rand.nextInt(10) > 8) {
+            this.tryDisarmTarget(damage.getResponsibleEntityP());
       }
       EntityDamageResult entityDamageResult = super.attackEntityFrom(damage);
       if (entityDamageResult != null && (double)this.getHealthFraction() <= 0.3D && !entityDamageResult.entityWasDestroyed()) {

@@ -15,12 +15,12 @@ public class EntityBoneLordTrans extends EntitySkeletonTrans {
    @Overwrite
    protected void addRandomEquipment() {
       this.addRandomWeapon();
-      int day = this.getWorld() != null ? Math.max(this.getWorld().getDayOfWorld() - 64, 0) : 0;
+      int day = this.getWorld() != null ? Math.max(this.getWorld().getDayOfWorld(), 0) : 0;
       if (day < 96) {
-         this.setBoots((new ItemStack(Item.bootsRustedIron)).randomizeForMob(this, true));
-         this.setLeggings((new ItemStack(Item.legsRustedIron)).randomizeForMob(this, true));
-         this.setCuirass((new ItemStack(Item.plateRustedIron)).randomizeForMob(this, true));
-         this.setHelmet((new ItemStack(Item.helmetRustedIron)).randomizeForMob(this, true));
+         this.setBoots((new ItemStack(Item.bootsIron)).randomizeForMob(this, true));
+         this.setLeggings((new ItemStack(Item.legsIron)).randomizeForMob(this, true));
+         this.setCuirass((new ItemStack(Item.plateIron)).randomizeForMob(this, true));
+         this.setHelmet((new ItemStack(Item.helmetIron)).randomizeForMob(this, true));
       } else {
          MonsterUtil.addDefaultArmor(day, this, true);
       }
@@ -37,10 +37,11 @@ public class EntityBoneLordTrans extends EntitySkeletonTrans {
    protected void applyEntityAttributes() {
       super.applyEntityAttributes();
       boolean boneLordTweak = Configs.Entities.BONE_LORD_TWEAK.get();
+      int day = this.getWorld() != null ? this.getWorld().getDayOfWorld() : 0;
       this.setEntityAttribute(GenericAttributes.followRange, 44.0D);
       this.setEntityAttribute(GenericAttributes.movementSpeed, 0.27000001072883606D);
-      this.setEntityAttribute(GenericAttributes.attackDamage, boneLordTweak ? 10.0D : 5.5D);
-      this.setEntityAttribute(GenericAttributes.maxHealth, boneLordTweak ? 44.0D : 22.0D);
+      this.setEntityAttribute(GenericAttributes.attackDamage, boneLordTweak ? 12 + day /20D : 5.5D);
+      this.setEntityAttribute(GenericAttributes.maxHealth, boneLordTweak ? 35 + day / 16D : 22.0D);
    }
 
    protected void enchantEquipment(ItemStack item_stack) {

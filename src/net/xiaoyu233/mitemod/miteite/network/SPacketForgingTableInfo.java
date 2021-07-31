@@ -1,15 +1,18 @@
 package net.xiaoyu233.mitemod.miteite.network;
 
 import net.minecraft.*;
+import net.xiaoyu233.mitemod.miteite.item.recipe.ForgingTableLevel;
+import net.xiaoyu233.mitemod.miteite.item.recipe.IFaultFeedback;
 
+import javax.annotation.Nullable;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 
 public class SPacketForgingTableInfo extends Packet {
     private String infoClassName;
@@ -69,27 +72,51 @@ public class SPacketForgingTableInfo extends Packet {
     }
 
     public static class EnhanceInfo implements SPacketForgingTableInfo.InfoType {
+        public static class FaultFeedbackData{
+            private final int data;
+            private final String name;
+
+            private FaultFeedbackData(int data, String name) {
+                this.data = data;
+                this.name = name;
+            }
+
+            public int getDataLength(){
+                return Packet.getPacketSizeOfString(this.name) + 4;
+            }
+
+            public int getData() {
+                return data;
+            }
+
+            public String getName() {
+                return name;
+            }
+        }
         private int chanceOfFailure;
-        private String failFeedback;
-        private int failData;
         private int duration;
         private int hammerDurabilityCost;
         private int axeDurabilityCost;
-
+        private final List<FaultFeedbackData> faultFeedbacks = new ArrayList<>();
         private EnhanceInfo() {
         }
 
-        private EnhanceInfo(int chanceOfFailure, String failFeedback, int failData, int duration, int hammerDurabilityCost, int axeDurabilityCost) {
+        private EnhanceInfo(int chanceOfFailure, List<IFaultFeedback> faultFeedbacks, int duration, int hammerDurabilityCost, int axeDurabilityCost) {
             this.chanceOfFailure = chanceOfFailure;
-            this.failFeedback = failFeedback;
-            this.failData = failData;
             this.duration = duration;
             this.hammerDurabilityCost = hammerDurabilityCost;
             this.axeDurabilityCost = axeDurabilityCost;
+            if (faultFeedbacks != null){
+                for (IFaultFeedback faultFeedback : faultFeedbacks) {
+                    if (faultFeedback != null){
+                        this.faultFeedbacks.add(new FaultFeedbackData(faultFeedback.getData(),faultFeedback.getName()));
+                    }
+                }
+            }
         }
 
-        public static SPacketForgingTableInfo.EnhanceInfo getInstance(int chanceOfFailure, String failFeedback, int failData, int duration, int hammerDurabilityCost, int axeDurabilityCost) {
-            return new SPacketForgingTableInfo.EnhanceInfo(chanceOfFailure, failFeedback, failData, duration, hammerDurabilityCost, axeDurabilityCost);
+        public static SPacketForgingTableInfo.EnhanceInfo getInstance(int chanceOfFailure, @Nullable List<IFaultFeedback> faultFeedbacks, int duration, int hammerDurabilityCost, int axeDurabilityCost) {
+            return new SPacketForgingTableInfo.EnhanceInfo(chanceOfFailure, faultFeedbacks, duration, hammerDurabilityCost, axeDurabilityCost);
         }
 
         public int getAxeDurabilityCost() {
@@ -101,19 +128,15 @@ public class SPacketForgingTableInfo extends Packet {
         }
 
         public int getDataLength() {
-            return 16 + Packet.getPacketSizeOfString(this.failFeedback);
+            return 16 + this.faultFeedbacks.stream().mapToInt(FaultFeedbackData::getDataLength).sum();
         }
 
         public int getDuration() {
             return this.duration;
         }
 
-        public int getFailData() {
-            return this.failData;
-        }
-
-        public String getFailFeedback() {
-            return this.failFeedback;
+        public List<FaultFeedbackData> getFaultFeedbacks() {
+            return faultFeedbacks;
         }
 
         public String asString() {
@@ -130,8 +153,10 @@ public class SPacketForgingTableInfo extends Packet {
 
         public void readData(DataInput dataInput) throws IOException {
             this.chanceOfFailure = dataInput.readInt();
-            this.failFeedback = Packet.readString(dataInput, 32767);
-            this.failData = dataInput.readInt();
+            int failFeedbackCount = dataInput.readInt();
+            for (int i = 0; i < failFeedbackCount; i++) {
+                this.faultFeedbacks.add(new FaultFeedbackData(dataInput.readInt(),Packet.readString(dataInput, 32767)));
+            }
             this.duration = dataInput.readInt();
             this.hammerDurabilityCost = dataInput.readInt();
             this.axeDurabilityCost = dataInput.readInt();
@@ -139,8 +164,11 @@ public class SPacketForgingTableInfo extends Packet {
 
         public void writeData(DataOutput dataOutput) throws IOException {
             dataOutput.writeInt(this.chanceOfFailure);
-            Packet.writeString(this.failFeedback, dataOutput);
-            dataOutput.writeInt(this.failData);
+            dataOutput.writeInt(this.faultFeedbacks.size());
+            for (FaultFeedbackData faultFeedback : this.faultFeedbacks) {
+                dataOutput.writeInt(faultFeedback.getData());
+                Packet.writeString(faultFeedback.getName(), dataOutput);
+            }
             dataOutput.writeInt(this.duration);
             dataOutput.writeInt(this.hammerDurabilityCost);
             dataOutput.writeInt(this.axeDurabilityCost);
@@ -176,7 +204,7 @@ public class SPacketForgingTableInfo extends Packet {
     }
 
     public static class ReqItems implements SPacketForgingTableInfo.InfoType {
-        private List<ItemStack> items = new ArrayList();
+        private List<ItemStack> items = new ArrayList<>();
 
         private ReqItems() {
         }
@@ -191,10 +219,8 @@ public class SPacketForgingTableInfo extends Packet {
             StringBuilder sb = new StringBuilder();
             sb.append(LocaleI18n.translateToLocal("gui.forgingTable.item_req"));
             sb.append(": ");
-            Iterator var2 = this.items.iterator();
 
-            while(var2.hasNext()) {
-                ItemStack item = (ItemStack)var2.next();
+            for (ItemStack item : this.items) {
                 sb.append(LocaleI18n.translateToLocal(item.getMITEStyleDisplayName()));
                 sb.append("X").append(item.stackSize).append(",");
             }
@@ -209,9 +235,8 @@ public class SPacketForgingTableInfo extends Packet {
         public int getDataLength() {
             int size = 0;
 
-            ItemStack item;
-            for(Iterator var2 = this.items.iterator(); var2.hasNext(); size += Packet.getPacketSizeOfItemStack(item)) {
-                item = (ItemStack)var2.next();
+            for (ItemStack itemStack : this.items) {
+                size += Packet.getPacketSizeOfItemStack(itemStack);
             }
 
             return size;
@@ -228,10 +253,8 @@ public class SPacketForgingTableInfo extends Packet {
 
         public void writeData(DataOutput out) throws IOException {
             out.writeInt(this.items.size());
-            Iterator var2 = this.items.iterator();
 
-            while(var2.hasNext()) {
-                ItemStack item = (ItemStack)var2.next();
+            for (ItemStack item : this.items) {
                 Packet.writeItemStack(item, out);
             }
 
@@ -265,6 +288,42 @@ public class SPacketForgingTableInfo extends Packet {
         }
     }
 
+    public static class TableLevelInfo implements SPacketForgingTableInfo.InfoType{
+        private ForgingTableLevel req;
+        @Override
+        public String asString() {
+            return LocaleI18n.translateToLocal("gui.forgingTable.levelToLow." + req.name().toLowerCase(Locale.ROOT));
+        }
+
+        private TableLevelInfo(ForgingTableLevel req){
+            this.req = req;
+        }
+
+        public static TableLevelInfo of(ForgingTableLevel req){
+            return new TableLevelInfo(req);
+        }
+
+        @Override
+        public int getColor() {
+            return 0xaa0000;
+        }
+
+        @Override
+        public int getDataLength() {
+            return 6;
+        }
+
+        @Override
+        public void readData(DataInput var1) throws IOException {
+            this.req = ForgingTableLevel.values()[var1.readInt()];
+        }
+
+        @Override
+        public void writeData(DataOutput var1) throws IOException {
+            var1.writeInt(this.req.ordinal());
+        }
+    }
+
     public static class ToolInfo implements SPacketForgingTableInfo.InfoType {
         private SPacketForgingTableInfo.ToolInfo.Tool tool;
 
@@ -284,11 +343,11 @@ public class SPacketForgingTableInfo extends Packet {
         }
 
         public int getColor() {
-            return 11141120;
+            return 0xaa0000;
         }
 
         public int getDataLength() {
-            return 2;
+            return 2 + 4;
         }
 
         public void readData(DataInput dataInput) throws IOException {
@@ -301,7 +360,8 @@ public class SPacketForgingTableInfo extends Packet {
 
         public enum Tool {
             AXE("gui.forgingTable.needAxe"),
-            HAMMER("gui.forgingTable.needHammer");
+            HAMMER("gui.forgingTable.needHammer"),
+            MAX_LEVEL("gui.forgingTable.max_level_or_not_found");
 
             private final String translationKey;
 

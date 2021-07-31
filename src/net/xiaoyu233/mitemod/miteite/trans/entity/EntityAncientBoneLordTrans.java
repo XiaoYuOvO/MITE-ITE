@@ -15,7 +15,7 @@ public class EntityAncientBoneLordTrans extends EntityBoneLordTrans {
    @Overwrite
    protected void addRandomEquipment() {
       this.addRandomWeapon();
-      int day = this.getWorld() != null ? Math.max(this.getWorld().getDayOfWorld() - 64, 0) : 0;
+      int day = this.getWorld() != null ? Math.max(this.getWorld().getDayOfWorld() - 16, 0) : 0;
       if (day < 96) {
          this.setBoots((new ItemStack(Item.bootsAncientMetal)).randomizeForMob(this, true));
          this.setLeggings((new ItemStack(Item.legsAncientMetal)).randomizeForMob(this, true));
@@ -31,10 +31,11 @@ public class EntityAncientBoneLordTrans extends EntityBoneLordTrans {
    protected void applyEntityAttributes() {
       super.applyEntityAttributes();
       boolean boneLordTweak = Configs.Entities.BONE_LORD_TWEAK.get();
+      int day = this.getWorld() != null ? this.getWorld().getDayOfWorld() : 0;
       this.setEntityAttribute(GenericAttributes.followRange, 48.0D);
       this.setEntityAttribute(GenericAttributes.movementSpeed, 0.30000001192092896D);
-      this.setEntityAttribute(GenericAttributes.attackDamage, boneLordTweak ? 20.0D : 10.0D);
-      this.setEntityAttribute(GenericAttributes.maxHealth, boneLordTweak ? 50.0D : 25.0D);
+      this.setEntityAttribute(GenericAttributes.attackDamage, boneLordTweak ? 15D + day / 20D : 10.0D);
+      this.setEntityAttribute(GenericAttributes.maxHealth, boneLordTweak ? 40 + day / 12D : 25.0D);
    }
 
    protected void enchantEquipment(ItemStack item_stack) {

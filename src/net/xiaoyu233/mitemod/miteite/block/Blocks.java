@@ -3,6 +3,7 @@ package net.xiaoyu233.mitemod.miteite.block;
 import net.minecraft.*;
 import net.xiaoyu233.mitemod.miteite.item.Items;
 import net.xiaoyu233.mitemod.miteite.item.Materials;
+import net.xiaoyu233.mitemod.miteite.item.recipe.ForgingTableLevel;
 import net.xiaoyu233.mitemod.miteite.util.Constant;
 import net.xiaoyu233.mitemod.miteite.util.RecipeRegister;
 import net.xiaoyu233.mitemod.miteite.util.ReflectHelper;
@@ -12,7 +13,7 @@ import java.lang.reflect.Modifier;
 
 import static net.xiaoyu233.mitemod.miteite.item.Items.VIBRANIUM_INGOT;
 
-public class Blocks {
+public class Blocks extends Block{
     public static final Block blockForgingTable = new BlockForgingTable(getNextBlockID())
         .setBlockHardness(8.0F).setExplosionResistance(0.875f).setStepSound_(Block.soundStoneFootstep)
         ;
@@ -24,11 +25,11 @@ public class Blocks {
     public static final Block furnaceVibraniumBurning =
             new BlockFurnaceVibranium(getNextBlockID(), true)
                     .setBlockHardness(8.0F)
-                    .setExplosionResistance(0.875f).setStepSound_(Block.soundStoneFootstep)
-        ;
+                    .setExplosionResistance(0.875f).setStepSound_(Block.soundStoneFootstep);
     public static final Block furnaceVibraniumIdle =
             new BlockFurnaceVibranium(getNextBlockID(),false).setCreativeTab(CreativeModeTab.tabDecorations)
                     .setBlockHardness(8.0F).setExplosionResistance(0.875f).setStepSound_(Block.soundStoneFootstep);
+    public static final Block netherAdamantiumOre = new BlockNetherAdamantiumOre(getNextBlockID()).setCreativeTab(CreativeModeTab.tabBlock).setBlockHardness(4.0F).setStepSound_(soundStoneFootstep).setUnlocalizedName("oreNetherAdamantium");
 
     static {
         try {
@@ -49,6 +50,10 @@ public class Blocks {
             e.printStackTrace();
         }
 
+    }
+
+    protected Blocks(int par1, Material par2Material, BlockConstants constants) {
+        super(par1, par2Material, constants);
     }
 
     private static void registerAnvil(BlockAnvil block,String resourceLocation){
@@ -75,6 +80,7 @@ public class Blocks {
         registerItemBlock(furnaceVibraniumIdle,"furnace_vibranium_idle");
         registerItemBlock(furnaceVibraniumBurning,"furnace_vibranium_burning");
         registerItemBlock(blockForgingTable,"block_forging_table");
+        registerItemBlock(netherAdamantiumOre,"nether_adamantium_ore");
     }
 
     private static void registerItemBlock(Block block,String resourceLocation){
@@ -88,12 +94,12 @@ public class Blocks {
     public static void registerRecipes(RecipeRegister register) {
         register.registerShapedRecipe(new ItemStack(anvilVibranium),true,
                 "AVA",
-                        " I ",
-                        "IaI",
-                        'A', Item.ingotAdamantium,
-                        'V', blockVibranium,
-                        'I', VIBRANIUM_INGOT,
-                        'a', Block.anvilAncientMetal
+                " I ",
+                "IaI",
+                'A', Item.ingotAdamantium,
+                'V', blockVibranium,
+                'I', VIBRANIUM_INGOT,
+                'a', Block.anvilAncientMetal
         );
         register.registerShapelessRecipe(new ItemStack(blockVibranium),true,
                         VIBRANIUM_INGOT, VIBRANIUM_INGOT, VIBRANIUM_INGOT,
@@ -102,24 +108,36 @@ public class Blocks {
         );
         register.registerShapedRecipe(new ItemStack(Blocks.furnaceVibraniumIdle),true,
                 "VOA",
-                        "DND",
-                        "AOV",
-                        'V',VIBRANIUM_INGOT,
-                        'O',Block.obsidian,
-                        'D',Item.diamond,
-                        'A',Item.ingotAdamantium,
-                        'N', Block.furnaceNetherrackIdle
+                "DND",
+                "AOV",
+                'V',VIBRANIUM_INGOT,
+                'O',Block.obsidian,
+                'D',Item.diamond,
+                'A',Item.ingotAdamantium,
+                'N', Block.furnaceNetherrackIdle
         );
-        register.registerShapedRecipe(new ItemStack(Blocks.blockForgingTable),true,
-                "MAM",
-                        "HVI",
-                        "wWw",
-                        'M',Block.blockMithril,
-                        'A',Block.blockAdamantium,
-                        'H',Items.warHammerMithril,
-                        'V', VIBRANIUM_INGOT,
-                        'I',Item.axeIron,
-                        'W',Block.blockAncientMetal,
-                        'w',Items.ingotAncientMetal);
+        register.registerShapedRecipe(new ItemStack(Blocks.blockForgingTable,1,0),true,
+                "WIT",
+                "aAH",
+                "OOO",
+                'W',Block.planks,
+                'A',Block.anvil,
+                'H',Items.warHammerIron,
+                'I', Items.ingotIron,
+                'a',Item.axeIron,
+                'T',new ItemStack(Block.workbench,1,7),
+                'O',Blocks.obsidian);
+        registerForgingTableUpgradeRecipes(register,ForgingTableLevel.IRON,Item.ingotAncientMetal);
+        registerForgingTableUpgradeRecipes(register,ForgingTableLevel.MITHRIL,Item.ingotAdamantium);
+        registerForgingTableUpgradeRecipes(register,ForgingTableLevel.ADAMANTIUM, VIBRANIUM_INGOT);
+        RecipesFurnace.smelting().addSmelting(Blocks.netherAdamantiumOre.blockID, new ItemStack(Item.ingotAdamantium));
+    }
+
+    private static void registerForgingTableUpgradeRecipes(RecipeRegister register, ForgingTableLevel originalLevel, Item ingot){
+        register.registerShapedRecipe(new ItemStack(Blocks.blockForgingTable,1,originalLevel.getLevel() + 1),true,
+                "III",
+                " T ",
+                'I', ingot,
+                'T', new ItemStack(Blocks.blockForgingTable,1,originalLevel.getLevel()));
     }
 }

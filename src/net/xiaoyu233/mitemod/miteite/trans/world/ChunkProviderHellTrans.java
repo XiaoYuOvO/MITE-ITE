@@ -1,6 +1,7 @@
 package net.xiaoyu233.mitemod.miteite.trans.world;
 
 import net.minecraft.*;
+import net.xiaoyu233.mitemod.miteite.block.Blocks;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
@@ -113,7 +114,7 @@ public class ChunkProviderHellTrans {
       int var11;
       for(var8 = 0; var8 < 16; ++var8) {
          var9 = var4 + this.hellRNG.nextInt(16);
-         var10 = this.hellRNG.nextInt(108) + 10;
+         var10 = this.hellRNG.nextInt(80) + 35;
          var11 = var5 + this.hellRNG.nextInt(16);
          var12.generate(this.worldObj, this.hellRNG, var9, var10, var11);
       }
@@ -123,10 +124,20 @@ public class ChunkProviderHellTrans {
 
          for(var8 = 0; var8 < 2; ++var8) {
             var9 = var4 + this.hellRNG.nextInt(16);
-            var10 = this.hellRNG.nextInt(108) + 10;
+            var10 = this.hellRNG.nextInt(80) + 35;
             var11 = var5 + this.hellRNG.nextInt(16);
             var12.generate(this.worldObj, this.hellRNG, var9, var10, var11);
          }
+      }
+
+      var12 = (new WorldGenMinable(Blocks.netherAdamantiumOre.blockID, 5, Block.netherrack.blockID)).setMinableBlockMetadata(0);
+
+      int count = this.hellRNG.nextInt(5) + 1;
+      for(var8 = 0; var8 < count; ++var8) {
+         var9 = var4 + this.hellRNG.nextInt(16);
+         var10 = this.hellRNG.nextInt(80) + 35;
+         var11 = var5 + this.hellRNG.nextInt(16);
+         var12.generate(this.worldObj, this.hellRNG, var9, var10, var11);
       }
 
       if (this.worldObj.getWorldInfo().getEarliestMITEReleaseRunIn() >= 0) {

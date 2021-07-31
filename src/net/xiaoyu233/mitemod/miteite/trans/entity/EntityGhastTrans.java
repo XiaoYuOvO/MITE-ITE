@@ -35,7 +35,7 @@ public class EntityGhastTrans extends EntityFlying implements IMonster {
    @Overwrite
    protected void applyEntityAttributes() {
       super.applyEntityAttributes();
-      this.explosionStrength = 2;
+      this.explosionStrength = 3;
       super.getEntityAttribute(GenericAttributes.maxHealth).setAttribute(15.0D);
    }
 
@@ -122,16 +122,20 @@ public class EntityGhastTrans extends EntityFlying implements IMonster {
                super.worldObj.playAuxSFXAtEntity(null, 1008, (int)super.posX, (int)super.posY, (int)super.posZ, 0);
 
                //Triple shot
-               for(int i = 3; i > 0; --i) {
-                  EntityLargeFirebal var17 = new EntityLargeFireballNB(super.worldObj, this, target_center, 4.0F + (float)i * 2.5F);
+//               for(int i = 3; i > 0; --i) {
+               //No triple shots anymore
+                  EntityLargeFirebal var17 = new EntityLargeFireballNB(super.worldObj, this, target_center, 4.0F);
                   if (this.worldObj.isOverworld()) {
                      var17.field_92057_e = Math.round((float)this.explosionStrength * (Configs.Entities.GHAST_OVERWORLD_BOOST.get()).floatValue());
                   } else {
                      var17.field_92057_e = this.explosionStrength;
                   }
+                  var17.accelerationX *= 1.15d;
+                  var17.accelerationY *= 1.15d;
+                  var17.accelerationZ *= 1.15d;
 
                   super.worldObj.spawnEntityInWorld(var17);
-               }
+//               }
 
                this.attackCounter = -35;
             }

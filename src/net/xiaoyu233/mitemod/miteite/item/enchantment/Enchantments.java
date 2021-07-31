@@ -16,9 +16,11 @@ public class Enchantments {
     public static final Enchantment CRIT = new EnchantmentCrit(getNextEnchantmentID(),yq.c, 10);
     public static final Enchantment EXTEND = new EnchantmentExtend(getNextEnchantmentID(),yq.c, 10);
     public static final Enchantment EMERGENCY = new EnchantmentEmergency(getNextEnchantmentID(),yq.c,15);
+    public static final Enchantment CONQUEROR = new EnchantmentConqueror(getNextEnchantmentID(),yq.c,15);
+    public static final Enchantment BEHEADING = new EnchantmentBeheading(getNextEnchantmentID(),yq.c,10);
     public static List<Enchantment> individualEnchantments = new ArrayList<>();
     public static void registerEnchantments(){
-        Enchantments.registerEnchantmentsUnsafe(DEFENCED,CRIT,EXTEND,EMERGENCY);
+        Enchantments.registerEnchantmentsUnsafe(DEFENCED,CRIT,EXTEND,EMERGENCY,CONQUEROR,BEHEADING);
     }
 
     public static void registerEnchantmentsUnsafe(Enchantment... enchantments) {

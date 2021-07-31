@@ -19,6 +19,11 @@ public class EntityGiantZombieTrans extends EntityMonster {
       super(var1);
    }
 
+   @Override
+   public boolean canBeKnockedBack() {
+      return false;
+   }
+
    private static void addDefaultArmor(int day_count, EntityInsentient monster, boolean haveAll) {
       Random rand = monster.getRNG();
       if (rand.nextInt(3 - Math.min(day_count / 128, 2)) == 0 || day_count > 365 || haveAll) {
@@ -73,9 +78,9 @@ public class EntityGiantZombieTrans extends EntityMonster {
    @Overwrite
    protected void applyEntityAttributes() {
       super.applyEntityAttributes();
-      int day = this.getWorld() != null ? Math.max(this.getWorld().getDayOfWorld() - 64, 0) : 0;
-      this.getEntityAttribute(GenericAttributes.attackDamage).setAttribute(30.0D + (double)day / 20.0D);
-      this.getEntityAttribute(GenericAttributes.maxHealth).setAttribute(100.0D + (double)day / 16.0D * 10.0D);
+      int day = this.getWorld() != null ? Math.max(this.getWorld().getDayOfWorld(), 0) : 0;
+      this.getEntityAttribute(GenericAttributes.attackDamage).setAttribute(25.0D + (double)day / 16.0D);
+      this.getEntityAttribute(GenericAttributes.maxHealth).setAttribute(100.0D + (double)day / 16.0D);
       this.getEntityAttribute(GenericAttributes.movementSpeed).setAttribute(0.3D);
    }
 
@@ -150,7 +155,7 @@ public class EntityGiantZombieTrans extends EntityMonster {
 
    @Override
    public float getReach() {
-      return super.getReach() * 2.1F;
+      return super.getReach() * 2.5F;
    }
 
    @Inject(method = "<init>",at = @At("RETURN"))
@@ -168,7 +173,7 @@ public class EntityGiantZombieTrans extends EntityMonster {
       this.tasks.addTask(2, new PathfinderGoalNearestAttackableTarget(this, EntityVillager.class, 0, false));
       this.tasks.addTask(4, new PathfinderGoalMeleeAttack(this, EntityAnimal.class, 1.0D, true));
       this.tasks.addTask(3, new PathfinderGoalNearestAttackableTarget(this, EntityAnimal.class, 10, true));
-      this.setSize(this.width * 6.1F, this.height * 6.0F);
+      this.setSize(0.6f * 6.1F, 1.8f * 6.0F);
    }
 
    @Override

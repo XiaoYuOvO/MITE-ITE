@@ -74,15 +74,15 @@ public class TileEntityBeaconTrans extends TileEntity {
    private float getCraftingBoostFactor(int level) {
       switch(level) {
       case 1:
-         return 0.1F;
+         return 0.25F;
       case 2:
-         return 0.35F;
+         return 0.4F;
       case 3:
-         return 1.0F;
+         return 0.6F;
       case 4:
-         return 1.75F;
+         return 0.85F;
       default:
-         return 0.0F;
+         return 0F;
       }
    }
 

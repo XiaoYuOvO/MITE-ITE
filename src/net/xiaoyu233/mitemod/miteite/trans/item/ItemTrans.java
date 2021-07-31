@@ -13,13 +13,24 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 
+import java.util.List;
+
 @Mixin(Item.class)
-public class ItemTrans {
+public abstract class ItemTrans {
+   @Shadow public abstract boolean hasQuality();
+
+   @Shadow private int maxDamage;
+
+   @Shadow public abstract boolean isDamageable();
+
    @Shadow
    private static Item[] itemsList;
    @Shadow
    @Final
    private int itemID;
+
+   @Shadow
+   protected List materials;
 
    public void addExpForTool(ItemStack stack, EntityPlayer player, int exp) {
       stack.fixNBT();
@@ -29,7 +40,7 @@ public class ItemTrans {
             tagCompound.setInteger("tool_exp", tagCompound.getInteger("tool_exp") + exp);
             if (tagCompound.hasKey("tool_level")) {
                int currentLevel = tagCompound.getInteger("tool_level");
-               int nextLevelExpReq = this.getExpReqForLevel(currentLevel + 1, this.isWeapon(stack.getItem()));
+               int nextLevelExpReq = this.getExpReqForLevel(currentLevel, this.isWeapon(stack.getItem()));
                if (tagCompound.getInteger("tool_exp") >= nextLevelExpReq) {
                   tagCompound.setInteger("tool_level", currentLevel + 1);
                   tagCompound.setInteger("tool_exp", 0);
@@ -54,10 +65,22 @@ public class ItemTrans {
 
    }
 
+   public List getMaterials() {
+      return materials;
+   }
+
    public int addModifierLevelFor(NBTTagCompound modifiers, ItemModifierTypes modifierType) {
       int effectLevel = modifiers.getInteger(modifierType.getNbtName()) + 1;
       modifiers.setInteger(modifierType.getNbtName(), effectLevel);
       return effectLevel;
+   }
+
+   @Overwrite
+   public final int getMaxDamage(EnumQuality quality) {
+      if (!this.isDamageable()) {
+         Minecraft.setErrorMessage("getMaxDamage: item is not damageable, " + this);
+      }
+      return this.maxDamage;
    }
 
    @Shadow
@@ -92,7 +115,7 @@ public class ItemTrans {
 
    @Overwrite
    public int getHeatLevel(ItemStack item_stack) {
-      if (ReflectHelper.dyCast(this) == Items.BLAZE_COAL) {
+      if (ReflectHelper.dyCast(this) == Items.BLAZE_COAL_POWDER) {
          return 5;
       } else if (ReflectHelper.dyCast(this) == Item.blazeRod) {
          return 4;

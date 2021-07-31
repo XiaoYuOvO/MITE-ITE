@@ -12,10 +12,12 @@ import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import javax.annotation.Nonnull;
+import java.util.List;
 
 @Mixin(ItemStack.class)
 public class ItemStackTrans {
@@ -41,6 +43,12 @@ public class ItemStackTrans {
       this.itemID = id;
       this.stackSize = stack_size;
       this.setItemSubtype(subtype);
+   }
+
+   @Redirect(method = "getTooltip",at = @At(value = "INVOKE",target = "Lnet/minecraft/Translator;addToList(Lnet/minecraft/EnumChatFormat;Ljava/lang/String;Ljava/util/List;)V",ordinal = 0))
+   private void removeChangeQualityInfo(EnumChatFormat enum_chat_formatting, String key, List list){
+      //Do nothing to remove
+      list.remove(list.size() - 1);
    }
 
    @Overwrite

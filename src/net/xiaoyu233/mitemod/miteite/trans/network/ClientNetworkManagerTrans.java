@@ -107,7 +107,7 @@ public class ClientNetworkManagerTrans extends NetworkManagerTrans{
       if (openingGUI instanceof GuiForgingTable) {
          if (packet.getInfo() instanceof SPacketForgingTableInfo.EnhanceInfo) {
             SPacketForgingTableInfo.EnhanceInfo info = (SPacketForgingTableInfo.EnhanceInfo)packet.getInfo();
-            ((GuiForgingTable)openingGUI).setEnhanceInfo(info.getChanceOfFailure(), info.getFailFeedback(), info.getFailData(), info.getDuration(), info.getHammerDurabilityCost(), info.getAxeDurabilityCost());
+            ((GuiForgingTable)openingGUI).setEnhanceInfo(info.getChanceOfFailure(), info.getFaultFeedbacks(), info.getDuration(), info.getHammerDurabilityCost(), info.getAxeDurabilityCost());
          } else {
             ((GuiForgingTable)openingGUI).setInfo(packet.getInfo().asString(), packet.getInfo().getColor());
          }

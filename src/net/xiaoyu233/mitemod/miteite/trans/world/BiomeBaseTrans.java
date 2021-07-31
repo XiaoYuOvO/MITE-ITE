@@ -2,6 +2,8 @@ package net.xiaoyu233.mitemod.miteite.trans.world;
 
 import net.minecraft.*;
 import net.xiaoyu233.fml.util.ReflectHelper;
+import net.xiaoyu233.mitemod.miteite.entity.EntityAnnihilationSkeleton;
+import net.xiaoyu233.mitemod.miteite.entity.EntityWanderingWitch;
 import net.xiaoyu233.mitemod.miteite.entity.EntityZombieLord;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -93,7 +95,7 @@ public class BiomeBaseTrans {
       this.spawnableMonsterList.add(new BiomeMeta(EntityWight.class, 10, 1, 1));
       this.spawnableMonsterList.add(new BiomeMeta(EntityInvisibleStalker.class, 10, 1, 1));
       this.spawnableMonsterList.add(new BiomeMeta(EntityDemonSpider.class, 10, 1, 1));
-      this.spawnableMonsterList.add(new BiomeMeta(EntityHellhound.class, 10, 1, 2));
+      this.spawnableMonsterList.add(new BiomeMeta(EntityHellhound.class, 13, 1, 2));
       this.spawnableMonsterList.add(new BiomeMeta(EntityWoodSpider.class, 20, 1, 1));
       this.spawnableMonsterList.add(new BiomeMeta(EntityShadow.class, 10, 1, 1));
       this.spawnableMonsterList.add(new BiomeMeta(EntityRevenant.class, 10, 1, 1));
@@ -108,7 +110,9 @@ public class BiomeBaseTrans {
       this.spawnableMonsterList.add(new BiomeMeta(EntityGiantZombie.class, 10, 1, 1));
       this.spawnableMonsterList.add(new BiomeMeta(EntityGhast.class, 10, 1, 1));
       this.spawnableMonsterList.add(new BiomeMeta(EntityAncientBoneLord.class, 10, 1, 1));
-      this.spawnableMonsterList.add(new BiomeMeta(EntityZombieLord.class, 1, 1, 1));
+      this.spawnableMonsterList.add(new BiomeMeta(EntityZombieLord.class, 2, 1, 1));
+      this.spawnableMonsterList.add(new BiomeMeta(EntityAnnihilationSkeleton.class, 1, 1, 1));
+      this.spawnableMonsterList.add(new BiomeMeta(EntityWanderingWitch.class, 1, 1, 1));
    }
 
    @Shadow

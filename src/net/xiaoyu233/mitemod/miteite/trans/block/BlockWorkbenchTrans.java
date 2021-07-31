@@ -8,7 +8,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(BlockWorkbench.class)
-public class BlockWorkbenchTrans {
+public class BlockWorkbenchTrans extends BlockTrans {
    @Shadow
    @Mutable
    @Final
@@ -27,6 +27,12 @@ public class BlockWorkbenchTrans {
    @Inject(method = "<clinit>",at = @At("RETURN"))
    private static void injectClinit(CallbackInfo callback){
       tool_materials = new Material[]{Material.flint, Material.copper, Material.silver, Material.gold, Material.iron, Material.ancient_metal, Material.mithril, Material.adamantium, Materials.vibranium, Material.obsidian};
+   }
+
+   @Override
+   @SoftOverride
+   public String getItemDisplayName(ItemStack itemStack) {
+      return Translator.get("tile.toolbench." + BlockWorkbench.getToolMaterial(itemStack.getItemSubtype()).getName() + ".name");
    }
 
    @Overwrite

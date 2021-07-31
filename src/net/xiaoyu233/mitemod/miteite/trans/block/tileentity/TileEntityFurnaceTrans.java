@@ -1,6 +1,7 @@
 package net.xiaoyu233.mitemod.miteite.trans.block.tileentity;
 
 import net.minecraft.*;
+import net.xiaoyu233.mitemod.miteite.block.Blocks;
 import net.xiaoyu233.mitemod.miteite.util.Configs;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
@@ -23,26 +24,20 @@ public class TileEntityFurnaceTrans extends TileEntity {
    public static int getHeatLevelRequired(int item_id) {
       if (item_id == Block.coalBlock.blockID) {
          return 5;
-      } else if (item_id != Block.oreAdamantium.blockID && item_id != Block.blockIron.blockID && item_id != Block.blockMithril.blockID) {
-         if (item_id == Block.oreMithril.blockID) {
-            return 3;
-         } else if (item_id != Block.oreCopper.blockID && item_id != Block.oreSilver.blockID && item_id != Block.oreGold.blockID && item_id != Block.oreIron.blockID) {
-            if (item_id != Block.oreNetherQuartz.blockID && item_id != Block.oreEmerald.blockID && item_id != Block.oreDiamond.blockID && item_id != Block.oreRedstone.blockID) {
-               if (item_id == Block.oreLapis.blockID) {
-                  return 2;
-               } else if (item_id == Block.sandStone.blockID) {
-                  return 2;
-               } else {
-                  return item_id == Block.sand.blockID ? 1 : 1;
-               }
-            } else {
-               return 2;
-            }
-         } else {
-            return 2;
-         }
-      } else {
+      } else if (item_id == Block.oreAdamantium.blockID || item_id == Block.blockIron.blockID || item_id == Block.blockMithril.blockID || item_id == Blocks.netherAdamantiumOre.blockID) {
          return 4;
+      } else if (item_id == Block.oreMithril.blockID) {
+         return 3;
+      } else if (item_id == Block.oreCopper.blockID || item_id == Block.oreSilver.blockID || item_id == Block.oreGold.blockID || item_id == Block.oreIron.blockID) {
+         return 2;
+      } else if (item_id == Block.oreNetherQuartz.blockID || item_id == Block.oreEmerald.blockID || item_id == Block.oreDiamond.blockID || item_id == Block.oreRedstone.blockID) {
+         return 2;
+      } else if (item_id == Block.oreLapis.blockID) {
+         return 2;
+      } else if (item_id == Block.sandStone.blockID) {
+         return 2;
+      } else {
+         return 1;
       }
    }
 

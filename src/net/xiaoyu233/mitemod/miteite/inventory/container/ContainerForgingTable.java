@@ -142,6 +142,12 @@ public class ContainerForgingTable extends Container {
         }
     }
 
+    public void sendTableInfo(SPacketForgingTableInfo.TableLevelInfo info) {
+        if (!this.world.isRemote){
+            this.player.sendPacket(new SPacketForgingTableInfo(info));
+        }
+    }
+
     //OnlyInServer
     public void startForging(){
         if (!this.tileentity.startForging()) {
@@ -149,7 +155,7 @@ public class ContainerForgingTable extends Container {
             ItemStack toolItem = this.slots.getToolItem();
             if (toolItem != null){
                 ForgingRecipe recipeFromTool = this.slots.getRecipeFromTool(toolItem);
-                if (recipeFromTool != null && this.slots.getHammerItem() != null && this.slots.getAxeItem() != null && !this.world.isRemote){
+                if (recipeFromTool != null && this.tileentity.getBlockMetadata() >= recipeFromTool.getForgingTableLevelReq().getLevel() && this.slots.getHammerItem() != null && this.slots.getAxeItem() != null && !this.world.isRemote){
                     this.player.sendPacket(new SPacketForgingTableInfo(SPacketForgingTableInfo.ReqItems.of(this.slots.getNeedItems(recipeFromTool))));
                 }
             }
@@ -236,9 +242,9 @@ public class ContainerForgingTable extends Container {
     void updateInfo(@Nullable ForgingRecipe recipe) {
         if (!this.world.isRemote){
             if (recipe != null){
-                this.player.sendPacket(new SPacketForgingTableInfo(SPacketForgingTableInfo.EnhanceInfo.getInstance(recipe.getChanceOfFailure(),recipe.getFaultFeedback().getName(),recipe.getFaultFeedback().getData(),this.slots.getForgingTime(recipe),recipe.getHammerDurabilityCost(),recipe.getAxeDurabilityCost())));
+                this.player.sendPacket(new SPacketForgingTableInfo(SPacketForgingTableInfo.EnhanceInfo.getInstance(recipe.getChanceOfFailure(),recipe.getFaultFeedback(),this.slots.getForgingTime(recipe),recipe.getHammerDurabilityCost(),recipe.getAxeDurabilityCost())));
             }else {
-                this.player.sendPacket(new SPacketForgingTableInfo(SPacketForgingTableInfo.EnhanceInfo.getInstance(0,"",0,0,0,0)));
+                this.player.sendPacket(new SPacketForgingTableInfo(SPacketForgingTableInfo.EnhanceInfo.getInstance(0,null,0,0,0)));
             }
         }
     }

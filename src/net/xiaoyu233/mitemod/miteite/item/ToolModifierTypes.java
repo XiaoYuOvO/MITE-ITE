@@ -1,12 +1,8 @@
 package net.xiaoyu233.mitemod.miteite.item;
 
-import com.google.common.collect.Lists;
 import net.minecraft.*;
 import net.xiaoyu233.mitemod.miteite.util.EnumChatFormats;
 
-import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Random;
 import java.util.function.Predicate;
 
 
@@ -19,7 +15,6 @@ import java.util.function.Predicate;
 //  海纳百川 - 你的生命值越高，造成的伤害也就越高。
 //  不动如山 - 格挡时可以减少更多的伤害
 //  可燃 - 火焰附加
-//  斩首
 //  剧毒 - 给予目标中毒效果
 // }
 // Tool Modifiers{
@@ -28,19 +23,20 @@ import java.util.function.Predicate;
 //  自然祝福 - 每挖掘一个方块都有概率恢复饱食度.有时在挖掘一定数量的方块后,有概率对玩家进行治疗。
 //  圣盾 - 当这个工具在你手中时,你将被赋予抗火效果.此外,损害减少,但耐久也会随之减低。
 //  不动如山 - 格挡时可以减少更多的伤害
-//  超自然 - 工具的挖掘等级比目标方块越大,挖掘速度越快 √DONE!
 //  自动冶炼 - 自动烧制挖掘等级比此属性级数小的目标方块
 // }
 
-public enum  ToolModifierTypes implements ItemModifierTypes{
+public enum ToolModifierTypes implements ItemModifierTypes{
     //Tool Modifiers
-    EFFICIENCY_MODIFIER(0.25F,"急速",EnumChatFormat.DARK_RED,10, (stack -> !ToolModifierTypes.isWeapon(stack)),10),
-    AQUADYNAMIC_MODIFIER(1.25F,"喜水",EnumChatFormats.LIGHT_YELLOW_GREEN,5, (stack -> !ToolModifierTypes.isWeapon(stack)),5),
-    DURABILITY_MODIFIER(0.1F,"耐久",EnumChatFormat.DARK_PURPLE,20,(stack -> true),10),
-    DAMAGE_MODIFIER(1.0F,"锋利", EnumChatFormat.WHITE,10, (ToolModifierTypes::isWeapon),5),
-    SLOWDOWN_MODIFIER(1.0F,"织网",EnumChatFormats.LIGHT_BLUE,5, ToolModifierTypes::isWeapon,5),
-    UNNATURAL_MODIFIER(0.1f,"超自然",EnumChatFormat.LIGHT_GRAY,2, itemStack -> !ToolModifierTypes.isWeapon(itemStack),5),
-    BEHEADING_MODIFIER(0.02f,"斩首",EnumChatFormats.DEAR_GREEN,1, ToolModifierTypes::isWeapon, 5);
+    EFFICIENCY_MODIFIER(0.25F,"急速",EnumChatFormat.DARK_RED,20, (stack -> !ToolModifierTypes.isWeapon(stack)),10),
+    AQUADYNAMIC_MODIFIER(1.25F,"喜水",EnumChatFormats.LIGHT_YELLOW_GREEN,10, (stack -> !ToolModifierTypes.isWeapon(stack)),5),
+    DURABILITY_MODIFIER(0.1F,"耐久",EnumChatFormat.DARK_PURPLE,40,(stack -> true),5),
+    DAMAGE_MODIFIER(1.0F,"锋利", EnumChatFormat.WHITE,20, (ToolModifierTypes::isWeapon),10),
+    SLOWDOWN_MODIFIER(1.0F,"织网",EnumChatFormats.LIGHT_BLUE,10, ToolModifierTypes::isWeapon,5),
+    UNNATURAL_MODIFIER(0.1f,"超自然",EnumChatFormat.LIGHT_GRAY,6, itemStack -> !ToolModifierTypes.isWeapon(itemStack),5),
+    DEMON_POWER(0.25f,"恶魔之力",EnumChatFormat.RED,4, ToolModifierTypes::isWeapon, 1),
+    GEOLOGY(0.5f,"地质学",EnumChatFormat.valueOf("GOLD"),1,itemStack -> itemStack.getItem() instanceof ItemPickaxe,1);
+//    BEHEADING_MODIFIER(0.02f,"斩首",EnumChatFormats.DEAR_GREEN,1, ToolModifierTypes::isWeapon, 5);
     public final String nbtName;
     public final float levelAddition;
     public final String displayName;
@@ -56,42 +52,6 @@ public enum  ToolModifierTypes implements ItemModifierTypes{
         this.weight = weight;
         this.canApplyTo = canApplyTo;
         this.maxLevel = maxLevel;
-    }
-
-    private static ArrayList<ToolModifierTypes> getAllCanBeApplied(ItemStack stack) {
-        ArrayList<ToolModifierTypes> toolModifierTypes = Lists.newArrayList(values());
-        toolModifierTypes.removeIf((modifierType) -> {
-            return !modifierType.canApplyTo.test(stack);
-        });
-        if (stack.stackTagCompound != null) {
-            toolModifierTypes.removeIf((toolModifierTypes1) -> {
-                return toolModifierTypes1.getModifierLevel(stack.stackTagCompound) >= toolModifierTypes1.maxLevel;
-            });
-        }
-
-        return toolModifierTypes;
-    }
-
-    @Nullable
-    public static ToolModifierTypes getModifierWithWeight(Random rand,ItemStack stack){
-        ArrayList<ToolModifierTypes> p1801660 = ToolModifierTypes.getAllCanBeApplied(stack);
-        int totalWeight = 0;
-        for (ToolModifierTypes modifierTypes : p1801660) {
-            totalWeight += modifierTypes.weight;
-        }
-        if (totalWeight > 0){
-            int currentWeight = rand.nextInt(totalWeight);
-            int x = 0;
-            for(int j = p1801660.size(); x < j; ++x) {
-                ToolModifierTypes t = p1801660.get(x);
-                currentWeight -= t.weight;
-                if (currentWeight < 0) {
-                    return t;
-                }
-            }
-        }
-
-        return null;
     }
 
     public static boolean isWeapon(ItemStack stack) {
@@ -118,7 +78,22 @@ public enum  ToolModifierTypes implements ItemModifierTypes{
     }
 
     @Override
+    public float getWeight() {
+        return weight;
+    }
+
+    @Override
     public String getNbtName() {
         return this.nbtName;
+    }
+
+    @Override
+    public boolean canApplyTo(ItemStack itemStack) {
+        return this.canApplyTo.test(itemStack);
+    }
+
+    @Override
+    public int getMaxLevel() {
+        return maxLevel;
     }
 }

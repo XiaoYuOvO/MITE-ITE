@@ -3,10 +3,7 @@ package net.xiaoyu233.mitemod.miteite.trans.entity;
 import net.minecraft.Entity;
 import net.minecraft.EntityTypes;
 import net.minecraft.World;
-import net.xiaoyu233.mitemod.miteite.entity.EntityAncientDragon;
-import net.xiaoyu233.mitemod.miteite.entity.EntityRideMarker;
-import net.xiaoyu233.mitemod.miteite.entity.EntityZombieLord;
-import net.xiaoyu233.mitemod.miteite.entity.EntityZombiePigmanLord;
+import net.xiaoyu233.mitemod.miteite.entity.*;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -42,5 +39,7 @@ public class EntityTypesTrans {
       addMapping(EntityRideMarker.class, "EntityMarker", 202);
       addMapping(EntityZombieLord.class, "EntityZombieLord", 203);
       addMapping(EntityZombiePigmanLord.class, "EntityZombiePigmanLord", 204);
+      addMapping(EntityAnnihilationSkeleton.class, "EntityAnnihilationSkeleton", 205);
+      addMapping(EntityWanderingWitch.class, "EntityWanderingWitch", 206);
    }
 }

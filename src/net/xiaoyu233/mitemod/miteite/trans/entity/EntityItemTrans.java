@@ -81,6 +81,10 @@ public abstract class EntityItemTrans extends Entity {
       this.canBePickUpByPlayer = canBePickUpByPlayer;
    }
 
+   public boolean canBePickUpByPlayer() {
+      return canBePickUpByPlayer;
+   }
+
    @Shadow
    public void tryRemoveFromWorldUniques() {
    }

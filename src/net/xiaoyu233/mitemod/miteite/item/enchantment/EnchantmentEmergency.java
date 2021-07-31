@@ -13,8 +13,13 @@ public class EnchantmentEmergency extends Enchantment {
     }
 
     @Override
+    public boolean enchantIndividually() {
+        return true;
+    }
+
+    @Override
     public float enchantIndividualChance(int enchantmentLevel) {
-        return 0.01f + 0.09f * (enchantmentLevel / 158f);
+        return 0.1f + 0.2f * (enchantmentLevel / 158f);
     }
 
     @Override

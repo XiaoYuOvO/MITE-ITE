@@ -10,6 +10,7 @@ import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
@@ -25,6 +26,24 @@ public abstract class EntityMonsterTrans extends EntityInsentient implements IMo
       super(par1World);
    }
 
+   @Redirect(method = {"attackEntityAsMob(Lnet/minecraft/Entity;)Lnet/minecraft/EntityDamageResult;"},
+            at = @At(value = "INVOKE",target = "Lnet/minecraft/AttributeInstance;getAttributeValue()D"))
+   private double redirectEntityDamageGet(AttributeInstance caller){
+      if (this.getHeldItem() instanceof ItemTool){
+         return caller.getAttributeValue() * this.getWeaponDamageBoost();
+      }
+      return caller.getAttributeValue();
+   }
+
+   @Redirect(method = {"attackEntityAsMob(Lnet/minecraft/EntityInsentient;Lnet/minecraft/Entity;)Lnet/minecraft/EntityDamageResult;"},
+           at = @At(value = "INVOKE",target = "Lnet/minecraft/AttributeInstance;getAttributeValue()D"))
+   private static double redirectEntityDamageGetStatic(AttributeInstance caller,EntityInsentient attacker, Entity target){
+      if (attacker != null && attacker.getHeldItem() instanceof ItemTool){
+         return caller.getAttributeValue() * attacker.getWeaponDamageBoost();
+      }
+      return caller.getAttributeValue();
+   }
+
    @Inject(method = "attackEntityFrom",at = @At("HEAD"))
    public void attackEntityFrom(Damage damage, CallbackInfoReturnable<EntityDamageResult> c) {
       if ((Configs.Entities.MOB_DEFENSE.get())
@@ -35,6 +54,27 @@ public abstract class EntityMonsterTrans extends EntityInsentient implements IMo
             this.tryDisarmTarget(damage.getResponsibleEntityP());
          }
          this.getWorld().playSoundAtEntity(this, "mob.irongolem.hit", 1.0F, 1.0F);
+      }
+   }
+
+   @Override
+   public void setTarget(EntityLiving target) {
+      if (target == null || target.canBeTargetTo(this)) {
+         super.setTarget(target);
+      }
+   }
+
+   @Override
+   public void setAttackTarget(EntityLiving par1EntityLivingBase) {
+      if (par1EntityLivingBase == null || par1EntityLivingBase.canBeTargetTo(this)) {
+         super.setAttackTarget(par1EntityLivingBase);
+      }
+   }
+
+   @Override
+   public void setRevengeTarget(EntityLiving par1EntityLivingBase) {
+      if (par1EntityLivingBase == null || par1EntityLivingBase.canBeTargetTo(this)) {
+         super.setRevengeTarget(par1EntityLivingBase);
       }
    }
 
@@ -179,8 +219,14 @@ public abstract class EntityMonsterTrans extends EntityInsentient implements IMo
    }
 
    protected void enchantEquipment(ItemStack item_stack) {
-      if ((double)this.getRNG().nextFloat() <= 0.1D + (double)this.getWorld().getDayOfWorld() / 64.0D / 10.0D) {
-         EnchantmentManager.addRandomEnchantment(this.getRNG(), item_stack, (int)(5.0F + (float)((this.getRNG().nextInt(15 + this.getWorld().getDayOfWorld() / 24) + 3) / 10) * (float)this.getRNG().nextInt(18)));
+      int dayOfWorld = this.getWorld().getDayOfWorld();
+      if ((double) this.getRNG().nextFloat() <= 0.1f + (double) dayOfWorld / 64.0f / 10.0f) {
+         MonsterUtil.addRandomEnchantment(this.getRNG(),
+                 item_stack,
+                 (int) (5.0F + (
+                         this.worldObj.getDayOfWorld() * 0.15f) +  (5 - this.rand.nextInt(10)) * this.rand.nextFloat()),
+                 Math.min(2 + dayOfWorld/24,15),
+                 Math.min(1 + dayOfWorld/72,4));
       }
 
    }

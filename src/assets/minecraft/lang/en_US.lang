@@ -15,6 +15,12 @@ item.vibranium_dagger.name=Vibranium Dagger
 item.vibranium_war_hammer.name=Vibranium War Hammer
 item.vibranium_battle_axe.name=Vibranium Battle Axe
 item.vibranium_bow.name=Vibranium Bow
+
+item.enhance_stone/iron.name=Iron Enhance Stone
+item.enhance_stone/mithril.name=Mithril Enhance Stone
+item.enhance_stone/adamantium.name=Adamantium Enhance Stone
+item.enhance_stone/universal.name=Universal Enhance Stone
+
 tile.anvil_vibranium.name=Vibranium Anvil
 tile.anvil_vibranium.intact.name=Vibranium Anvil
 tile.anvil_vibranium.slightlyDamaged.name=Slightly Damaged Vibranium Anvil
@@ -23,6 +29,13 @@ tile.block_vibranium.name=Vibranium Block
 tile.toolbench.vibranium.name=Vibranium Workbench
 tile.furnace_vibranium_idle.name=Vibranium Furnace
 tile.furnace_vibranium_burning.name=Vibranium Furnace
+tile.nether_adamantium_ore.name=Nether Adamantium Ore
+
+tile.forging_table.iron.name=Iron Forging Table
+tile.forging_table.mithril.name=Mithril Forging Table
+tile.forging_table.adamantium.name=Adamantium Forging Table
+tile.forging_table.vibrantium.name=Vibrantium Forging Table
+
 achievement.vibraniumIngot=Then am I going to be invincible?
 achievement.vibraniumIngot.desc=Make a vibranium in crafting table
 achievement.vibraniumAnvil=2000 years later....
@@ -33,20 +46,22 @@ achievement.vibraniumFurnace="Atomic Reconstruction Machine"
 achievement.vibraniumFurnace.desc=Make a vibranium furnace(it can turn coal into diamond!)
 commands.version.playing=You are playing
 commands.day.msg=It is day %s of this world
+
 enchantment.defence=Defence
 enchantment.crit=Crit
 enchantment.extend=Extend
 enchantment.emergency=Emergency
+enchantment.beheading=Beheading
+enchantment.conqueror=Conqueror
+
 entity.EntityZombieLord.name=Zombie Lord
+entity.EntityAnnihilationSkeleton.name=Annihilation Skeleton
+entity.EntityWanderingWitch.name=Wandering Witch
+
 gui.forgingTable.start=Start Forging
 gui.forgingTable.item_req=Forging require materials
-item.enhance_stone.name=Enhance Stone
 gui.forgingTable.failed=Enhancing Failed!
 gui.forgingTable.succeed=Enhancing Succeed!
-forging.failFeedback.break=break
-forging.failFeedback.durability.amount=drop durability of amount %s
-forging.failFeedback.durability.percentage=drop durability of percentage %s
-forging.failFeedback.downgrade=downgrade item for %s level(s)
 gui.forgingTable.time=Time of forging
 gui.forgingTable.chanceOfFailure=Chance of failure
 gui.forgingTable.ifFail=If fail
@@ -54,7 +69,19 @@ gui.forgingTable.axeCost=Axe durability cost
 gui.forgingTable.hammerCost=Hammer durability cost
 gui.forgingTable.needAxe=Need an axe
 gui.forgingTable.needHammer=Need a war hammer
-tile.block_forging_table.name=Forging Table
+gui.forgingTable.max_level_or_not_found=The tool has reached its max forging level or the recipe doesn't exist
+
+gui.forgingTable.levelToLow.iron=The level of forging table is too low,requires §n§7 Iron§r
+gui.forgingTable.levelToLow.ancient_metal=The level of forging table is too low,requires §n§g Ancient metal§r
+gui.forgingTable.levelToLow.mithril=The level of forging table is too low,requires §n§h Mithril§r
+gui.forgingTable.levelToLow.adamantium=The level of forging table is too low,requires §n§d Adamantium§r
+gui.forgingTable.levelToLow.vibrantium=The level of forging table is too low,requires §n§9 Vibrantium§r
+
+forging.failFeedback.break=break
+forging.failFeedback.durability.amount=drop durability of amount %s
+forging.failFeedback.durability.percentage=drop durability of percentage %s
+forging.failFeedback.downgrade=downgrade item for %s level(s)
+
 gameplay.portal_door.interact=§nPlayer %s is entering portal door
 command.sleep_check.msg=The following players are not sleeping:
 command.sleep_check.none=All players are sleeping now

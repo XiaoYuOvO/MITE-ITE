@@ -4,8 +4,10 @@ import net.minecraft.*;
 import net.xiaoyu233.mitemod.miteite.inventory.container.ContainerForgingTable;
 import net.xiaoyu233.mitemod.miteite.inventory.container.ForgingTableSlots;
 import net.xiaoyu233.mitemod.miteite.network.CPacketStartForging;
+import net.xiaoyu233.mitemod.miteite.network.SPacketForgingTableInfo;
 import org.lwjgl.opengl.GL11;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class GuiForgingTable extends awy implements ICrafting {
@@ -26,8 +28,8 @@ public class GuiForgingTable extends awy implements ICrafting {
     private String infoString;
     private int currentInfoTime;
     private int currentInfoColor;
-    private int maxTime,chanceOfFailure,failData;
-    private String failName;
+    private int maxTime,chanceOfFailure;
+    private final List<SPacketForgingTableInfo.EnhanceInfo.FaultFeedbackData> faultFeedbackData = new ArrayList<>();
     private int hammerCost,axeCost;
 
     public GuiForgingTable(EntityPlayer player, int x, int y, int z,ForgingTableSlots slots) {
@@ -75,7 +77,11 @@ public class GuiForgingTable extends awy implements ICrafting {
             this.b(this.f.l,this.hammerCostInfo + ":" + this.hammerCost,var3,var5+20,0xffffff);
             this.b(this.f.l,this.axeCostInfo + ":" + this.axeCost,var3,var5+30,0xffffff);
             this.b(this.f.l,this.ifFail,var3,var5+40,0xFFFF55);
-            this.b(this.f.l,"   "+LocaleI18n.translateToLocalFormatted(this.failName,this.failData),var3,var5+50,0xFF5555);
+            List<SPacketForgingTableInfo.EnhanceInfo.FaultFeedbackData> feedbackData = this.faultFeedbackData;
+            for (int i2 = 0; i2 < feedbackData.size(); i2++) {
+                SPacketForgingTableInfo.EnhanceInfo.FaultFeedbackData faultFeedbackData = feedbackData.get(i2);
+                this.b(this.f.l, "   " + LocaleI18n.translateToLocalFormatted(faultFeedbackData.getName(), faultFeedbackData.getData()), var3, var5 + 50 + 10 * i2, 0xFF5555);
+            }
         }
     }
 
@@ -142,12 +148,12 @@ public class GuiForgingTable extends awy implements ICrafting {
         this.currentInfoTime = 0;
     }
 
-    public void setEnhanceInfo(int chanceOfFailure,String failFeedback,int failFeedbackData,int time,int hammerCost,int axeCost){
-        this.failData = failFeedbackData;
-        this.failName = failFeedback;
+    public void setEnhanceInfo(int chanceOfFailure, List<SPacketForgingTableInfo.EnhanceInfo.FaultFeedbackData> faultFeedbackData, int time, int hammerCost, int axeCost){
         this.chanceOfFailure = chanceOfFailure;
         this.maxTime = time;
         this.hammerCost = hammerCost;
         this.axeCost = axeCost;
+        this.faultFeedbackData.clear();
+        this.faultFeedbackData.addAll(faultFeedbackData);
     }
 }

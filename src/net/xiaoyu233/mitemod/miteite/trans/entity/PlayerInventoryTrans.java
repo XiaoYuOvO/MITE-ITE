@@ -39,7 +39,7 @@ public class PlayerInventoryTrans {
       if (damage_source != null && damage_source.getResponsibleEntity() != null
               && !item.isMaxToolLevel(item_stack)
       ) {
-         item.addExpForTool(item_stack, this.player, portion);
+         item.addExpForTool(item_stack, this.player, (int) MathHelper.clamp_float(result.getAmountOfHealthLost(),1f,4f));
       }
    }
 
@@ -51,50 +51,6 @@ public class PlayerInventoryTrans {
    private EntityDamageResult removeApplyArmorDamageResult(EntityDamageResult caller,ItemDamageResult itemDamageResult){
       return null;
    }
-//   @Overwrite
-//   public void tryDamageArmor(DamageSource damage_source, float amount, EntityDamageResult result) {
-//      if (this.d.onClient()) {
-//         Minecraft.setErrorMessage("InventoryPlayer.damageArmor: called on client?");
-//      }
-//
-//      if (this.d.isWearingDamageableItems(true) && !this.d.inCreativeMode() && (damage_source == null || !damage_source.isUnblockable())) {
-//         if (result == null) {
-//            result = new EntityDamageResult(this.d);
-//         }
-//
-//         int amount_remaining = (int)amount;
-//         if (amount_remaining < 1) {
-//            amount_remaining = 1;
-//         }
-//
-//         while(true) {
-//            while(amount_remaining > 0 && this.d.isWearingDamageableItems(true)) {
-//               int armor_index = this.d.aD().nextInt(this.armorInventory.length);
-//               ItemStack item_stack = this.armorInventory[armor_index];
-//               Item item;
-//               if (item_stack != null && (item = item_stack.getItem()) instanceof ItemArmor) {
-//                  int portion;
-//                  if (this.getNumberOfArmorPiecesEquipped() == 1) {
-//                     portion = amount_remaining;
-//                  } else {
-//                     portion = this.d.aD().nextInt(amount_remaining) + 1;
-//                  }
-//
-//
-//                  if (item_stack.stackSize == 0) {
-//                     this.armorInventory[armor_index] = null;
-//                  }
-//
-//                  amount_remaining -= portion;
-//               } else {
-//                  amount_remaining -= this.d.aD().nextInt(amount_remaining) + 1;
-//               }
-//            }
-//
-//            return;
-//         }
-//      }
-//   }
 
    @Redirect(
            method = "tryDamageArmor",

@@ -4,6 +4,7 @@ import net.minecraft.*;
 import net.xiaoyu233.fml.util.ReflectHelper;
 import net.xiaoyu233.mitemod.miteite.gui.GuiForgingTable;
 import net.xiaoyu233.mitemod.miteite.inventory.container.ForgingTableSlots;
+import net.xiaoyu233.mitemod.miteite.item.Materials;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
@@ -39,9 +40,50 @@ public abstract class ClientPlayerTrans extends beu {
       this.d.a(new GuiForgingTable(ReflectHelper.dyCast(this), x, y, z, slots));
    }
 
-   @Shadow
+   @Overwrite
    private float getBenchAndToolsModifier(Container container) {
-      return 0.0F;
+      if (!(container instanceof ContainerWorkbench)) {
+         return 0.0F;
+      } else {
+         ContainerWorkbench container_workbench = (ContainerWorkbench) container;
+         SlotResult slot_crafting = (SlotResult) container_workbench.getSlot(0);
+         ItemStack item_stack = slot_crafting.getStack();
+         Item item = item_stack == null ? null : item_stack.getItem();
+         aah recipe = container_workbench.getRecipe();
+         Material material_to_check_tool_bench_hardness_against;
+         if (recipe == null) {
+            material_to_check_tool_bench_hardness_against = item.getHardestMetalMaterial();
+         } else {
+            material_to_check_tool_bench_hardness_against = recipe.getMaterialToCheckToolBenchHardnessAgainst();
+         }
+         if (material_to_check_tool_bench_hardness_against == null){
+            return 0f;
+         }
+
+         Material benchMaterial = BlockWorkbench.getToolMaterial(container_workbench.getBlockMetadata());
+         if (benchMaterial.getMinHarvestLevel() < material_to_check_tool_bench_hardness_against.getMinHarvestLevel()) {
+            return 0F;
+         }
+         if (benchMaterial == Material.flint || benchMaterial == Material.obsidian) {
+            return 0F;
+         } else if (benchMaterial == Material.copper || benchMaterial == Material.silver || benchMaterial == Material.gold) {
+            return 0.1F;
+         } else if (benchMaterial == Material.iron) {
+            return 0.2F;
+         } else if (benchMaterial == Material.ancient_metal) {
+            return 0.3F;
+         } else if (benchMaterial == Material.mithril) {
+            return 0.3F;
+         } else if (benchMaterial == Material.adamantium) {
+            return 0.4F;
+         } else if (benchMaterial == Materials.vibranium) {
+            return 0.55F;
+         } else {
+            Minecraft.setErrorMessage("getBenchAndToolsModifier: unrecognized tool material " + benchMaterial);
+            return 0.0F;
+         }
+
+      }
    }
 
    @Overwrite
@@ -52,6 +94,6 @@ public abstract class ClientPlayerTrans extends beu {
       }
 
       float bench_and_tools_modifier = this.getBenchAndToolsModifier(this.openContainer);
-      return Math.round(Math.max((float)period / (1.0F + this.getLevelModifier(EnumLevelBonus.CRAFTING) + bench_and_tools_modifier), 25.0F) / (this.getCraftingBoostFactor() + 1.0F));
+      return Math.round(Math.max((float)period * (1.0F - bench_and_tools_modifier) * (1.0f - Math.min(this.getExperienceLevel(),100) * 0.006f), 1) / (this.getCraftingBoostFactor() + 1.0F));
    }
 }

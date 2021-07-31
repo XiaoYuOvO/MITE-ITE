@@ -14,6 +14,8 @@ import java.util.List;
 
 @Mixin(WorldServer.class)
 public abstract class WorldServerTrans extends World {
+   @Shadow protected abstract EntityInsentient tryCreateNewLivingEntityCloseTo(int x, int y, int z, int min_distance, int max_distance, Class entity_living_class, EnumCreatureType enum_creature_type);
+
    @Shadow
    public boolean levelSaving;
    @Shadow
@@ -68,6 +70,10 @@ public abstract class WorldServerTrans extends World {
       return null;
    }
 
+
+   public EntityInsentient tryCreateNewLivingEntityCloseToP(int x, int y, int z, int min_distance, int max_distance, Class entity_living_class, EnumCreatureType enum_creature_type) {
+      return this.tryCreateNewLivingEntityCloseTo(x, y, z, min_distance, max_distance, entity_living_class, enum_creature_type);
+   }
    @Overwrite
    public Class getSuitableCreature(EnumCreatureType creature_type, int x, int y, int z) {
       boolean check_depth = this.isOverworld();

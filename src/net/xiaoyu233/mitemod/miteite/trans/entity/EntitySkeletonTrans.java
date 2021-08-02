@@ -74,9 +74,21 @@ public class EntitySkeletonTrans extends EntityMonster implements IRangedEntity 
       }
    }
 
-   @Override
-   public float getWeaponDamageBoost() {
-      return 2.0f;
+   @Overwrite
+   protected void applyEntityAttributes() {
+      super.applyEntityAttributes();
+      int day = this.getWorld() != null ? this.getWorld().getDayOfWorld() : 0;
+      this.setEntityAttribute(GenericAttributes.followRange, 64.0D);
+      if (this.getSkeletonType() == WITHER_SKELETON_ID) {
+         this.setEntityAttribute(GenericAttributes.maxHealth, 45D + (double)day / 16.0D);
+         this.setEntityAttribute(GenericAttributes.movementSpeed, 0.25D);
+         this.setEntityAttribute(GenericAttributes.attackDamage, 15.0D + (double)day / 24.0D);
+      } else {
+         this.setEntityAttribute(GenericAttributes.maxHealth, 15.0D + (double)day / 14.0D);
+         this.setEntityAttribute(GenericAttributes.movementSpeed, 0.30000001192092896D);
+         this.setEntityAttribute(GenericAttributes.attackDamage, 10 + day / 24d);
+      }
+
    }
 
    @Overwrite
@@ -186,21 +198,9 @@ public class EntitySkeletonTrans extends EntityMonster implements IRangedEntity 
       this.setCombatTask();
    }
 
-   @Overwrite
-   protected void applyEntityAttributes() {
-      super.applyEntityAttributes();
-      int day = this.getWorld() != null ? this.getWorld().getDayOfWorld() : 0;
-      this.setEntityAttribute(GenericAttributes.followRange, 64.0D);
-      if (this.getSkeletonType() == WITHER_SKELETON_ID) {
-         this.setEntityAttribute(GenericAttributes.maxHealth, 45D + (double)day / 16.0D);
-         this.setEntityAttribute(GenericAttributes.movementSpeed, 0.25D);
-         this.setEntityAttribute(GenericAttributes.attackDamage, 15.0D + (double)day / 24.0D);
-      } else {
-         this.setEntityAttribute(GenericAttributes.maxHealth, 15.0D + (double)day / 14.0D);
-         this.setEntityAttribute(GenericAttributes.movementSpeed, 0.30000001192092896D);
-         this.setEntityAttribute(GenericAttributes.attackDamage, this.getEntityAttributeValue(GenericAttributes.attackDamage) * 3.6D);
-      }
-
+   @Override
+   public float getWeaponDamageBoost() {
+      return 1.25f;
    }
 
    @Inject(method = "writeEntityToNBT",at = @At("RETURN"))
@@ -323,7 +323,7 @@ public class EntitySkeletonTrans extends EntityMonster implements IRangedEntity 
       par1EntityLivingData = super.onSpawnWithEgg(par1EntityLivingData);
       int skeleton_type = this.forced_skeleton_type >= 0 ? this.forced_skeleton_type : this.getRandomSkeletonType(super.worldObj);
       if ((Configs.Entities.COMPRESSED_SKELETON.get())) {
-         this.dataWatcher.updateObject(this.DATA_OBJ_ID_COMPRESSED, (byte)(this.rand.nextInt(20) == 0 ? 1 : 0));
+         this.dataWatcher.updateObject(this.DATA_OBJ_ID_COMPRESSED, (byte)(this.rand.nextInt(100) < 3 ? 1 : 0));
       }
 
       if (skeleton_type == WITHER_SKELETON_ID) {

@@ -2,21 +2,16 @@ package net.xiaoyu233.mitemod.miteite.block;
 
 import net.minecraft.*;
 import net.xiaoyu233.mitemod.miteite.item.recipe.ForgingTableLevel;
+import net.xiaoyu233.mitemod.miteite.render.block.SideIconHolder;
 import net.xiaoyu233.mitemod.miteite.tileentity.TileEntityForgingTable;
 import org.spongepowered.asm.mixin.SoftOverride;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class BlockForgingTable extends Block implements IContainer,IBlockWithSubtypes {
     private final BlockSubtypes subtypes = new BlockSubtypes(Arrays.stream(ForgingTableLevel.values()).map(value -> value.name().toLowerCase(Locale.ROOT)).collect(Collectors.toList()).toArray(new String[0]));
-    private IIcon TEXTURE_TOP;
-    private IIcon TEXTURE_BOTTOM;
-    private IIcon TEXTURE_SIDE;
-    private IIcon TEXTURE_FRONT;
-    private IIcon TEXTURE_BACK;
+    private final Map<Integer, SideIconHolder> textureMap = new HashMap<>();
 
     protected BlockForgingTable(int par1) {
         super(par1, Material.anvil, new BlockConstants());
@@ -48,31 +43,32 @@ public class BlockForgingTable extends Block implements IContainer,IBlockWithSub
 
     @Override
     public IIcon a(int side, int metadata) {
+        SideIconHolder icon = this.textureMap.get(metadata);
         switch (side){
             //top
             case 1:
-                return TEXTURE_TOP;
+                return icon.getTexture_top();
             //bottom
             case 0:
-                return TEXTURE_BOTTOM;
+                return icon.getTexture_bottom();
             case 2:
-                return TEXTURE_FRONT;
             case 3:
-                return TEXTURE_BACK;
             case 5:
             case 4:
-                return TEXTURE_SIDE;
+                return icon.getTexture_side();
         }
         return super.a(side, metadata);
     }
 
     @Override
     public void a(mt mt) {
-        this.TEXTURE_TOP = mt.a("forgingTable/top");
-        this.TEXTURE_BOTTOM = mt.a("forgingTable/bottom");
-        this.TEXTURE_FRONT = mt.a("forgingTable/front");
-        this.TEXTURE_SIDE = mt.a("forgingTable/side");
-        this.TEXTURE_BACK = mt.a("forgingTable/back");
+        for (ForgingTableLevel value : ForgingTableLevel.values()) {
+            SideIconHolder sideIconHolder = new SideIconHolder();
+            sideIconHolder.setTexture_top(mt.a("forging_table/" + value.name().toLowerCase() + "/top"));
+            sideIconHolder.setTexture_bottom(mt.a("forging_table/" + value.name().toLowerCase() + "/bottom"));
+            sideIconHolder.setTexture_side(mt.a("forging_table/" + value.name().toLowerCase() + "/side"));
+            this.textureMap.put(value.ordinal(),sideIconHolder);
+        }
     }
 
     @Override
@@ -97,7 +93,7 @@ public class BlockForgingTable extends Block implements IContainer,IBlockWithSub
     }
 
     public void addItemBlockMaterials(ItemBlock item_block) {
-        item_block.addMaterial(Material.adamantium);
+        item_block.addMaterial(Material.iron);
     }
 
     @Override

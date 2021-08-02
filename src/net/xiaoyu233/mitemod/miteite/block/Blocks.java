@@ -118,16 +118,14 @@ public class Blocks extends Block{
         );
         register.registerShapedRecipe(new ItemStack(Blocks.blockForgingTable,1,0),true,
                 "WIT",
-                "aAH",
+                " A ",
                 "OOO",
                 'W',Block.planks,
                 'A',Block.anvil,
-                'H',Items.warHammerIron,
                 'I', Items.ingotIron,
-                'a',Item.axeIron,
                 'T',new ItemStack(Block.workbench,1,7),
                 'O',Blocks.obsidian);
-        registerForgingTableUpgradeRecipes(register,ForgingTableLevel.IRON,Item.ingotAncientMetal);
+        registerForgingTableUpgradeRecipes(register,ForgingTableLevel.IRON,Item.ingotMithril);
         registerForgingTableUpgradeRecipes(register,ForgingTableLevel.MITHRIL,Item.ingotAdamantium);
         registerForgingTableUpgradeRecipes(register,ForgingTableLevel.ADAMANTIUM, VIBRANIUM_INGOT);
         RecipesFurnace.smelting().addSmelting(Blocks.netherAdamantiumOre.blockID, new ItemStack(Item.ingotAdamantium));

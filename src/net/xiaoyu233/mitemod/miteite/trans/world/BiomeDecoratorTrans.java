@@ -128,7 +128,7 @@ public class BiomeDecoratorTrans {
       this.goldGen = new WorldGenMinable(Block.oreGold.blockID, 4);
       this.ironGen = new WorldGenMinable(Block.oreIron.blockID, 6);
       this.mithrilGen = new WorldGenMinable(Block.oreMithril.blockID, 3);
-      this.adamantiteGen = new WorldGenMinable(Block.oreAdamantium.blockID, 3);
+      this.adamantiteGen = new WorldGenMinable(Block.oreAdamantium.blockID, 1);
       this.redstoneGen = new WorldGenMinable(Block.oreRedstone.blockID, 5);
       this.diamondGen = new WorldGenMinable(Block.oreDiamond.blockID, 3);
       this.lapisGen = new WorldGenMinable(Block.oreLapis.blockID, 2);

@@ -55,7 +55,7 @@ public class WorldClientTrans extends World {
          }
       } else {
          super.tick();
-         if ((Configs.GameMechanics.FIRST_DAY_LONGER_DAY_TIME.get()) && this.getDayOfWorld() == 1 && this.getTimeOfDay() < 12000L) {
+         if ((Configs.GameMechanics.FIRST_DAY_LONGER_DAY_TIME.get()) && this.getDayOfOverworld() == 1 && this.getTimeOfDay() < 12000L) {
             if (this.pushTimeNextTick) {
                this.setTotalWorldTime(this.getTotalWorldTime() + 1L);
                this.pushTimeNextTick = false;

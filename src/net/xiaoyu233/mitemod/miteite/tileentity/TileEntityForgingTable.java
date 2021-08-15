@@ -160,13 +160,8 @@ public class TileEntityForgingTable extends TileEntity implements IInventory {
             this.slots.updateInfo(null);
         }
 
-        if (this.usedRecipe != null) {
-            if (this.slots.getForgingTime(this.usedRecipe) != this.maxTime) {
-                this.finishForging();
-                this.slots.onFinishForging(SPacketFinishForging.Status.CANCELED);
-            }
-
-            if (usedRecipe == null && this.slots.getOutput() == null) {
+        if ( this.usedRecipe != null) {
+            if (this.usedRecipe != usedRecipe || this.slots.getForgingTime(this.usedRecipe) != this.maxTime) {
                 this.finishForging();
                 this.slots.onFinishForging(SPacketFinishForging.Status.CANCELED);
             }
@@ -215,7 +210,7 @@ public class TileEntityForgingTable extends TileEntity implements IInventory {
             }
 
             if (this.forgingTime == this.currentFailCheckTime) {
-                if (this.getWorldObj().rand.nextInt(100) < this.usedRecipe.getChanceOfFailure()) {
+                if (this.getWorldObj().rand.nextInt(100) < this.slots.getChanceOfFailure(this.usedRecipe)) {
                     this.failForging();
                     this.finishForging();
                 }

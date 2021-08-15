@@ -13,7 +13,15 @@ import java.util.Set;
 import static net.xiaoyu233.mitemod.miteite.util.WorldUtil.isBloodMoonDay;
 
 @Mixin(World.class)
-public class WorldTrans {
+public abstract class WorldTrans {
+   @Shadow public static int getDayOfWorld(long unadjusted_tick){
+      return 0;
+   }
+
+   public int getDayOfOverworld(){
+      return getDayOfWorld(this.worldInfo.getWorldTotalTime(0));
+   }
+
    @Shadow
    public WorldData worldInfo;
    @Shadow
@@ -74,10 +82,11 @@ public class WorldTrans {
       return 0;
    }
 
-   @Shadow
-   private long getTotalWorldTime() {
-      return 0L;
-   }
+//   @Overwrite
+//   public long getTotalWorldTime() {
+//      //Redirect to overworld
+//      return this.worldInfo.getWorldTotalTime(0);
+//   }
 
    @Overwrite
    public final boolean isBloodMoon(boolean exclusivelyAtNight) {
@@ -99,6 +108,8 @@ public class WorldTrans {
    private boolean isDaytime() {
       return false;
    }
+
+   @Shadow public abstract long getTotalWorldTime();
 
    @Overwrite
    public final boolean isHarvestMoon(boolean exclusivelyAtNight) {

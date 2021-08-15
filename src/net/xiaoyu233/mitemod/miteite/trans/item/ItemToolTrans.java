@@ -79,7 +79,11 @@ public class ItemToolTrans extends Item implements IUpgradableItem {
             info.add("§5强化等级:§6" + StringUtil.intToRoman(forgingGrade));
             if (extended_info) {
                info.add("  §7装备经验增加:§a" + this.getEquipmentExpBounce(item_stack) * 100 + "%");
-               info.add("  §9攻击力增加:§6" + ItemStack.field_111284_a.format(this.getEnhancedDamage(item_stack)));
+               if (this.isWeapon(item_stack.getItem())){
+                  info.add("  §9攻击力增加:§6" + ItemStack.field_111284_a.format(this.getEnhancedDamage(item_stack)));
+               }else {
+                  info.add("  §9挖掘速度加:§6" + ItemStack.field_111284_a.format(item_stack.getEnhanceFactor() * 100) + "%");
+               }
             }
          }
 
@@ -110,7 +114,7 @@ public class ItemToolTrans extends Item implements IUpgradableItem {
       return false;
    }
 
-   private float getAttackDamageBounce(ItemStack stack) {
+   protected float getAttackDamageBounce(ItemStack stack) {
       return ToolModifierTypes.DAMAGE_MODIFIER.getModifierValue(stack.stackTagCompound);
    }
 
@@ -131,10 +135,7 @@ public class ItemToolTrans extends Item implements IUpgradableItem {
    }
 
    private float getEnhancedDamage(ItemStack itemStack) {
-      return
-              (float)
-                      (itemStack.getEnhanceFactor() *
-                              (double) this.getCombinedDamageVsEntity());
+      return this.isWeapon(itemStack.getItem()) ? (float) (itemStack.getEnhanceFactor() * (double) this.getCombinedDamageVsEntity()) : 0.0f;
    }
 
    public int getExpReqForLevel(int level, boolean isSword) {
@@ -206,8 +207,9 @@ public class ItemToolTrans extends Item implements IUpgradableItem {
             commonModifierValue += (float)deltaLevel * unnaturalModifierValue;
          }
       }
+      float enhanceModifierValue = (float) (1 + itemStack.getEnhanceFactor());
 
-      return !player.isInWater() && !player.isInRain() ? this.getBaseHarvestEfficiency(block) * (this.getMaterialHarvestEfficiency() + commonModifierValue) : this.getBaseHarvestEfficiency(block) * (this.getMaterialHarvestEfficiency() + commonModifierValue + ToolModifierTypes.AQUADYNAMIC_MODIFIER.getModifierValue(itemStack.getTagCompound()));
+      return !player.isInWater() && !player.isInRain() ? this.getBaseHarvestEfficiency(block) * (this.getMaterialHarvestEfficiency() + commonModifierValue) * enhanceModifierValue : this.getBaseHarvestEfficiency(block) * (this.getMaterialHarvestEfficiency() + commonModifierValue + ToolModifierTypes.AQUADYNAMIC_MODIFIER.getModifierValue(itemStack.getTagCompound()));
    }
 
    public float getStrVsBlock(Block block, int metadata, ItemStack itemStack, EntityPlayer player) {

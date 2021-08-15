@@ -11,7 +11,7 @@ public class EntityZombiePigmanLord extends EntityPigZombie {
 
     @Override
     public void addRandomEquipment() {
-        int day = this.getWorld().getDayOfWorld();
+        int day = this.getWorld().getDayOfOverworld();
         this.setCurrentItemOrArmor(0,new ItemStack(Items.VIBRANIUM_SWORD,1).randomizeForMob(this,day > 64));
         this.setCurrentItemOrArmor(1,new ItemStack(Items.VIBRANIUM_HELMET,1).randomizeForMob(this,day > 64));
         this.setCurrentItemOrArmor(2,new ItemStack(Items.VIBRANIUM_CHESTPLATE,1).randomizeForMob(this,day > 64));
@@ -24,7 +24,7 @@ public class EntityZombiePigmanLord extends EntityPigZombie {
     @Override
     protected void applyEntityAttributes() {
         super.applyEntityAttributes();
-        int day = this.getWorld().getDayOfWorld();
+        int day = this.getWorld().getDayOfOverworld();
         this.setEntityAttribute(GenericAttributes.attackDamage, 12.0D + (double)day / 48.0D);
         this.setEntityAttribute(GenericAttributes.maxHealth, 50.0D + (double)day / 14.0D);
         this.setEntityAttribute(GenericAttributes.movementSpeed, 0.3D);

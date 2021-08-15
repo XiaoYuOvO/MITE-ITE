@@ -4,12 +4,20 @@ import net.minecraft.*;
 import net.xiaoyu233.mitemod.miteite.util.Configs;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ItemGoldenApple.class)
 public class ItemGoldenAppleTrans extends ItemFood {
 
     public int getMaxItemUseDuration(ItemStack par1ItemStack) {
         return ItemGoldenApple.isEnchantedGoldenApple(par1ItemStack) ? Configs.Item.ENCHANTED_GOLDEN_APPLE_EAT_TIME.get(): Configs.Item.GOLDEN_APPLE_EAT_TIME.get();
+    }
+
+    @Inject(method = "<init>",at = @At("RETURN"))
+    private void injectCtor(CallbackInfo callback){
+        this.setSugarContent(1500);
     }
 
     @Overwrite

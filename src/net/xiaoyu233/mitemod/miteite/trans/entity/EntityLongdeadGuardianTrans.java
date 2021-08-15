@@ -37,8 +37,8 @@ public class EntityLongdeadGuardianTrans extends EntityLongdeadTrans {
 
    @SoftOverride
    protected void enchantEquipment(ItemStack item_stack) {
-      if ((double)this.getRNG().nextFloat() <= 0.2D + (double)this.getWorld().getDayOfWorld() / 64.0D / 10.0D) {
-         EnchantmentManager.addRandomEnchantment(this.getRNG(), item_stack, (int)(5.0F + (float)(this.getRNG().nextInt(15 + this.getWorld().getDayOfWorld() / 32) / 10) * (float)this.getRNG().nextInt(18)));
+      if ((double)this.getRNG().nextFloat() <= 0.2D + (double)this.getWorld().getDayOfOverworld() / 64.0D / 10.0D) {
+         EnchantmentManager.addRandomEnchantment(this.getRNG(), item_stack, (int)(5.0F + (float)(this.getRNG().nextInt(15 + this.getWorld().getDayOfOverworld() / 32) / 10) * (float)this.getRNG().nextInt(18)));
       }
 
    }

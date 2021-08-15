@@ -2,11 +2,14 @@ package net.xiaoyu233.mitemod.miteite.trans.entity;
 
 import net.minecraft.*;
 import net.xiaoyu233.mitemod.miteite.util.Configs;
+import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.Slice;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.List;
@@ -75,7 +78,7 @@ public class EntityEnderDragonTrans extends EntityInsentient implements IComplex
             if (var3 instanceof EntityPlayer && Configs.Entities.ENDER_DRAGON_ATTACK_SLOWNESS.get()){
                ((EntityPlayer) var3).addPotionEffect(new MobEffect(MobEffectList.moveSlowdown.id, 15 * 20,0));
             }
-            var3.attackEntityFrom(new Damage(DamageSource.causeMobDamage(this), 20.0F));
+            var3.attackEntityFrom(new Damage(DamageSource.causeMobDamage(this),this.getHealth() < 150.0F ? 28F : 20.0F));
          }
       }
 
@@ -95,6 +98,9 @@ public class EntityEnderDragonTrans extends EntityInsentient implements IComplex
       if (damage.isArrowDamage() && this.getHealth() < this.getMaxHealth() * Configs.Entities.ENDER_DRAGON_IMMUNE_TO_ARROW_HEALTH_PERCENT.get()){
          damage.setAmount(0);
       }
+      if (this.getHealth() < 150.0F) {
+         damage.scaleAmount(0.8f);
+      }
 
       float var4 = super.rotationYaw * 3.1415927F / 180.0F;
       float var5 = MathHelper.sin(var4);
@@ -104,6 +110,15 @@ public class EntityEnderDragonTrans extends EntityInsentient implements IComplex
       this.targetZ = super.posZ - (double)(var6 * 5.0F) + (double)((this.getRNG().nextFloat() - 0.5F) * 2.0F);
       this.target = null;
       return !(damage.getSource().getResponsibleEntity() instanceof EntityPlayer) && !damage.isExplosion() ? null : this.func_82195_e(damage);
+   }
+
+   @Redirect(method = "onLivingUpdate",
+           slice = @Slice(
+                   from = @At(value = "FIELD",target = "Lnet/minecraft/EntityLiving;hurtTime:I",opcode = Opcodes.GETFIELD),
+                   to = @At(value = "INVOKE",target = "Lnet/minecraft/EntityEnderDragon;attackEntitiesInList(Ljava/util/List;)V")),
+           at = @At(value = "INVOKE",target = "Lnet/minecraft/AxisAlignedBB;expand(DDD)Lnet/minecraft/AxisAlignedBB;"))
+   private AxisAlignedBB redirectExpandAttackRange(AxisAlignedBB caller,double par1, double par3, double par5){
+      return caller.expand(par1, par3, par5).expand(1.2d,1.2d,1.2d);
    }
 
    @Shadow
@@ -119,7 +134,7 @@ public class EntityEnderDragonTrans extends EntityInsentient implements IComplex
    @Overwrite
    private void setNewTarget() {
       this.forceNewTarget = false;
-      if (this.getRNG().nextInt(2) == 0 && !super.worldObj.playerEntities.isEmpty() && this.getHealth() > 150.0F) {
+      if (this.getRNG().nextInt(2) == 0 && !super.worldObj.playerEntities.isEmpty() || this.getHealth() < 150.0F) {
          this.target = (Entity)super.worldObj.playerEntities.get(this.getRNG().nextInt(super.worldObj.playerEntities.size()));
       } else {
          boolean var1;
@@ -152,10 +167,6 @@ public class EntityEnderDragonTrans extends EntityInsentient implements IComplex
          } else if (super.ticksExisted % 10 == 0 && this.getHealth() < this.getMaxHealth()) {
             this.setHealth(super.getHealth() + 2.0F);
          }
-      }
-
-      if (this.getHealth() < 150.0F && super.ticksExisted % 30 == 0 && this.getHealth() < this.getMaxHealth()) {
-         this.setHealth(super.getHealth() + 2.0F);
       }
 
       if (this.getRNG().nextInt(10) == 0) {

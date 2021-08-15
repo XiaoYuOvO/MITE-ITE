@@ -17,7 +17,7 @@ public class EntityInvisibleStalkerTrans extends EntityMonster {
    @Overwrite
    protected void applyEntityAttributes() {
       super.applyEntityAttributes();
-      int day = this.getWorld() != null ? this.getWorld().getDayOfWorld() : 0;
+      int day = this.getWorld() != null ? this.getWorld().getDayOfOverworld() : 0;
       this.getEntityAttribute(GenericAttributes.followRange).setAttribute(40.0D);
       this.getEntityAttribute(GenericAttributes.movementSpeed).setAttribute(0.23000000417232513D);
       this.getEntityAttribute(GenericAttributes.maxHealth).setAttribute(20D + day / 16D);

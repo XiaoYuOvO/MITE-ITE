@@ -13,7 +13,7 @@ public class EntityEndermanTrans extends EntityMonster {
    @Overwrite
    protected void applyEntityAttributes() {
       super.applyEntityAttributes();
-      int day = this.getWorld() != null ? this.getWorld().getDayOfWorld() : 0;
+      int day = this.getWorld() != null ? this.getWorld().getDayOfOverworld() : 0;
       this.getEntityAttribute(GenericAttributes.maxHealth).setAttribute(100.0D + day / 20D);
       this.getEntityAttribute(GenericAttributes.movementSpeed).setAttribute(0.3D);
       this.getEntityAttribute(GenericAttributes.attackDamage).setAttribute(30.0D + day / 20D);

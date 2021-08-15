@@ -25,7 +25,7 @@ public abstract class RecipesArmorTrans {
     @Overwrite
     public void addRecipes(CraftingManager par1CraftingManager) {
         this.crafting_manager = par1CraftingManager;
-        Item[] components = new Item[]{Item.leather, Item.chainCopper, Item.chainSilver, Item.chainGold, Item.chainRustedIron, Item.chainIron, Item.chainMithril, Item.chainAdamantium, Item.chainAncientMetal, Item.ingotCopper, Item.ingotSilver, Item.ingotGold, Item.ingotIron, Item.ingotMithril, Item.ingotAncientMetal};
+        Item[] components = new Item[]{Item.leather, Item.chainCopper, Item.chainSilver, Item.chainGold, Item.chainRustedIron, Item.chainIron, Item.chainMithril, Item.chainAdamantium, Item.chainAncientMetal, Item.ingotCopper, Item.ingotSilver, Item.ingotGold, Item.ingotIron, Item.ingotAncientMetal};
 
         for (Item component : components) {
             if (component.getMaterials().size() != 1) {
@@ -61,5 +61,29 @@ public abstract class RecipesArmorTrans {
                 'A',Item.ingotAdamantium,
                 'B',Item.bootsAncientMetal);
 
+
+        //Iron -> Mithril
+        ((CraftingManagerInvoker)this.crafting_manager).addRecipeP(new ItemStack(Item.helmetMithril),true,
+                "AAA",
+                "AHA",
+                'A',Item.ingotMithril,
+                'H',Item.helmetIron).func_92100_c();
+        ((CraftingManagerInvoker)this.crafting_manager).addRecipeP(new ItemStack(Item.plateMithril),true,
+                "APA",
+                "AAA",
+                "AAA",
+                'A',Item.ingotMithril,
+                'P',Item.plateIron).func_92100_c();
+        ((CraftingManagerInvoker)this.crafting_manager).addRecipeP(new ItemStack(Item.legsMithril),true,
+                "AAA",
+                "ALA",
+                "A A",
+                'A',Item.ingotMithril,
+                'L',Item.legsIron).func_92100_c();
+        ((CraftingManagerInvoker)this.crafting_manager).addRecipeP(new ItemStack(Item.bootsMithril),true,
+                "ABA",
+                "A A",
+                'A',Item.ingotMithril,
+                'B',Item.bootsIron).func_92100_c();
     }
 }

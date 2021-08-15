@@ -3,11 +3,17 @@ package net.xiaoyu233.mitemod.miteite.trans.block;
 import net.minecraft.*;
 import net.xiaoyu233.mitemod.miteite.entity.EntityRideMarker;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Overwrite;
 
 @Mixin(BlockStairs.class)
 public class BlockStairsTrans extends Block {
    protected BlockStairsTrans(int par1, Material par2Material, BlockConstants constants) {
       super(par1, par2Material, constants);
+   }
+
+   @Overwrite
+   public boolean hidesAdjacentSide(IBlockAccess block_access, int x, int y, int z, Block neighbor, int side) {
+      return this.isFaceFlatAndSolid(block_access.getBlockMetadata(x, y, z), EnumFace.get(MathHelper.clamp_int(side,0,5)).getOpposite());
    }
 
    public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, EnumFace face, float offset_x, float offset_y, float offset_z) {

@@ -1,15 +1,22 @@
 package net.xiaoyu233.mitemod.miteite.entity;
 
 import net.minecraft.*;
+import net.xiaoyu233.fml.util.Utils;
 import net.xiaoyu233.mitemod.miteite.item.Items;
 import net.xiaoyu233.mitemod.miteite.util.Configs;
 
 public class EntityAnnihilationSkeleton extends EntitySkeleton {
     private boolean attackedByPlayer;
     private int despawnCount;
+    private final ItemStack weapon = Utils.safeMake(()-> {
+        ItemStack itemStack = new ItemStack(Items.VIBRANIUM_DAGGER);
+        itemStack.addEnchantment(Enchantment.knockback,5);
+        return itemStack;
+    }, null);
     private int particleCount;
     public EntityAnnihilationSkeleton(World par1World) {
         super(par1World);
+        this.setHeldItemStack(weapon);
     }
 
     @Override
@@ -41,11 +48,8 @@ public class EntityAnnihilationSkeleton extends EntitySkeleton {
     }
 
     @Override
-    protected void applyEntityAttributes() {
-        super.applyEntityAttributes();
-        this.setEntityAttribute(GenericAttributes.maxHealth,15);
-        this.setEntityAttribute(GenericAttributes.attackDamage,Integer.MAX_VALUE);
-        this.setEntityAttribute(GenericAttributes.movementSpeed, 0.264D);
+    public void addRandomWeapon() {
+        this.setHeldItemStack(weapon);
     }
 
     @Override
@@ -124,8 +128,11 @@ public class EntityAnnihilationSkeleton extends EntitySkeleton {
     }
 
     @Override
-    public boolean getCanSpawnHere(boolean perform_light_check) {
-        return !this.worldObj.isOverworld() || this.worldObj.getDayOfWorld() > 64 && this.rand.nextInt(4) < 1 && this.worldObj.getClosestPlayerToEntity(this,24,true) == null;
+    protected void applyEntityAttributes() {
+        super.applyEntityAttributes();
+        this.setEntityAttribute(GenericAttributes.maxHealth,30);
+        this.setEntityAttribute(GenericAttributes.attackDamage,Integer.MAX_VALUE);
+        this.setEntityAttribute(GenericAttributes.movementSpeed, 0.2772D);
     }
 
     @Override
@@ -152,8 +159,8 @@ public class EntityAnnihilationSkeleton extends EntitySkeleton {
     }
 
     @Override
-    public void addRandomWeapon() {
-        super.setHeldItemStack(new ItemStack(Items.VIBRANIUM_DAGGER));
+    public boolean getCanSpawnHere(boolean perform_light_check) {
+        return !this.worldObj.isOverworld() || this.worldObj.getDayOfOverworld() > 32 && this.rand.nextInt(4) < 1 && this.worldObj.getClosestPlayerToEntity(this,24,true) == null;
     }
 
     @Override

@@ -119,6 +119,19 @@ public class ForgingTableSlots extends InventorySubcontainer {
        this.tryWriteSlotStack(nbt,this.output,"Output");
     }
 
+    public int getChanceOfFailure(@Nonnull ForgingRecipe recipe){
+        int bounceChanceFromTool = 0;
+        ItemStack hammer = this.getHammerItem();
+        if (hammer != null){
+            bounceChanceFromTool += Math.max((hammer.getMaterialForRepairs().getMinHarvestLevel() - Material.iron.getMinHarvestLevel()) * 3,0);
+        }
+        ItemStack axeItem = this.getAxeItem();
+        if (axeItem != null) {
+            bounceChanceFromTool += Math.max((axeItem.getMaterialForRepairs().getMinHarvestLevel() - Material.iron.getMinHarvestLevel()) * 2,0);
+        }
+        return recipe.getChanceOfFailure() - bounceChanceFromTool;
+    }
+
     public int getToolItemSlotIndex(){
         return 5;
     }

@@ -7,9 +7,9 @@ import net.xiaoyu233.mitemod.miteite.util.Constant;
 
 public class ItemEnhanceStone extends Item {
     public enum Types{
-        iron(50, Material.iron),
-        mithril(60, Material.mithril),
-        adamantium(70, Material.adamantium),
+        iron(35, Material.iron),
+        mithril(55, Material.mithril),
+        adamantium(65, Material.adamantium),
         universal(50, Material.glowstone);
         private final int failChance;
         private IIcon iIcon;

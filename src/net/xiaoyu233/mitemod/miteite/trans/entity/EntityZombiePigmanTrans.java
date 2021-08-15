@@ -7,6 +7,9 @@ import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.List;
 import java.util.UUID;
@@ -31,6 +34,53 @@ public class EntityZombiePigmanTrans extends EntityZombie implements IRangedEnti
 
    public EntityZombiePigmanTrans(World par1World) {
       super(par1World);
+   }
+
+   @Overwrite
+   protected void applyEntityAttributes() {
+      super.applyEntityAttributes();
+      int day = this.getWorld() != null ? Math.max(this.getWorld().getDayOfOverworld(), 0) : 0;
+      this.setEntityAttribute(GenericAttributes.maxHealth, 50.0D + (double)day / 16.0D);
+      this.setEntityAttribute(GenericAttributes.followRange, 64.0D);
+      this.setEntityAttribute(GenericAttributes.movementSpeed, 0.25D);
+      this.setEntityAttribute(GenericAttributes.attackDamage, 12.0D + (double)day / 20.0D);
+      this.setEntityAttribute(EntityZombie.field_110186_bp, this.rand.nextDouble() * 0.10000000149011612D);
+   }
+
+   @Override
+   public EntityDamageResult attackEntityAsMob(Entity target) {
+      if (target != null && target.isEntityAlive() && rand.nextFloat() < Configs.Entities.NETHER_MOD_ATTACK_FIRE_CHANCE.get()){
+         target.setFire(5);
+      }
+      return super.attackEntityAsMob(target);
+   }
+
+   public void attackEntityWithRangedAttack(EntityLiving entityLiving, float par2) {
+      EntityArrow var3 = new EntityArrow(this.getWorld(), this, entityLiving, 1.6F, (float)(14 - this.getWorld().difficultySetting * 4), Item.arrowRustedIron, false);
+      int rawDay = this.getWorld() != null ? this.getWorld().getDayOfOverworld() : 0;
+      int day = Math.max(rawDay - 64, 0);
+      int var4 = EnchantmentManager.getEnchantmentLevel(Enchantment.power.effectId, this.getHeldItemStack()) + 1;
+      int var5 = (int)((double)EnchantmentManager.getEnchantmentLevel(Enchantment.punch.effectId, this.getHeldItemStack()) + Math.min(1.0D + Math.floor((float)day / 48.0F), 5.0D));
+      double damage = (double)(par2 * 2.0F) + this.getRNG().nextGaussian() * 0.0D + (double)((float)this.getWorld().difficultySetting * 0.11F);
+      var3.setDamage(damage);
+      if (var4 > 0) {
+         var3.setDamage(var3.getDamage() + (double)var4 * 2.0D + 1.0D);
+      }
+
+      if (var5 > 0) {
+         var3.setKnockbackStrength(var5);
+      }
+
+      if (EnchantmentManager.getEnchantmentLevel(Enchantment.flame.effectId, this.getHeldItemStack()) > 0 || this.isInFire() && this.getRNG().nextInt(3) == 0 || rawDay > 196) {
+         var3.setFire(100);
+      }
+
+      this.playSound("random.bow", 1.0F, 1.0F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
+      this.getWorld().spawnEntityInWorld(var3);
+   }
+
+   @Inject(method = "<init>",at = @At("RETURN"))
+   private void injectInit(CallbackInfo callbackInfo){
       this.tasks.clear();
       this.tasks.addTask(1, new EntityAIWatchAnimal(this));
       this.tasks.addTask(0, new PathfinderGoalFloat(this));
@@ -52,47 +102,9 @@ public class EntityZombiePigmanTrans extends EntityZombie implements IRangedEnti
       this.tasks.addTask(3, new EntityAIMoveToTree(this, 1.0F));
    }
 
-   @Override
-   public EntityDamageResult attackEntityAsMob(Entity target) {
-      if (target != null && target.isEntityAlive() && rand.nextFloat() < Configs.Entities.NETHER_MOD_ATTACK_FIRE_CHANCE.get()){
-         target.setFire(100);
-      }
-      return super.attackEntityAsMob(target);
-   }
-
-   @Overwrite
-   protected void applyEntityAttributes() {
-      super.applyEntityAttributes();
-      int day = this.getWorld() != null ? Math.max(this.getWorld().getDayOfWorld(), 0) : 0;
-      this.setEntityAttribute(GenericAttributes.maxHealth, 50.0D + (double)day / 16.0D);
-      this.setEntityAttribute(GenericAttributes.followRange, 64.0D);
-      this.setEntityAttribute(GenericAttributes.movementSpeed, 0.25D);
-      this.setEntityAttribute(GenericAttributes.attackDamage, 12.0D + (double)day / 20.0D);
-      this.setEntityAttribute(EntityZombie.field_110186_bp, this.rand.nextDouble() * 0.10000000149011612D);
-   }
-
-   public void attackEntityWithRangedAttack(EntityLiving entityLiving, float par2) {
-      EntityArrow var3 = new EntityArrow(this.getWorld(), this, entityLiving, 1.6F, (float)(14 - this.getWorld().difficultySetting * 4), Item.arrowRustedIron, false);
-      int rawDay = this.getWorld() != null ? this.getWorld().getDayOfWorld() : 0;
-      int day = Math.max(rawDay - 64, 0);
-      int var4 = EnchantmentManager.getEnchantmentLevel(Enchantment.power.effectId, this.getHeldItemStack()) + 1;
-      int var5 = (int)((double)EnchantmentManager.getEnchantmentLevel(Enchantment.punch.effectId, this.getHeldItemStack()) + Math.min(1.0D + Math.floor((float)day / 48.0F), 5.0D));
-      double damage = (double)(par2 * 2.0F) + this.getRNG().nextGaussian() * 0.0D + (double)((float)this.getWorld().difficultySetting * 0.11F);
-      var3.setDamage(damage);
-      if (var4 > 0) {
-         var3.setDamage(var3.getDamage() + (double)var4 * 2.0D + 1.0D);
-      }
-
-      if (var5 > 0) {
-         var3.setKnockbackStrength(var5);
-      }
-
-      if (EnchantmentManager.getEnchantmentLevel(Enchantment.flame.effectId, this.getHeldItemStack()) > 0 || this.isInFire() && this.getRNG().nextInt(3) == 0 || rawDay > 196) {
-         var3.setFire(100);
-      }
-
-      this.playSound("random.bow", 1.0F, 1.0F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
-      this.getWorld().spawnEntityInWorld(var3);
+   @Inject(method = "addRandomEquipment",at = @At("HEAD"))
+   private void injectInitArmor(CallbackInfo callbackInfo){
+      super.addRandomArmor();
    }
 
    public boolean canCatchFire() {
@@ -133,7 +145,7 @@ public class EntityZombiePigmanTrans extends EntityZombie implements IRangedEnti
       super.onUpdate();
       if (this.getWorld().isWorldServer() && this.dataWatcher.getWatchableObjectByte(this.DATA_OBJ_ID_IS_BOOSTED) > 0) {
          if (this.effectCooldown <= 0) {
-            int day = MinecraftServer.F().getOverworld().getWorld().getDayOfWorld();
+            int day = MinecraftServer.F().getOverworld().getWorld().getDayOfOverworld();
             if (day > 128) {
                List<EntityPigZombie> nearbyZombie = this.worldObj.getEntitiesWithinAABB(EntityPigZombie.class, this.boundingBox.expand(16.0D, 8.0D, 16.0D));
 

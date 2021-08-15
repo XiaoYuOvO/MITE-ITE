@@ -577,15 +577,25 @@ public abstract class EntityPlayerTrans extends EntityLiving implements ICommand
          }
       }
 
-      if (!world.isAirOrPassableBlock(x, 64, z, true)) {
-         world.setBlockToAir(x, 64, z);
-      }
+      if (!world.isUnderworld()){
+         if (!world.isAirOrPassableBlock(x, 64, z, true)) {
+            world.setBlockToAir(x, 64, z);
+         }
 
-      if (!world.isAirOrPassableBlock(x, 65, z, true)) {
-         world.setBlockToAir(x, 65, z);
-      }
+         if (!world.isAirOrPassableBlock(x, 65, z, true)) {
+            world.setBlockToAir(x, 65, z);
+         }
+         return new int[]{x, 64, z};
+      }else {
+         if (!world.isAirOrPassableBlock(x, 120, z, true)) {
+            world.setBlockToAir(x, 120, z);
+         }
 
-      return new int[]{x, 64, z};
+         if (!world.isAirOrPassableBlock(x, 121, z, true)) {
+            world.setBlockToAir(x, 121, z);
+         }
+         return new int[]{x, 120, z};
+      }
    }
 
    @Shadow
@@ -606,6 +616,51 @@ public abstract class EntityPlayerTrans extends EntityLiving implements ICommand
       player.runegate_destination_coords = runegate_destination_coords;
       player.playerNetServerHandler.sendPacket(new Packet85SimpleSignal(EnumSignal.runegate_start));
       player.setPositionAndUpdate(runegate_destination_coords[0], runegate_destination_coords[1], runegate_destination_coords[2]);
+   }
+
+   @Redirect(method = "getCurrentPlayerStrVsBlock",at = @At(value = "INVOKE",target = "Lnet/minecraft/EnchantmentManager;getAquaAffinityModifier(Lnet/minecraft/EntityLiving;)Z"))
+   private boolean redirectCheckAquaEnchantment(EntityLiving player){
+      boolean aquaAffinityModifier = EnchantmentManager.getAquaAffinityModifier(this);
+      boolean waterLike = this.getHeldItemStack() != null && ToolModifierTypes.AQUADYNAMIC_MODIFIER.getModifierLevel(this.getHeldItemStack().getTagCompound()) != 0;
+      return aquaAffinityModifier || waterLike;
+   }
+
+   @Redirect(method = "attackEntityFrom",
+           at = @At(value = "INVOKE",
+                   target = "Lnet/minecraft/EntityLiving;attackEntityFrom(Lnet/minecraft/Damage;)Lnet/minecraft/EntityDamageResult;"))
+   private EntityDamageResult redirectEntityAttack(EntityLiving caller,Damage damage){
+      double progress = Math.min(Configs.GameMechanics.STEPPED_MOB_DAMAGE_PROGRESS_MAX.get(),(Configs.GameMechanics.STEPPED_MOB_DAMAGE_PROGRESS_BASE.get()) + this.getWorld().getDayOfOverworld() / (float)Configs.GameMechanics.STEPPED_MOB_DAMAGE_PROGRESS_INCREASE_DAY.get());
+      if (progress != 0.0D) {
+         Entity responsibleEntity = damage.getSource().getResponsibleEntity();
+         if (responsibleEntity != null && !(responsibleEntity instanceof EntityEnderDragon || responsibleEntity instanceof EntityCubic)) {
+            if (this.attackCountMap.containsKey(responsibleEntity)) {
+               damage.setAmount(damage.getAmount() + (this.attackCountMap.get(responsibleEntity)));
+               this.attackCountMap.put(responsibleEntity, this.attackCountMap.get(responsibleEntity) + 1);
+            } else {
+               this.attackCountMap.put(responsibleEntity, 1);
+            }
+         }
+      }
+      if (damage.getResponsibleEntityP() != null && this.getHeldItem() != null && this.rand.nextInt(10) > 8) {
+            this.tryDisarmTarget(damage.getResponsibleEntityP());
+      }
+      EntityDamageResult entityDamageResult = super.attackEntityFrom(damage);
+      if (entityDamageResult != null && (double)this.getHealthFraction() <= 0.3D && !entityDamageResult.entityWasDestroyed()) {
+         ItemStack[] var5 = this.getWornItems();
+
+         List<ItemStack> readyEmergencyItems = new ArrayList<>();
+         for (ItemStack wornItem : var5) {
+            if (wornItem != null && wornItem.hasEnchantment(Enchantments.EMERGENCY, false)) {
+               if (wornItem.getEmergencyCooldown() <= 0){
+                  readyEmergencyItems.add(wornItem);
+               }
+            }
+         }
+         if (readyEmergencyItems.size() > 0){
+            this.activeEmergency(readyEmergencyItems);
+         }
+      }
+      return entityDamageResult;
    }
 
    @Inject(method = "onLivingUpdate",
@@ -746,42 +801,10 @@ public abstract class EntityPlayerTrans extends EntityLiving implements ICommand
       par1NBTTagCompound.setInteger("DefenseCooldown",this.defenseCooldown);
    }
 
-   @Redirect(method = "attackEntityFrom",
-           at = @At(value = "INVOKE",
-                   target = "Lnet/minecraft/EntityLiving;attackEntityFrom(Lnet/minecraft/Damage;)Lnet/minecraft/EntityDamageResult;"))
-   private EntityDamageResult redirectEntityAttack(EntityLiving caller,Damage damage){
-      double progress = Math.min(Configs.GameMechanics.STEPPED_MOB_DAMAGE_PROGRESS_MAX.get(),(Configs.GameMechanics.STEPPED_MOB_DAMAGE_PROGRESS_BASE.get()) + this.getWorld().getDayOfWorld() / (float)Configs.GameMechanics.STEPPED_MOB_DAMAGE_PROGRESS_INCREASE_DAY.get());
-      if (progress != 0.0D) {
-         Entity responsibleEntity = damage.getSource().getResponsibleEntity();
-         if (responsibleEntity != null && !(responsibleEntity instanceof EntityEnderDragon)) {
-            if (this.attackCountMap.containsKey(responsibleEntity)) {
-               damage.setAmount((float) (damage.getAmount() + (this.attackCountMap.get(responsibleEntity))));
-               this.attackCountMap.put(responsibleEntity, this.attackCountMap.get(responsibleEntity) + 1);
-            } else {
-               this.attackCountMap.put(responsibleEntity, 1);
-            }
-         }
-      }
-      if (damage.getResponsibleEntityP() != null && this.getHeldItem() != null && this.rand.nextInt(10) > 8) {
-            this.tryDisarmTarget(damage.getResponsibleEntityP());
-      }
-      EntityDamageResult entityDamageResult = super.attackEntityFrom(damage);
-      if (entityDamageResult != null && (double)this.getHealthFraction() <= 0.3D && !entityDamageResult.entityWasDestroyed()) {
-         ItemStack[] var5 = this.getWornItems();
-
-         List<ItemStack> readyEmergencyItems = new ArrayList<>();
-         for (ItemStack wornItem : var5) {
-            if (wornItem != null && wornItem.hasEnchantment(Enchantments.EMERGENCY, false)) {
-               if (wornItem.getEmergencyCooldown() <= 0){
-                  readyEmergencyItems.add(wornItem);
-               }
-            }
-         }
-         if (readyEmergencyItems.size() > 0){
-            this.activeEmergency(readyEmergencyItems);
-         }
-      }
-      return entityDamageResult;
+   @Redirect(method = "getCurrentPlayerStrVsBlock",at = @At(value = "INVOKE",target = "Lnet/minecraft/Item;getStrVsBlock(Lnet/minecraft/Block;I)F"))
+   private float redirectGetStrVsBlock(Item caller,Block block,int metadata){
+      ItemStack heldItemStack = this.getHeldItemStack();
+      return heldItemStack.getItem().getStrVsBlock(block, metadata,heldItemStack, net.xiaoyu233.fml.util.ReflectHelper.dyCast(this));
    }
 
    @Shadow

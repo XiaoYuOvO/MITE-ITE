@@ -23,7 +23,7 @@ public abstract class EntityTrans {
    public boolean isInFire() {
       if (this.worldObj.isTheNether() &&
               (Configs.GameMechanics.Nether.NETHERRACK_DAMAGE.get()) &&
-              Configs.GameMechanics.Nether.NETHERRACK_DAMAGE_LIMIT_DAY.get() <= this.worldObj.getDayOfWorld() &&
+              Configs.GameMechanics.Nether.NETHERRACK_DAMAGE_LIMIT_DAY.get() <= this.worldObj.getDayOfOverworld() &&
               this.canCatchFire() &&
               this.worldObj.doesBoundingBoxContainBlock(this.boundingBox.expand(0.001D, 0.005D, 0.001D), Block.netherrack.blockID, -1)) {
          ++this.netherrackWalkTime;

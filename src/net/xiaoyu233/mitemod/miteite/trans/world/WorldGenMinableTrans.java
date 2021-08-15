@@ -16,18 +16,21 @@ public class WorldGenMinableTrans {
    @Shadow
    private int minableBlockId;
 
-   @Overwrite
+//   @Overwrite
+   @Shadow
    public int getRandomVeinHeight(World world, Random rand) {
       Block block = Block.blocksList[this.minableBlockId];
       if (world.isUnderworld()) {
          if (world.underworld_y_offset == 0) {
             return rand.nextInt(256);
          }
+
          if (block == Block.oreAdamantium) {
-            float relative_height;
-            do {
-               relative_height = rand.nextFloat();
-            } while(!(relative_height < rand.nextFloat()));
+            if (rand.nextFloat() < 0.75F) {
+               return 0;
+            }else {
+               return rand.nextInt(16 + world.underworld_y_offset);
+            }
          }
 
          if (block instanceof BlockOre && rand.nextFloat() < 0.75F) {

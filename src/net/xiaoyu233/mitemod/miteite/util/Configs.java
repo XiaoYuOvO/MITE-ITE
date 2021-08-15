@@ -16,7 +16,7 @@ public class Configs {
                     addEntry(ConfigEntry.of("stepped_mob_damage_progress_increase_day",GameMechanics.STEPPED_MOB_DAMAGE_PROGRESS_INCREASE_DAY).withComment("渐进伤害每次增幅每增加一点所需天数(整数)")).
                     addEntry(ConfigEntry.of("stepped_player_damage_progress",GameMechanics.STEPPED_PLAYER_BASE_DAMAGE_MAX).withComment("玩家对怪物渐进伤害(不计附魔)最大值")).
                     addEntry(ConfigEntry.of("stepped_player_damage_increase_per_lvl",GameMechanics.STEPPED_PLAYER_DAMAGE_INCREASE_PER_LVL).withComment("玩家对怪物渐进伤害每级加成")).
-                    addEntry(ConfigEntry.of("fishing_xp_scale",GameMechanics.FISHING_XP_SCALE).withComment("钓鱼经验加成倍数(小数)")).
+                    addEntry(ConfigEntry.of("fishing_xp",GameMechanics.FISHING_XP_SCALE).withComment("钓鱼经验(整数)")).
                     addEntry(ConfigEntry.of("in_rain_debuff_time",GameMechanics.IN_RAIN_DEBUFF_TIME).withComment("雨中获得负面效果所需时长(整数)")).
                     addEntry(ConfigEntry.of("first_day_longer_day_time",GameMechanics.FIRST_DAY_LONGER_DAY_TIME).withComment("加长第一天时间(开关)")).
                     addEntry(ConfigEntry.of("player_defense_cooldown",GameMechanics.PLAYER_DEFENSE_COOLDOWN).withComment("玩家格挡冷却")).
@@ -40,6 +40,7 @@ public class Configs {
             addEntry(ConfigCategory.of("Item").
                     addEntry(ConfigEntry.of("quartz_max_exp_level",Item.QUARTZ_MAX_EXP_LEVEL).withComment("石英可提供经验最大等级")).
                     addEntry(ConfigEntry.of("diamond_exp",Item.DIAMOND_EXP).withComment("钻石经验")).
+                    addEntry(ConfigEntry.of("emerald_exp",Item.EMERALD_EXP).withComment("绿宝石经验")).
                     addEntry(ConfigEntry.of("quartz_exp",Item.QUARTZ_EXP).withComment("石英经验")).
                     addEntry(ConfigEntry.of("golden_apple_eat_time",Item.GOLDEN_APPLE_EAT_TIME).withComment("金苹果使用耗时")).
                     addEntry(ConfigEntry.of("enchanted_golden_apple_eat_time",Item.ENCHANTED_GOLDEN_APPLE_EAT_TIME).withComment("附魔金苹果使用耗时")).
@@ -167,16 +168,16 @@ public class Configs {
         public static final FieldReference<Float> NETHER_MOD_ATTACK_FIRE_CHANCE = new FieldReference<>(0.5f);
         public static class Animals{
             public static final FieldReference<Integer> ANIMAL_ILL_TO_DEATH_TIME = new FieldReference<>(144000);
-            public static final FieldReference<Integer> BREED_XP_CHICKEN = new FieldReference<>(3);
+            public static final FieldReference<Integer> BREED_XP_CHICKEN = new FieldReference<>(8);
             public static final FieldReference<Integer> BREED_XP_COW = new FieldReference<>(25);
             public static final FieldReference<Integer> BREED_XP_PIG = new FieldReference<>(15);
-            public static final FieldReference<Integer> BREED_XP_SHEEP = new FieldReference<>(5);
+            public static final FieldReference<Integer> BREED_XP_SHEEP = new FieldReference<>(10);
         }
     }
 
     public static class GameMechanics{
         public static final FieldReference<Boolean> FIRST_DAY_LONGER_DAY_TIME = new FieldReference<>(true);
-        public static final FieldReference<Double> FISHING_XP_SCALE = new FieldReference<>(3d);
+        public static final FieldReference<Integer> FISHING_XP_SCALE = new FieldReference<>(10);
         public static final FieldReference<Integer> IN_RAIN_DEBUFF_TIME = new FieldReference<>(3600);
         public static final FieldReference<Double> IN_WALL_DAMAGE_FOR_PLAYER = new FieldReference<>(10.0d);
         public static final FieldReference<Integer> PLAYER_DEFENCE_MAX_TIME = new FieldReference<>(2 * 20);
@@ -210,8 +211,8 @@ public class Configs {
     }
 
     public static class Item{
-
-        public static final FieldReference<Integer> DIAMOND_EXP = new FieldReference<>(300);
+        public static final FieldReference<Integer> DIAMOND_EXP = new FieldReference<>(400);
+        public static final FieldReference<Integer> EMERALD_EXP = new FieldReference<>(300);
         public static final FieldReference<Integer> ENCHANTED_GOLDEN_APPLE_EAT_TIME = new FieldReference<>(10);
         public static final FieldReference<Integer> QUARTZ_MAX_EXP_LEVEL = new FieldReference<>(55);
         public static final FieldReference<Integer> GOLDEN_APPLE_EAT_TIME = new FieldReference<>(20);

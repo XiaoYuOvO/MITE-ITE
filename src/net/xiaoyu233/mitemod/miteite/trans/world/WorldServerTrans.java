@@ -195,7 +195,7 @@ public abstract class WorldServerTrans extends World {
                                 if (this.isTheNether() && entity.getDistanceSqToBlock(x, y, z) < 2304.0D && this.rand.nextFloat() < 0.8F) {
                                     entity_class = null;
                                 }else if (this.isOverworld() && entity.getDistanceSqToBlock(x, y, z) < 2304.0D && can_spawn_ghast_on_surface){
-                                    if (this.getDayOfWorld() >= (Configs.GameMechanics.MobSpawning.GHAST_SPAWN_LIMIT_DAY.get())){
+                                    if (this.getDayOfOverworld() >= (Configs.GameMechanics.MobSpawning.GHAST_SPAWN_LIMIT_DAY.get())){
                                         return entity_class;
                                     }
                                 }
@@ -291,7 +291,7 @@ public abstract class WorldServerTrans extends World {
       }
 
       int ticks_progressed = this.shouldTimeProgress() ? 1 : 0;
-      if (Configs.GameMechanics.FIRST_DAY_LONGER_DAY_TIME.get() && this.getDayOfWorld() == 1 && this.getTotalWorldTime() < 12000L) {
+      if (Configs.GameMechanics.FIRST_DAY_LONGER_DAY_TIME.get() && this.getDayOfOverworld() == 1 && this.getTotalWorldTime() < 12000L) {
          if (this.pushTimeNextTick) {
             if (ticks_progressed > 0) {
                this.advanceTotalWorldTime(ticks_progressed);

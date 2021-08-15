@@ -17,6 +17,8 @@ import java.util.List;
 
 @Mixin(Item.class)
 public abstract class ItemTrans {
+   @Shadow private int sugar_content;
+
    @Shadow public abstract boolean hasQuality();
 
    @Shadow private int maxDamage;
@@ -31,6 +33,10 @@ public abstract class ItemTrans {
 
    @Shadow
    protected List materials;
+
+   public void setSugarContent(int sugarContent){
+      this.sugar_content = sugarContent;
+   }
 
    public void addExpForTool(ItemStack stack, EntityPlayer player, int exp) {
       stack.fixNBT();

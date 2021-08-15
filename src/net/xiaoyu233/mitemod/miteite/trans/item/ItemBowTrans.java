@@ -6,7 +6,9 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.List;
 
@@ -15,17 +17,13 @@ public class ItemBowTrans extends Item {
    @Shadow
    private Material reinforcement_material;
 
+   @Inject(method = "<init>",at = @At("RETURN"))
+   private void injectInit(CallbackInfo callbackInfo){
+      this.setMaxDamage(reinforcement_material == Materials.vibranium ? 512 : (reinforcement_material == Material.mithril ? 128 : (reinforcement_material == Material.ancient_metal ? 64 : 32)));
+   }
+
    public ItemBowTrans(int id, Material reinforcement_material) {
       super(id, Material.wood, "bows/" + reinforcement_material.toString() + "/");
-//      if (reinforcement_material != null && reinforcement_material != Material.wood) {
-//         this.addMaterial(new Material[]{reinforcement_material});
-//      }
-//
-//      this.reinforcement_material = reinforcement_material;
-//      this.d(1);
-//      this.e(reinforcement_material == Materials.vibranium ? 512 : (reinforcement_material == Material.mithril ? 128 : (reinforcement_material == Material.ancient_metal ? 64 : 32)));
-//      this.a(CreativeModeTab.tabCombat);
-//      this.setSkillsetThatCanRepairThis(reinforcement_material.isMetal() ? Skill.ARCHERY.getID() + Skill.BLACKSMITHING.getID() : Skill.ARCHERY.getID());
    }
 
    @Overwrite

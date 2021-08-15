@@ -152,8 +152,9 @@ public abstract class ItemArmorTrans extends Item implements IDamageableItem, IU
    @Shadow
    public abstract void func_82813_b(ItemStack par1ItemStack, int par2);
 
-   private float getEnhancedProtection(ItemStack itemStack) {
-      return (float)(itemStack.getEnhanceFactor() * (double)this.getRawProtection() * 0.68f + (double)((float)itemStack.getForgingGrade() / 3.0F));
+   @Override
+   public void addExpForTool(ItemStack stack, EntityPlayer player, int exp) {
+      super.addExpForTool(stack, player, (int) (exp * (this.getEquipmentExpBounce(stack) + 1)) * 2);
    }
 
    public int getExpReqForLevel(int tool_level, int slotIndexl, ItemArmor armor) {
@@ -171,9 +172,8 @@ public abstract class ItemArmorTrans extends Item implements IDamageableItem, IU
       }
    }
 
-   @Override
-   public void addExpForTool(ItemStack stack, EntityPlayer player, int exp) {
-      super.addExpForTool(stack, player, (int) (exp * (this.getEquipmentExpBounce(stack) + 1)));
+   private float getEnhancedProtection(ItemStack itemStack) {
+      return (float)(itemStack.getEnhanceFactor() * (double)this.getRawProtection() * 0.68f + (double)((float)itemStack.getForgingGrade() / 3.0F)) * (0.75f);
    }
 
    public int getExpReqForLevel(int i, boolean weapon) {

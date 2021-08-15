@@ -28,6 +28,6 @@ public abstract class EntityFishingHookTrans extends Entity {
            at = @At(value = "NEW",
                    target = "(Lnet/minecraft/World;DDDI)Lnet/minecraft/EntityExperienceOrb;"))
    private EntityExperienceOrb ctorFishingExp(World par1World, double par2, double par4, double par6, int par8){
-      return new EntityExperienceOrb(this.angler.worldObj, this.angler.posX, this.angler.posY + 0.5D, this.angler.posZ + 0.5D, (int) ((this.rand.nextInt(6) + 1) * Configs.GameMechanics.FISHING_XP_SCALE.get()));
+      return new EntityExperienceOrb(this.angler.worldObj, this.angler.posX, this.angler.posY + 0.5D, this.angler.posZ + 0.5D,Configs.GameMechanics.FISHING_XP_SCALE.get());
    }
 }

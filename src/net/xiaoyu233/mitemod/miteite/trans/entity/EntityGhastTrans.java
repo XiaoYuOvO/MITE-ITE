@@ -35,7 +35,7 @@ public class EntityGhastTrans extends EntityFlying implements IMonster {
    @Overwrite
    protected void applyEntityAttributes() {
       super.applyEntityAttributes();
-      this.explosionStrength = 3;
+      this.explosionStrength = 6;
       super.getEntityAttribute(GenericAttributes.maxHealth).setAttribute(15.0D);
    }
 
@@ -51,7 +51,7 @@ public class EntityGhastTrans extends EntityFlying implements IMonster {
       } else if (!this.getWorld().isOverworld()) {
          return super.getCanSpawnHere(perform_light_check);
       } else {
-         return this.getWorld().isBloodMoon24HourPeriod() && this.getWorld().getDayOfWorld() >= Configs.GameMechanics.MobSpawning.GHAST_SPAWN_LIMIT_DAY.get() && !this.getWorld().anySolidBlockIn(this.boundingBox.addCoord(0.0D, 3.0D, 0.0D));
+         return this.getWorld().isBloodMoon24HourPeriod() && this.getWorld().getDayOfOverworld() >= Configs.GameMechanics.MobSpawning.GHAST_SPAWN_LIMIT_DAY.get() && !this.getWorld().anySolidBlockIn(this.boundingBox.addCoord(0.0D, 3.0D, 0.0D));
       }
    }
 

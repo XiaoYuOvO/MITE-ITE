@@ -132,7 +132,7 @@ public class ChunkProviderHellTrans {
 
       var12 = (new WorldGenMinable(Blocks.netherAdamantiumOre.blockID, 5, Block.netherrack.blockID)).setMinableBlockMetadata(0);
 
-      int count = this.hellRNG.nextInt(5) + 1;
+      int count = this.hellRNG.nextInt(6) + 1;
       for(var8 = 0; var8 < count; ++var8) {
          var9 = var4 + this.hellRNG.nextInt(16);
          var10 = this.hellRNG.nextInt(80) + 35;

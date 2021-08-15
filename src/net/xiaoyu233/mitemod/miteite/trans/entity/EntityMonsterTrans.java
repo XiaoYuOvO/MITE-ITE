@@ -91,27 +91,40 @@ public abstract class EntityMonsterTrans extends EntityInsentient implements IMo
 
    protected void addRandomArmor() {
       int hour = this.getWorld().getHourOfDay();
-      int day = this.getWorld().getDayOfWorld();
+      int day = this.getWorld().getDayOfOverworld();
       Random rand;
       if (day > 32 && ((day % 2 == 0 || day > 64) && hour >= 18 || ((day - 1) % 2 == 0 || day > 64) && hour <= 6)) {
-         this.addPotionEffect(new MobEffect(1, 999999, this.getRNG().nextInt(Math.max((day - 32) / 96, 1)), true));
+         this.addPotionEffect(new MobEffect(MobEffectList.moveSpeed.id, 999999, Math.min(this.getRNG().nextInt(Math.max((day - 32) / 96, 1)),4), true));
          rand = this.getRNG();
          if (rand.nextInt(5) == 0) {
-            this.addPotionEffect(new MobEffect(5, 999999, this.getRNG().nextInt(Math.max((day - 32) / 128, 1)), true));
+            this.addPotionEffect(new MobEffect(MobEffectList.damageBoost.id, 999999, Math.min(this.getRNG().nextInt(Math.max((day - 32) / 128, 1)),3), true));
          }
 
          MonsterUtil.addDefaultArmor(day, this, false);
       } else if (day > 128) {
          rand = this.getRNG();
          if (rand.nextInt(4) < (day - 96) / 32) {
-            this.addPotionEffect(new MobEffect(1, 999999, this.getRNG().nextInt(Math.max((day - 32) / 96, 1)), true));
+            this.addPotionEffect(new MobEffect(MobEffectList.moveSpeed.id, 999999, Math.min(this.getRNG().nextInt(Math.max((day - 32) / 96, 1)),4), true));
          }
 
          if (rand.nextInt(5) < (day - 96) / 32) {
-            this.addPotionEffect(new MobEffect(5, 999999, this.getRNG().nextInt(Math.max((day - 32) / 128, 1)), true));
+            this.addPotionEffect(new MobEffect(MobEffectList.damageBoost.id, 999999, Math.min(this.getRNG().nextInt(Math.max((day - 32) / 128, 1)),3), true));
          }
 
          MonsterUtil.addDefaultArmor(day, this, false);
+      }
+
+   }
+
+   protected void enchantEquipment(ItemStack item_stack) {
+      int dayOfWorld = this.getWorld().getDayOfOverworld();
+      if ((double) this.getRNG().nextFloat() <= 0.1f + (double) dayOfWorld / 64.0f / 10.0f) {
+         MonsterUtil.addRandomEnchantment(this.getRNG(),
+                 item_stack,
+                 (int) (5.0F + (
+                         this.worldObj.getDayOfOverworld() * 0.15f) +  (5 - this.rand.nextInt(10)) * this.rand.nextFloat()),
+                 Math.min(2 + dayOfWorld/24,15),
+                 Math.min(1 + dayOfWorld/72,4));
       }
 
    }
@@ -218,17 +231,14 @@ public abstract class EntityMonsterTrans extends EntityInsentient implements IMo
       }
    }
 
-   protected void enchantEquipment(ItemStack item_stack) {
-      int dayOfWorld = this.getWorld().getDayOfWorld();
-      if ((double) this.getRNG().nextFloat() <= 0.1f + (double) dayOfWorld / 64.0f / 10.0f) {
-         MonsterUtil.addRandomEnchantment(this.getRNG(),
-                 item_stack,
-                 (int) (5.0F + (
-                         this.worldObj.getDayOfWorld() * 0.15f) +  (5 - this.rand.nextInt(10)) * this.rand.nextFloat()),
-                 Math.min(2 + dayOfWorld/24,15),
-                 Math.min(1 + dayOfWorld/72,4));
+   @Override
+   public float getReach() {
+      if (!this.isAIEnabled()) {
+         Minecraft.setErrorMessage("getReach: doesn't handle old AI mobs yet");
+         return 0.0F;
+      } else {
+         return 1.2F + this.getHeldItemReachBonus() * 0.6F;
       }
-
    }
 
    @Inject(method = "onLivingUpdate",at = @At("RETURN"))

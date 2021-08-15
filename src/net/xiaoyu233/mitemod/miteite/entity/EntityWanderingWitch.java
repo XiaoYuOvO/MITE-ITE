@@ -11,17 +11,18 @@ public class EntityWanderingWitch extends EntityWitch {
     private int aliveBatsCount;
     private final int maxBatsCount = 8;
     private boolean cursedPlayer;
+    private int throwingPotionCooldown;
 
     public EntityWanderingWitch(World par1World) {
         super(par1World);
         this.tasks.removeTask(this.tasks.getTask(PathfinderGoalArrowAttack.class));
-        this.tasks.addTask(2, new PathfinderGoalArrowAttack(this, 1.0D, 60, 10.0F){
+        this.tasks.addTask(2, new PathfinderGoalArrowAttack(this, 1.0D, 42, 10.0F){
             @Override
             public boolean shouldExecute() {
                 return super.shouldExecute() && !this.getEntityHost().fleeing;
             }
         });
-        this.tasks.addTask(1,new PathfinderGoalAvoidPlayer(this,EntityPlayer.class,6,1,1.2));
+        this.tasks.addTask(1,new PathfinderGoalAvoidPlayer(this,EntityPlayer.class,3,1.1,1.4));
     }
 
     public void cursePlayer(ServerPlayer player) {
@@ -62,7 +63,7 @@ public class EntityWanderingWitch extends EntityWitch {
 
     @Override
     public boolean getCanSpawnHere(boolean perform_light_check) {
-        return super.getCanSpawnHere(perform_light_check) && this.worldObj.getDayOfWorld() > 64;
+        return super.getCanSpawnHere(perform_light_check) && this.worldObj.getDayOfOverworld() > 64;
     }
 
     public void onAllyBatsDeath(){
@@ -70,37 +71,32 @@ public class EntityWanderingWitch extends EntityWitch {
     }
 
     @Override
-    public int summonWolvesP() {
-        EntityLiving target = (EntityLiving)this.worldObj.getEntityByID(this.getSummon_wolf_target().entityId);
-        if (target != null && !target.isDead) {
-            int target_x = (target.getBlockPosX() + this.getBlockPosX()) / 2;
-            int target_y = (target.getBlockPosY() + this.getFootBlockPosY()) / 2;
-            int target_z = (target.getBlockPosZ() + this.getBlockPosZ()) / 2;
-            int batCounts = this.maxBatsCount - this.aliveBatsCount;
-
-            for(int attempts = 0; attempts < batCounts; ++attempts) {
-                EntityVampireBat bat = new EntityVampireBat(this.worldObj);
-                bat.addPotionEffect(new MobEffect(MobEffectList.damageBoost.id,Integer.MAX_VALUE,1));
-                bat.setSpawnedByWitch(true,this);
-                bat.setPosition(target_x,target_y,target_z);
-                this.worldObj.spawnEntityInWorld(bat);
-                this.aliveBatsCount++;
-                Navigation navigator = bat.getNavigator();
-                PathEntity path = this.worldObj.getEntityPathToXYZ(bat, target_x, target_y, target_z, 32.0F, navigator.canPassOpenWoodenDoors, false, navigator.avoidsWater, navigator.canSwim);
-                if (path != null) {
-                    PathPoint final_point = path.getFinalPathPoint();
-                    if (!(World.getDistanceSqFromDeltas((float)(final_point.xCoord - target_x), (float)(final_point.yCoord - target_y), (float)(final_point.zCoord - target_z)) > 2.0D)) {
-                        bat.refreshDespawnCounter(-9600);
-                        bat.onSpawnWithEgg(null);
-                        bat.setAttackTarget(target);
-                        bat.entityFX(EnumEntityFX.summoned);
+    public void onLivingUpdate() {
+        super.onLivingUpdate();
+        EntityPlayer closestPlayerToEntity1 = this.worldObj.getClosestPlayerToEntity(this, 4, true);
+        this.fleeing = closestPlayerToEntity1 != null;
+        if (this.onServer()) {
+            if (this.throwingPotionCooldown > 0){
+                this.throwingPotionCooldown--;
+            }
+            if (this.fleeing){
+                if (this.throwingPotionCooldown <= 0) {
+                    closestPlayerToEntity1.addPotionEffect(new MobEffect(MobEffectList.moveSlowdown.id, rand.nextInt(30) + 20,0));
+                    this.attackEntityWithRangedAttack(closestPlayerToEntity1,1.0f);
+                    this.summonWolvesP();
+                    this.throwingPotionCooldown = 80;
+                    this.worldObj.setEntityState(this,EnumEntityState.witch_magic);
+                }
+            }
+            if (!this.cursedPlayer) {
+                EntityPlayer closestPlayerToEntity = this.worldObj.getClosestPlayerToEntity(this, 32, true);
+                if (closestPlayerToEntity != null) {
+                    if (closestPlayerToEntity.canSeeEntity(this)) {
+                        this.cursePlayerSpecial((ServerPlayer) closestPlayerToEntity);
+                        this.cursedPlayer = true;
                     }
                 }
             }
-
-            return batCounts;
-        } else {
-            return 0;
         }
     }
 
@@ -135,18 +131,42 @@ public class EntityWanderingWitch extends EntityWitch {
     }
 
     @Override
-    public void onLivingUpdate() {
-        super.onLivingUpdate();
-        this.fleeing = this.worldObj.getClosestPlayerToEntity(this, 3, true) != null;
-        if (this.onServer() && !this.cursedPlayer){
-            EntityPlayer closestPlayerToEntity = this.worldObj.getClosestPlayerToEntity(this, 32, true);
-            if (closestPlayerToEntity != null) {
-                if (closestPlayerToEntity.canSeeEntity(this)) {
-                    this.cursePlayerSpecial((ServerPlayer) closestPlayerToEntity);
-                    this.cursedPlayer = true;
+    public int summonWolvesP() {
+        EntityLiving summon_wolf_target = this.getSummon_wolf_target();
+        if (summon_wolf_target != null){
+            EntityLiving target = (EntityLiving)this.worldObj.getEntityByID(summon_wolf_target.entityId);
+            if (target != null && !target.isDead) {
+                int target_x = (target.getBlockPosX() + this.getBlockPosX()) / 2;
+                int target_y = (target.getBlockPosY() + this.getFootBlockPosY()) / 2;
+                int target_z = (target.getBlockPosZ() + this.getBlockPosZ()) / 2;
+                int batCounts = this.maxBatsCount - this.aliveBatsCount;
+
+                for(int attempts = 0; attempts < batCounts; ++attempts) {
+                    EntityBat bat = rand.nextInt(10) > 8 ? new EntityNightwing(this.worldObj) : new EntityGiantVampireBat(this.worldObj);
+                    bat.addPotionEffect(new MobEffect(MobEffectList.damageBoost.id,Integer.MAX_VALUE,1));
+                    bat.setSpawnedByWitch(true,this);
+                    bat.setPosition(target_x,target_y,target_z);
+                    this.worldObj.spawnEntityInWorld(bat);
+                    this.aliveBatsCount++;
+                    Navigation navigator = bat.getNavigator();
+                    PathEntity path = this.worldObj.getEntityPathToXYZ(bat, target_x, target_y, target_z, 32.0F, navigator.canPassOpenWoodenDoors, false, navigator.avoidsWater, navigator.canSwim);
+                    if (path != null) {
+                        PathPoint final_point = path.getFinalPathPoint();
+                        if (!(World.getDistanceSqFromDeltas((float)(final_point.xCoord - target_x), (float)(final_point.yCoord - target_y), (float)(final_point.zCoord - target_z)) > 2.0D)) {
+                            bat.refreshDespawnCounter(-9600);
+                            bat.onSpawnWithEgg(null);
+                            bat.setAttackTarget(target);
+                            bat.entityFX(EnumEntityFX.summoned);
+                        }
+                    }
                 }
+
+                return batCounts;
+            } else {
+                return 0;
             }
         }
+        return 0;
     }
 
     public boolean considerStopFleeing() {

@@ -45,9 +45,18 @@ public class EntitySkeletonTrans extends EntityMonster implements IRangedEntity 
       super(par1World);
    }
 
+
+   @Override
+   protected void addRandomArmor() {
+      super.addRandomArmor();
+      if (this.worldObj.isUnderworld() && this.worldObj.getDayOfOverworld() < 64) {
+         MonsterUtil.addDefaultArmor(64, this, true);
+      }
+   }
+
    @Overwrite
    public void addRandomWeapon() {
-      int day_of_world = MinecraftServer.F().getOverworld().getDayOfWorld();
+      int day_of_world = MinecraftServer.F().getOverworld().getDayOfOverworld();
       if (this.getSkeletonType() == 2 && day_of_world >= 64) {
          if (this.getRNG().nextInt(Math.max(2, 20 - day_of_world / 48)) == 1) {
             super.setCurrentItemOrArmor(0, (new ItemStack(this.getWeapon(day_of_world))).randomizeForMob(this, day_of_world >= 96));
@@ -77,16 +86,16 @@ public class EntitySkeletonTrans extends EntityMonster implements IRangedEntity 
    @Overwrite
    protected void applyEntityAttributes() {
       super.applyEntityAttributes();
-      int day = this.getWorld() != null ? this.getWorld().getDayOfWorld() : 0;
+      int day = this.getWorld() != null ? this.getWorld().getDayOfOverworld() : 0;
       this.setEntityAttribute(GenericAttributes.followRange, 64.0D);
       if (this.getSkeletonType() == WITHER_SKELETON_ID) {
          this.setEntityAttribute(GenericAttributes.maxHealth, 45D + (double)day / 16.0D);
          this.setEntityAttribute(GenericAttributes.movementSpeed, 0.25D);
-         this.setEntityAttribute(GenericAttributes.attackDamage, 15.0D + (double)day / 24.0D);
+         this.setEntityAttribute(GenericAttributes.attackDamage, 13.0D + (double)day / 24.0D);
       } else {
          this.setEntityAttribute(GenericAttributes.maxHealth, 15.0D + (double)day / 14.0D);
          this.setEntityAttribute(GenericAttributes.movementSpeed, 0.30000001192092896D);
-         this.setEntityAttribute(GenericAttributes.attackDamage, 10 + day / 24d);
+         this.setEntityAttribute(GenericAttributes.attackDamage, 8 + day / 24d);
       }
 
    }
@@ -110,7 +119,7 @@ public class EntitySkeletonTrans extends EntityMonster implements IRangedEntity 
 
    @Override
    protected float getChanceOfCausingFire() {
-      return Math.min(0.05f + this.worldObj.getDayOfWorld() / 800f,0.25f);
+      return Math.min(0.05f + this.worldObj.getDayOfOverworld() / 800f,0.25f);
    }
 
    @Overwrite
@@ -130,14 +139,9 @@ public class EntitySkeletonTrans extends EntityMonster implements IRangedEntity 
       return Constant.SWORDS[Math.max(Math.min(day / 64,Constant.SWORDS.length - 1),0)];
    }
 
-   void initStockedWeapon(){
-      this.willChangeWeapon = this.willChangeWeapon();
-      int day = this.getWorld() != null ? this.getWorld().getDayOfWorld() : 0;
-      if (this.getHeldItem() instanceof ItemBow) {
-         this.stowed_item_stack = (new ItemStack(this.getWeapon(day))).randomizeForMob(this, true);
-      }else if (this.getHeldItem() instanceof ItemSword){
-         this.stowed_item_stack = (new ItemStack(this.getWeapon(day))).randomizeForMob(this, true);
-      }
+   @Override
+   public float getWeaponDamageBoost() {
+      return 1.15f;
    }
 
    @Inject(method = "addRandomEquipment",at = @At("RETURN"))
@@ -198,9 +202,14 @@ public class EntitySkeletonTrans extends EntityMonster implements IRangedEntity 
       this.setCombatTask();
    }
 
-   @Override
-   public float getWeaponDamageBoost() {
-      return 1.25f;
+   void initStockedWeapon(){
+      this.willChangeWeapon = this.willChangeWeapon();
+      int day = this.getWorld() != null ? this.getWorld().getDayOfOverworld() : 0;
+      if (this.getHeldItem() instanceof ItemBow) {
+         this.stowed_item_stack = (new ItemStack(this.getWeapon(day))).randomizeForMob(this, true);
+      }else if (this.getHeldItem() instanceof ItemSword){
+         this.stowed_item_stack = (new ItemStack(this.getWeapon(day))).randomizeForMob(this, true);
+      }
    }
 
    @Inject(method = "writeEntityToNBT",at = @At("RETURN"))
@@ -304,7 +313,7 @@ public class EntitySkeletonTrans extends EntityMonster implements IRangedEntity 
 //            skeleton.getDataWatcher().updateObject(DATA_OBJ_ID_COMPRESSED,(byte)0);
             skeleton.setAttackTarget(this.getTarget());
             skeleton.entityFX(EnumEntityFX.summoned);
-            int dayOfWorld = this.worldObj.getDayOfWorld();
+            int dayOfWorld = this.worldObj.getDayOfOverworld();
             if (dayOfWorld > 64) {
                skeleton.setCurrentItemOrArmor(1, new ItemStack(Constant.HELMETS[MathHelper.clamp_int(1,MonsterUtil.getRandomItemTier(this.rand, dayOfWorld),Constant.HELMETS.length - 1)]).randomizeForMob(skeleton,true));
             }
@@ -329,7 +338,7 @@ public class EntitySkeletonTrans extends EntityMonster implements IRangedEntity 
       if (skeleton_type == WITHER_SKELETON_ID) {
          this.tasks.addTask(4, this.aiAttackOnCollide);
          this.setSkeletonType(WITHER_SKELETON_ID);
-         this.setCurrentItemOrArmor(0, (new ItemStack(Item.swordAncientMetal)).setQuality(EnumQuality.poor).randomizeForMob(this, super.worldObj.getDayOfWorld() > 160));
+         this.setCurrentItemOrArmor(0, (new ItemStack(Item.swordAncientMetal)).setQuality(EnumQuality.poor).randomizeForMob(this, super.worldObj.getDayOfOverworld() > 160));
          this.getEntityAttribute(GenericAttributes.attackDamage).setAttribute(4.0D);
          this.setEntityAttribute(GenericAttributes.maxHealth, this.getEntityAttributeValue(GenericAttributes.maxHealth) * 2.0D);
          this.setHealth(24.0F);
@@ -392,7 +401,7 @@ public class EntitySkeletonTrans extends EntityMonster implements IRangedEntity 
    }
 
    private void processArrow(EntityArrow var3, float par2) {
-      int rawDay = this.getWorld() != null ? this.getWorld().getDayOfWorld() : 0;
+      int rawDay = this.getWorld() != null ? this.getWorld().getDayOfOverworld() : 0;
       int day = Math.max(rawDay - 64, 0);
       int var4 = EnchantmentManager.getEnchantmentLevel(Enchantment.power.effectId, this.getHeldItemStack()) + 1;
       int var5 = (int)((double)EnchantmentManager.getEnchantmentLevel(Enchantment.punch.effectId, this.getHeldItemStack()) + Math.min(1.0D + Math.floor((float)day / 48.0F), 5.0D));

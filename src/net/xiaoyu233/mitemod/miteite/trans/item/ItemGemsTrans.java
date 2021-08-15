@@ -19,7 +19,7 @@ public class ItemGemsTrans extends Item {
       if (item == Item.dyePowder && item_stack.getItemSubtype() == 4) {
          return 40;
       } else {
-         return item == netherQuartz ? Configs.Item.QUARTZ_EXP.get() : (item == emerald ? 250 : (item == diamond ? Configs.Item.DIAMOND_EXP.get() : 0));
+         return item == netherQuartz ? Configs.Item.QUARTZ_EXP.get() : (item == emerald ? Configs.Item.EMERALD_EXP.get() : (item == diamond ? Configs.Item.DIAMOND_EXP.get() : 0));
       }
    }
 

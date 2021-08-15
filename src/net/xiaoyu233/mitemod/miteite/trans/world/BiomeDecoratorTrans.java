@@ -168,7 +168,7 @@ public class BiomeDecoratorTrans {
          this.genMinable(GOLD_FREQUENCY_UNDERWORLD, this.goldGen, true);
          this.genMinable(IRON_FREQUENCY_UNDERWORLD, this.ironGen, true);
          this.genMinable(MITHRIL_FREQUENCY_UNDERWORLD, this.mithrilGen, true);
-         this.genMinable(ADAMANTIUM_FREQUENCY_UNDERWORLD, this.adamantiteGen, true);
+         this.genMinable(ADAMANTIUM_FREQUENCY_UNDERWORLD / 2, this.adamantiteGen, false);
          this.genMinable(10, this.redstoneGen);
          this.genMinable(DIAMOND_FREQUENCY_UNDERWORLD, this.diamondGen);
          this.genMinable(LAPIS_FREQUENCY_UNDERWORLD, this.lapisGen);

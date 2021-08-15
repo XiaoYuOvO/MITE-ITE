@@ -134,7 +134,7 @@ public abstract class EntityInsentientTrans extends EntityLiving {
                }
                if (!item.isMaxToolLevel(stack)) {
                   if (item.isWeapon(item) || amp != 1) {
-                     item.addExpForTool(stack, (EntityPlayer) attacker, (int) Math.min(this.getHealth(), result.getAmountOfHealthLost() * amp));
+                     item.addExpForTool(stack, (EntityPlayer) attacker, (int) Math.min(this.getMaxHealth(), result.getAmountOfHealthLost() * amp));
                   } else {
                      item.addExpForTool(stack, (EntityPlayer) attacker, 1);
                   }

@@ -239,10 +239,12 @@ public class ContainerForgingTable extends Container {
         return itemstack;
     }
 
+
+
     void updateInfo(@Nullable ForgingRecipe recipe) {
         if (!this.world.isRemote){
             if (recipe != null){
-                this.player.sendPacket(new SPacketForgingTableInfo(SPacketForgingTableInfo.EnhanceInfo.getInstance(recipe.getChanceOfFailure(),recipe.getFaultFeedback(),this.slots.getForgingTime(recipe),recipe.getHammerDurabilityCost(),recipe.getAxeDurabilityCost())));
+                this.player.sendPacket(new SPacketForgingTableInfo(SPacketForgingTableInfo.EnhanceInfo.getInstance(this.slots.getChanceOfFailure(recipe),recipe.getFaultFeedback(),this.slots.getForgingTime(recipe),recipe.getHammerDurabilityCost(),recipe.getAxeDurabilityCost())));
             }else {
                 this.player.sendPacket(new SPacketForgingTableInfo(SPacketForgingTableInfo.EnhanceInfo.getInstance(0,null,0,0,0)));
             }

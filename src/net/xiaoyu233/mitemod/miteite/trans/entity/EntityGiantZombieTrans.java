@@ -50,7 +50,7 @@ public class EntityGiantZombieTrans extends EntityMonster {
    @Override
    protected void addRandomArmor() {
       int hour = this.getWorld().getHourOfDay();
-      int day = this.getWorld().getDayOfWorld();
+      int day = this.getWorld().getDayOfOverworld();
       Random rand;
       if (day > 32 && ((day % 2 == 0 || day > 64) && hour >= 18 || ((day - 1) % 2 == 0 || day > 64) && hour <= 6)) {
          this.addPotionEffect(new MobEffect(1, 999999, this.getRNG().nextInt(Math.max((day - 32) / 96, 1)), true));
@@ -78,7 +78,7 @@ public class EntityGiantZombieTrans extends EntityMonster {
    @Overwrite
    protected void applyEntityAttributes() {
       super.applyEntityAttributes();
-      int day = this.getWorld() != null ? Math.max(this.getWorld().getDayOfWorld(), 0) : 0;
+      int day = this.getWorld() != null ? Math.max(this.getWorld().getDayOfOverworld(), 0) : 0;
       this.getEntityAttribute(GenericAttributes.attackDamage).setAttribute(25.0D + (double)day / 16.0D);
       this.getEntityAttribute(GenericAttributes.maxHealth).setAttribute(100.0D + (double)day / 16.0D);
       this.getEntityAttribute(GenericAttributes.movementSpeed).setAttribute(0.3D);
@@ -103,7 +103,7 @@ public class EntityGiantZombieTrans extends EntityMonster {
 
    protected void dropFewItems(boolean recently_hit_by_player, DamageSource damage_source) {
       if (recently_hit_by_player) {
-         if (this.getWorld().getDayOfWorld() < 128) {
+         if (this.getWorld().getDayOfOverworld() < 128) {
             this.dropItemStack(new ItemStack(Item.ancientMetalNugget, 4 + this.rand.nextInt(2)));
          } else {
             this.dropItemStack(new ItemStack(Item.ingotMithril, 1));
@@ -114,8 +114,8 @@ public class EntityGiantZombieTrans extends EntityMonster {
    }
 
    protected void enchantEquipment(ItemStack item_stack) {
-      if ((double)this.getRNG().nextFloat() <= 0.1D + (double)this.getWorld().getDayOfWorld() / 64.0D / 10.0D) {
-         EnchantmentManager.addRandomEnchantment(this.getRNG(), item_stack, (int)(5.0F + (float)((this.getRNG().nextInt(15 + this.getWorld().getDayOfWorld() / 24) + 3) / 10) * (float)this.getRNG().nextInt(18)));
+      if ((double)this.getRNG().nextFloat() <= 0.1D + (double)this.getWorld().getDayOfOverworld() / 64.0D / 10.0D) {
+         EnchantmentManager.addRandomEnchantment(this.getRNG(), item_stack, (int)(5.0F + (float)((this.getRNG().nextInt(15 + this.getWorld().getDayOfOverworld() / 24) + 3) / 10) * (float)this.getRNG().nextInt(18)));
       }
 
    }

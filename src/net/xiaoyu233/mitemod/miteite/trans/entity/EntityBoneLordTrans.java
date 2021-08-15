@@ -15,7 +15,7 @@ public class EntityBoneLordTrans extends EntitySkeletonTrans {
    @Overwrite
    protected void addRandomEquipment() {
       this.addRandomWeapon();
-      int day = this.getWorld() != null ? Math.max(this.getWorld().getDayOfWorld(), 0) : 0;
+      int day = this.getWorld() != null ? Math.max(this.getWorld().getDayOfOverworld(), 0) : 0;
       if (day < 96) {
          this.setBoots((new ItemStack(Item.bootsIron)).randomizeForMob(this, true));
          this.setLeggings((new ItemStack(Item.legsIron)).randomizeForMob(this, true));
@@ -37,16 +37,16 @@ public class EntityBoneLordTrans extends EntitySkeletonTrans {
    protected void applyEntityAttributes() {
       super.applyEntityAttributes();
       boolean boneLordTweak = Configs.Entities.BONE_LORD_TWEAK.get();
-      int day = this.getWorld() != null ? this.getWorld().getDayOfWorld() : 0;
+      int day = this.getWorld() != null ? this.getWorld().getDayOfOverworld() : 0;
       this.setEntityAttribute(GenericAttributes.followRange, 44.0D);
       this.setEntityAttribute(GenericAttributes.movementSpeed, 0.27000001072883606D);
-      this.setEntityAttribute(GenericAttributes.attackDamage, boneLordTweak ? 12 + day /20D : 5.5D);
+      this.setEntityAttribute(GenericAttributes.attackDamage, boneLordTweak ? 10 + day /20D : 3.5D);
       this.setEntityAttribute(GenericAttributes.maxHealth, boneLordTweak ? 35 + day / 16D : 22.0D);
    }
 
    protected void enchantEquipment(ItemStack item_stack) {
-      if ((double)this.getRNG().nextFloat() <= 0.2D + (double)this.getWorld().getDayOfWorld() / 64.0D / 10.0D) {
-         EnchantmentManager.addRandomEnchantment(this.getRNG(), item_stack, (int)(5.0F + (float)((this.getRNG().nextInt(15 + this.getWorld().getDayOfWorld() / 24) + 3) / 10) * (float)this.getRNG().nextInt(18)));
+      if ((double)this.getRNG().nextFloat() <= 0.2D + (double)this.getWorld().getDayOfOverworld() / 64.0D / 10.0D) {
+         EnchantmentManager.addRandomEnchantment(this.getRNG(), item_stack, (int)(5.0F + (float)((this.getRNG().nextInt(15 + this.getWorld().getDayOfOverworld() / 24) + 3) / 10) * (float)this.getRNG().nextInt(18)));
       }
 
    }

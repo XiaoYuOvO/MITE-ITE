@@ -22,12 +22,12 @@ public class EntityInfernalCreeperTrans extends EntityCreeperTrans {
       if (Configs.Entities.INFERNAL_CREEPER_BOOST.get()) {
          if (damage_source.bypassesMundaneArmor()) {
             if (this.getWorld() != null) {
-               return super.getNaturalDefense(damage_source) + (float) this.getWorld().getDayOfWorld() * 0.075F;
+               return super.getNaturalDefense(damage_source) + (float) this.getWorld().getDayOfOverworld() * 0.075F;
             }
             return super.getNaturalDefense(damage_source);
          }
          if (this.getWorld() != null) {
-            return super.getNaturalDefense(damage_source) + 2.0F + (float) this.getWorld().getDayOfWorld() * 0.075F;
+            return super.getNaturalDefense(damage_source) + 2.0F + (float) this.getWorld().getDayOfOverworld() * 0.075F;
          }
          return super.getNaturalDefense(damage_source) + 2.0F;
       }

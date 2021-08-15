@@ -19,7 +19,7 @@ public class EntityIronGolemTrans extends EntityGolem {
    @Overwrite
    protected void applyEntityAttributes() {
       super.applyEntityAttributes();
-      int day = this.getWorld() != null ? this.getWorld().getDayOfWorld() : 0;
+      int day = this.getWorld() != null ? this.getWorld().getDayOfOverworld() : 0;
       this.getEntityAttribute(GenericAttributes.maxHealth).setAttribute(200.0D + day / 26D);
       this.getEntityAttribute(GenericAttributes.movementSpeed).setAttribute(0.25D);
       this.setEntityAttribute(GenericAttributes.attackDamage, 0.0D);
@@ -28,7 +28,7 @@ public class EntityIronGolemTrans extends EntityGolem {
    public EntityDamageResult attackEntityAsMob(Entity target) {
       this.attackTimer = 10;
       this.worldObj.setEntityState(this, EnumEntityState.golem_throw);
-      int day = this.getWorld() != null ? this.getWorld().getDayOfWorld() : 0;
+      int day = this.getWorld() != null ? this.getWorld().getDayOfOverworld() : 0;
       EntityDamageResult result = target.attackEntityFrom(new Damage(DamageSource.causeMobDamage(this), (float) (25f + day / 16f + this.getEntityAttributeValue(GenericAttributes.attackDamage))));
       if (result != null) {
          if (result.entityWasKnockedBack()) {

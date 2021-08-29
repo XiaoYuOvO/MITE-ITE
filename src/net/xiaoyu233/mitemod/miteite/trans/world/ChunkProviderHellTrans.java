@@ -2,6 +2,7 @@ package net.xiaoyu233.mitemod.miteite.trans.world;
 
 import net.minecraft.*;
 import net.xiaoyu233.mitemod.miteite.block.Blocks;
+import net.xiaoyu233.mitemod.miteite.util.Configs;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
@@ -130,9 +131,9 @@ public class ChunkProviderHellTrans {
          }
       }
 
-      var12 = (new WorldGenMinable(Blocks.netherAdamantiumOre.blockID, 5, Block.netherrack.blockID)).setMinableBlockMetadata(0);
+      var12 = (new WorldGenMinable(Blocks.netherAdamantiumOre.blockID, Configs.WorldGen.Nether.NETHER_ADAMANTIUM_MAX_COUNT_PER_VEIN.get(), Block.netherrack.blockID)).setMinableBlockMetadata(0);
 
-      int count = this.hellRNG.nextInt(6) + 1;
+      int count = this.hellRNG.nextInt(Configs.WorldGen.Nether.NETHER_ADAMANTIUM_MAX_COUNT_PER_CHUNK.get()) + 1;
       for(var8 = 0; var8 < count; ++var8) {
          var9 = var4 + this.hellRNG.nextInt(16);
          var10 = this.hellRNG.nextInt(80) + 35;

@@ -30,7 +30,7 @@ public class Blocks extends Block{
             new BlockFurnaceVibranium(getNextBlockID(),false).setCreativeTab(CreativeModeTab.tabDecorations)
                     .setBlockHardness(8.0F).setExplosionResistance(0.875f).setStepSound_(Block.soundStoneFootstep);
     public static final Block netherAdamantiumOre = new BlockNetherAdamantiumOre(getNextBlockID()).setCreativeTab(CreativeModeTab.tabBlock).setBlockHardness(4.0F).setStepSound_(soundStoneFootstep).setUnlocalizedName("oreNetherAdamantium");
-
+    public static final Block chestVibranium = (ReflectHelper.createInstance(BlockStrongbox.class,new Class[] {int.class,Material.class},getNextBlockID(), Materials.vibranium)).setStepSound_(soundMetalFootstep);
     static {
         try {
             Field field = Block.class.getDeclaredField("is_normal_cube_lookup");
@@ -81,6 +81,7 @@ public class Blocks extends Block{
         registerItemBlock(furnaceVibraniumBurning,"furnace_vibranium_burning");
         registerItemBlock(blockForgingTable,"block_forging_table");
         registerItemBlock(netherAdamantiumOre,"nether_adamantium_ore");
+        registerItemBlock(chestVibranium,"vibranium_chest");
     }
 
     private static void registerItemBlock(Block block,String resourceLocation){
@@ -125,6 +126,11 @@ public class Blocks extends Block{
                 'I', Items.ingotIron,
                 'T',new ItemStack(Block.workbench,1,7),
                 'O',Blocks.obsidian);
+        register.registerShapedRecipe(new ItemStack(Blocks.chestVibranium), true,
+                "III",
+                "I I",
+                "III",
+                'I', VIBRANIUM_INGOT);
         registerForgingTableUpgradeRecipes(register,ForgingTableLevel.IRON,Item.ingotMithril);
         registerForgingTableUpgradeRecipes(register,ForgingTableLevel.MITHRIL,Item.ingotAdamantium);
         registerForgingTableUpgradeRecipes(register,ForgingTableLevel.ADAMANTIUM, VIBRANIUM_INGOT);

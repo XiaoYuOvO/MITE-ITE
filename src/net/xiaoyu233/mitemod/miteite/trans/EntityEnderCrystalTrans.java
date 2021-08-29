@@ -24,7 +24,7 @@ public class EntityEnderCrystalTrans extends Entity {
                 ItemStack item_stack = damage_source.getItemAttackedWith();
                 if (item_stack != null && item_stack.getItem().isTool()) {
                     ItemTool item_tool = item_stack.getItemAsTool();
-                    //Make only vibrantium will be effective
+                    //Make only vibranium will be effective
                     return !item_tool.isEffectiveAgainstBlock(Block.blockAdamantium, 0);
                 }
             }

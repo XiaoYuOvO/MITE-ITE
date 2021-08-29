@@ -1,6 +1,7 @@
 package net.xiaoyu233.mitemod.miteite.entity;
 
 import net.minecraft.*;
+import net.xiaoyu233.mitemod.miteite.util.Configs;
 
 import java.util.Random;
 import java.util.UUID;
@@ -63,7 +64,14 @@ public class EntityWanderingWitch extends EntityWitch {
 
     @Override
     public boolean getCanSpawnHere(boolean perform_light_check) {
-        return super.getCanSpawnHere(perform_light_check) && this.worldObj.getDayOfOverworld() > 64;
+        boolean chanceSpawn = false;
+        if (this.worldObj.isOverworld()){
+            chanceSpawn = this.rand.nextInt(100) < Configs.GameMechanics.MobSpawning.WANDERING_WITCH_SPAWN_CHANCE_OVERWORLD.get();
+        }
+        if (this.worldObj.isUnderworld()){
+            chanceSpawn = this.rand.nextInt(100) < Configs.GameMechanics.MobSpawning.WANDERING_WITCH_SPAWN_CHANCE_UNDERWORLD.get();
+        }
+        return super.getCanSpawnHere(perform_light_check) && this.worldObj.getDayOfOverworld() > 64 && chanceSpawn;
     }
 
     public void onAllyBatsDeath(){

@@ -68,11 +68,11 @@ public class ForgingTableRecipes {
         registerZeroToTwoRecipes(Material.iron,ForgingTableLevel.IRON);
         registerZeroToTwoRecipes(Material.ancient_metal,ForgingTableLevel.MITHRIL);
         registerZeroToFourRecipes(Material.mithril,ForgingTableLevel.MITHRIL);
-        //Vibrantium
+        //Vibranium
         {
-            registerZeroToThreeRecipes(Materials.vibranium,ForgingTableLevel.VIBRANTIUM);
-            registerThreeToSix(Materials.vibranium,ForgingTableLevel.VIBRANTIUM);
-            ForgingRecipe.Builder.of(Materials.vibranium,7,ForgingTableLevel.VIBRANTIUM).
+            registerZeroToThreeRecipes(Materials.vibranium,ForgingTableLevel.VIBRANIUM);
+            registerThreeToSix(Materials.vibranium,ForgingTableLevel.VIBRANIUM);
+            ForgingRecipe.Builder.of(Materials.vibranium,7,ForgingTableLevel.VIBRANIUM).
                     setChanceOfFailure(Items.ADAMANTIUM_ENHANCE_STONE.getFailChance()).
                     setAxeDurabilityCost(6144).
                     setHammerDurabilityCost(8192).
@@ -85,7 +85,7 @@ public class ForgingTableRecipes {
                             new ItemStack(Item.ingotMithril,2),
                             new ItemStack(Items.ADAMANTIUM_ENHANCE_STONE,1)).
                     build(regiseterer);
-            ForgingRecipe.Builder.of(Materials.vibranium,8,ForgingTableLevel.VIBRANTIUM).
+            ForgingRecipe.Builder.of(Materials.vibranium,8,ForgingTableLevel.VIBRANIUM).
                     setChanceOfFailure(Items.ADAMANTIUM_ENHANCE_STONE.getFailChance()).
                     setAxeDurabilityCost(8192).
                     setHammerDurabilityCost(10240).
@@ -98,7 +98,7 @@ public class ForgingTableRecipes {
                             new ItemStack(Item.ingotMithril,2),
                             new ItemStack(Items.ADAMANTIUM_ENHANCE_STONE,1)).
                     build(regiseterer);
-            ForgingRecipe.Builder.of(Materials.vibranium,9,ForgingTableLevel.VIBRANTIUM).
+            ForgingRecipe.Builder.of(Materials.vibranium,9,ForgingTableLevel.VIBRANIUM).
                     setChanceOfFailure(Items.ADAMANTIUM_ENHANCE_STONE.getFailChance()).
                     setAxeDurabilityCost(8192).
                     setHammerDurabilityCost(10240).

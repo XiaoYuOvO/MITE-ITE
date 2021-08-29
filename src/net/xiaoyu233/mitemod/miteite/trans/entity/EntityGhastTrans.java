@@ -51,7 +51,7 @@ public class EntityGhastTrans extends EntityFlying implements IMonster {
       } else if (!this.getWorld().isOverworld()) {
          return super.getCanSpawnHere(perform_light_check);
       } else {
-         return this.getWorld().isBloodMoon24HourPeriod() && this.getWorld().getDayOfOverworld() >= Configs.GameMechanics.MobSpawning.GHAST_SPAWN_LIMIT_DAY.get() && !this.getWorld().anySolidBlockIn(this.boundingBox.addCoord(0.0D, 3.0D, 0.0D));
+         return this.getWorld().isBloodMoon24HourPeriod() && this.getWorld().getDayOfOverworld() >= Configs.GameMechanics.MobSpawning.GHAST_SPAWN_LIMIT_DAY.get() && !this.getWorld().anySolidBlockIn(this.boundingBox.addCoord(0.0D, 3.0D, 0.0D)) && this.worldObj.getEntitiesWithinAABB(EntityGhast.class,this.boundingBox.expand(64,64,64)).isEmpty();
       }
    }
 

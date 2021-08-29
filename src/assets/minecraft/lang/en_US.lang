@@ -30,11 +30,12 @@ tile.toolbench.vibranium.name=Vibranium Workbench
 tile.furnace_vibranium_idle.name=Vibranium Furnace
 tile.furnace_vibranium_burning.name=Vibranium Furnace
 tile.nether_adamantium_ore.name=Nether Adamantium Ore
+tile.vibranium_chest.name=Vibranium Chest
 
 tile.forging_table.iron.name=Iron Forging Table
 tile.forging_table.mithril.name=Mithril Forging Table
 tile.forging_table.adamantium.name=Adamantium Forging Table
-tile.forging_table.vibrantium.name=Vibrantium Forging Table
+tile.forging_table.vibranium.name=Vibrantium Forging Table
 
 achievement.vibraniumIngot=Then am I going to be invincible?
 achievement.vibraniumIngot.desc=Make a vibranium in crafting table
@@ -75,7 +76,7 @@ gui.forgingTable.levelToLow.iron=The level of forging table is too low,requires 
 gui.forgingTable.levelToLow.ancient_metal=The level of forging table is too low,requires §n§g Ancient metal§r
 gui.forgingTable.levelToLow.mithril=The level of forging table is too low,requires §n§h Mithril§r
 gui.forgingTable.levelToLow.adamantium=The level of forging table is too low,requires §n§d Adamantium§r
-gui.forgingTable.levelToLow.vibrantium=The level of forging table is too low,requires §n§9 Vibrantium§r
+gui.forgingTable.levelToLow.vibranium=The level of forging table is too low,requires §n§9 Vibrantium§r
 
 forging.failFeedback.break=break
 forging.failFeedback.durability.amount=drop durability of amount %s
@@ -86,3 +87,4 @@ gameplay.portal_door.interact=§nPlayer %s is entering portal door
 command.sleep_check.msg=The following players are not sleeping:
 command.sleep_check.none=All players are sleeping now
 container.workbench.boost=Crafting speed boost:
+container.strongbox.vibranium=Vibrantium Chest

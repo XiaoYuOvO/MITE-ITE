@@ -2,6 +2,7 @@ package net.xiaoyu233.mitemod.miteite.trans.item;
 
 import net.minecraft.*;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.SoftOverride;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
@@ -9,9 +10,16 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(ItemHoe.class)
 public class ItemHoeTrans extends ItemToolTrans{
     @Override
+    @SoftOverride
     protected int getExpForBlockBreak(BlockBreakInfo blockBreakInfo) {
-        if (this.materials_effective_against.contains(blockBreakInfo.block)){
-            return 1;
+        Block block = blockBreakInfo.block;
+        if (block instanceof BlockCrops){
+            if (((BlockCrops) block).isMature(blockBreakInfo.getMetadata())) {
+                return 8;
+            }
+        }
+        if (this.materials_effective_against.contains(block)){
+            return 3;
         }
         return 0;
     }

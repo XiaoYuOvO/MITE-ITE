@@ -19,7 +19,7 @@ public class EnchantmentEmergency extends Enchantment {
 
     @Override
     public float enchantIndividualChance(int enchantmentLevel) {
-        return 0.1f + 0.3f * (enchantmentLevel / 158f);
+        return enchantmentLevel < 50 ? 0 : 0.1f + 0.3f * (enchantmentLevel / 158f);
     }
 
     @Override

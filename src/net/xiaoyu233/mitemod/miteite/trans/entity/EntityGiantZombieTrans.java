@@ -163,16 +163,16 @@ public class EntityGiantZombieTrans extends EntityMonster {
       this.tasks.addTask(0, new PathfinderGoalFloat(this));
       this.tasks.addTask(2, new PathfinderGoalMeleeAttack(this, EntityPlayer.class, 1.1D, true));
       this.tasks.addTask(3, new PathfinderGoalMeleeAttack(this, EntityVillager.class, 1.0D, true));
+      this.tasks.addTask(4, new PathfinderGoalMeleeAttack(this, EntityAnimal.class, 1.0D, true));
       this.tasks.addTask(4, new PathfinderGoalMoveTowardsRestriction(this, 1.0D));
       this.tasks.addTask(5, new PathfinderGoalMoveThroughVillage(this, 1.0D, false));
       this.tasks.addTask(6, new PathfinderGoalRandomStroll(this, 1.0D));
       this.tasks.addTask(7, new PathfinderGoalLookAtPlayer(this, EntityPlayer.class, 8.0F));
       this.tasks.addTask(7, new PathfinderGoalRandomLookaround(this));
-      this.tasks.addTask(1, new PathfinderGoalHurtByTarget(this, true));
-      this.tasks.addTask(2, new PathfinderGoalNearestAttackableTarget(this, EntityPlayer.class, 0, true));
-      this.tasks.addTask(2, new PathfinderGoalNearestAttackableTarget(this, EntityVillager.class, 0, false));
-      this.tasks.addTask(4, new PathfinderGoalMeleeAttack(this, EntityAnimal.class, 1.0D, true));
-      this.tasks.addTask(3, new PathfinderGoalNearestAttackableTarget(this, EntityAnimal.class, 10, true));
+      this.targetTasks.addTask(1, new PathfinderGoalHurtByTarget(this, true));
+      this.targetTasks.addTask(2, new PathfinderGoalNearestAttackableTarget(this, EntityPlayer.class, 0, true));
+      this.targetTasks.addTask(2, new PathfinderGoalNearestAttackableTarget(this, EntityVillager.class, 0, false));
+      this.targetTasks.addTask(3, new PathfinderGoalNearestAttackableTarget(this, EntityAnimal.class, 10, true));
       this.setSize(0.6f * 6.1F, 1.8f * 6.0F);
    }
 

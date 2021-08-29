@@ -25,6 +25,8 @@ public class Configs {
                             addEntry(ConfigEntry.of("blood_moon_max_hostile_fraction",GameMechanics.MobSpawning.BLOOD_MOON_MAX_HOSTILE_FRACTION).withComment("血月最大刷怪数量系数(小数)")).
                             addEntry(ConfigEntry.of("ghast_spawn_limit_day",GameMechanics.MobSpawning.GHAST_SPAWN_LIMIT_DAY).withComment("主世界生成恶魂所需天数(整数)")).
                             addEntry(ConfigEntry.of("ancient_bone_lord_spawn_limit_day",GameMechanics.MobSpawning.ANCIENT_BONE_LORD_SPAWN_LIMIT_DAY).withComment("主世界生成远古骷髅公爵所需天数(整数)")).
+                            addEntry(ConfigEntry.of("wandering_witch_spawn_chance_overworld",GameMechanics.MobSpawning.WANDERING_WITCH_SPAWN_CHANCE_OVERWORLD).withComment("主世界流浪女巫生成概率百分比(整数)")).
+                            addEntry(ConfigEntry.of("wandering_witch_spawn_chance_underworld",GameMechanics.MobSpawning.WANDERING_WITCH_SPAWN_CHANCE_UNDERWORLD).withComment("地底世界流浪女巫生成概率百分比(整数)")).
                             addEntry(ConfigEntry.of("mob_max_spawn_count_increase_per_day",GameMechanics.MobSpawning.MOB_MAX_SPAWN_COUNT_INCREASE_PER_DAY).withComment("每天刷怪数量上限增量(整数)"))).
                     addEntry(ConfigCategory.of("Underworld").
                             addEntry(ConfigEntry.of("underworld_random_teleport",GameMechanics.Underworld.UNDERWORLD_RANDOM_TELEPORT).withComment("地底世界随机传送(开关)")).
@@ -75,6 +77,8 @@ public class Configs {
                     addEntry(ConfigEntry.of("zombie_pigman_attack_animails",Entities.ZOMBIE_PIGMAN_ATTACK_ANIMAILS).withComment("僵尸猪人攻击动物")).
                     addEntry(ConfigEntry.of("ghast_overworld_boost",Entities.GHAST_OVERWORLD_BOOST).withComment("主世界恶魂火球爆炸范围增强倍数")).
                     addEntry(ConfigEntry.of("wolves_attack_players_with_meat",Entities.WOLVES_ATTACK_PLAYERS_WITH_MEAT).withComment("狼攻击快捷栏有肉的玩家")).
+                    addEntry(ConfigEntry.of("villager_wool_to_emerald_shard_count",Entities.VILLAGER_WOOL_TO_EMERALD_SHARD_COUNT).withComment("村民用羊毛换绿宝石碎片-羊毛所需数量")).
+                    addEntry(ConfigEntry.of("villager_wool_to_emerald_shard_shard_count",Entities.VILLAGER_WOOL_TO_EMERALD_SHARD_SHARD_COUNT).withComment("村民用羊毛换绿宝石碎片-绿宝石碎片获得数量")).
                     addEntry(ConfigEntry.of("can_boost_iron_golem",Entities.CAN_BOOST_IRON_GOLEM).withComment("可以强化铁傀儡")).
                     addEntry(ConfigEntry.of("mob_defense",Entities.MOB_DEFENSE).withComment("怪物格挡")).
                     addEntry(ConfigEntry.of("mob_disarm_when_defence",Entities.MOB_DISARM_WHEN_DEFENCE).withComment("怪物格挡时若有缴械附魔有几率缴械")).
@@ -112,7 +116,10 @@ public class Configs {
                             addEntry(ConfigEntry.of("lapis_frequency_underworld",WorldGen.Underworld.LAPIS_FREQUENCY_UNDERWORLD).withComment("地底世界青金石矿生成频率")).
                             addEntry(ConfigEntry.of("diamond_frequency_underworld",WorldGen.Underworld.DIAMOND_FREQUENCY_UNDERWORLD).withComment("地底世界钻石矿生成频率")).
                             addEntry(ConfigEntry.of("adamantium_frequency_underworld",WorldGen.Underworld.ADAMANTIUM_FREQUENCY_UNDERWORLD).withComment("地底世界艾德曼矿生成频率")).
-                            addEntry(ConfigEntry.of("underworld_mantle_block_offset",WorldGen.Underworld.UNDERWORLD_MANTLE_BLOCK_OFFSET).withComment("地底世界地幔位置向上偏移")))).
+                            addEntry(ConfigEntry.of("underworld_mantle_block_offset",WorldGen.Underworld.UNDERWORLD_MANTLE_BLOCK_OFFSET).withComment("地底世界地幔位置向上偏移"))).
+                    addEntry(ConfigCategory.of("Nether").
+                            addEntry(ConfigEntry.of("nether_adamantium_max_count_per_chunk",WorldGen.Nether.NETHER_ADAMANTIUM_MAX_COUNT_PER_CHUNK).withComment("地狱艾德曼每个区块最大生成数量")).
+                            addEntry(ConfigEntry.of("nether_adamantium_max_count_per_vein",WorldGen.Nether.NETHER_ADAMANTIUM_MAX_COUNT_PER_VEIN).withComment("地狱艾德曼每个矿脉最大矿物生成数量")))).
             addEntry(ConfigCategory.of("Client").
                     addEntry(ConfigCategory.of("Gui").
                             addEntry(ConfigEntry.of("health_bar_x_offset",Client.Gui.HEALTH_BAR_X_OFFSET).withComment("营养条GUI横向偏移")).
@@ -192,6 +199,8 @@ public class Configs {
             public static final FieldReference<Double> BLOOD_MOON_MAX_HOSTILE_FRACTION = new FieldReference<>(128d);
             public static final FieldReference<Integer> GHAST_SPAWN_LIMIT_DAY = new FieldReference<>(128);
             public static final FieldReference<Double> MOB_MAX_SPAWN_COUNT_INCREASE_PER_DAY = new FieldReference<>(1d);
+            public static final FieldReference<Integer> WANDERING_WITCH_SPAWN_CHANCE_OVERWORLD = new FieldReference<>(33);
+            public static final FieldReference<Integer> WANDERING_WITCH_SPAWN_CHANCE_UNDERWORLD = new FieldReference<>(50);
         }
 
         public static class Nether{
@@ -267,6 +276,11 @@ public class Configs {
             public static final FieldReference<Integer> MITHRIL_FREQUENCY_UNDERWORLD = new FieldReference<>(10);
             public static final FieldReference<Integer> SILVER_FREQUENCY_UNDERWORLD = new FieldReference<>(10);
             public static final FieldReference<Integer> UNDERWORLD_MANTLE_BLOCK_OFFSET = new FieldReference<>(75);
+        }
+
+        public static class Nether{
+            public static final FieldReference<Integer> NETHER_ADAMANTIUM_MAX_COUNT_PER_CHUNK = new FieldReference<>(3);
+            public static final FieldReference<Integer> NETHER_ADAMANTIUM_MAX_COUNT_PER_VEIN = new FieldReference<>(2);
         }
     }
 }

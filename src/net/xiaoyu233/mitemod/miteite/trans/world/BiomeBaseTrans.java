@@ -8,6 +8,9 @@ import net.xiaoyu233.mitemod.miteite.entity.EntityZombieLord;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,8 +56,6 @@ public class BiomeBaseTrans {
    protected WorldGenSwampTree worldGeneratorSwamp;
    @Shadow
    protected WorldGenTrees worldGeneratorTrees;
-   @Shadow
-   private boolean enableSnow;
 
    protected BiomeBaseTrans(int par1) {
       this.topBlock = (byte)Block.grass.blockID;
@@ -107,6 +108,10 @@ public class BiomeBaseTrans {
       this.spawnableMonsterList.add(new BiomeMeta(EntityClayGolem.class, 50, 1, 1));
       this.spawnableMonsterList.add(new BiomeMeta(EntityBoneLord.class, 5, 1, 1));
       this.spawnableMonsterList.add(new BiomeMeta(EntityPhaseSpider.class, 5, 1, 4));
+   }
+
+   @Inject(method = "<init>",at = @At("RETURN"))
+   private void injectInit(CallbackInfo callbackInfo){
       this.spawnableMonsterList.add(new BiomeMeta(EntityGiantZombie.class, 10, 1, 1));
       this.spawnableMonsterList.add(new BiomeMeta(EntityGhast.class, 10, 1, 1));
       this.spawnableMonsterList.add(new BiomeMeta(EntityAncientBoneLord.class, 10, 1, 1));

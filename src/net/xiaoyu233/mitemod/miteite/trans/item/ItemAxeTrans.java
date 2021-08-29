@@ -1,15 +1,19 @@
 package net.xiaoyu233.mitemod.miteite.trans.item;
 
 import net.minecraft.BlockBreakInfo;
-import net.minecraft.ItemShovel;
+import net.minecraft.BlockLog;
+import net.minecraft.ItemAxe;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.SoftOverride;
 
-@Mixin(ItemShovel.class)
-public class ItemShovelTrans extends ItemToolTrans{
+@Mixin(ItemAxe.class)
+public class ItemAxeTrans extends ItemToolTrans{
     @Override
     @SoftOverride
     protected int getExpForBlockBreak(BlockBreakInfo blockBreakInfo) {
-        return 3;
+        if (blockBreakInfo.block instanceof BlockLog){
+            return 2;
+        }
+        return Math.max(super.getExpForBlockBreak(blockBreakInfo),1);
     }
 }

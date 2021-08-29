@@ -33,8 +33,9 @@ tile.furnace_vibranium_burning.name=振金熔炉
 tile.forging_table.iron.name=铁锻造台
 tile.forging_table.mithril.name=秘银锻造台
 tile.forging_table.adamantium.name=艾德曼锻造台
-tile.forging_table.vibrantium.name=振金锻造台
+tile.forging_table.vibranium.name=振金锻造台
 tile.nether_adamantium_ore.name=地狱艾德曼矿
+tile.vibranium_chest.name=振金箱子
 
 achievement.vibraniumIngot=那我岂不是要无敌了?
 achievement.vibraniumIngot.desc=制作出一个振金锭
@@ -75,7 +76,7 @@ gui.forgingTable.levelToLow.iron=强化台等级过低,需要§n§7铁§r等级
 gui.forgingTable.levelToLow.ancient_metal=强化台等级过低,需要§n§g远古金属§r等级
 gui.forgingTable.levelToLow.mithril=强化台等级过低,需要§n§h秘银§r等级
 gui.forgingTable.levelToLow.adamantium=强化台等级过低,需要§n§d艾德曼§r等级
-gui.forgingTable.levelToLow.vibrantium=强化台等级过低,需要§n§9振金§r等级
+gui.forgingTable.levelToLow.vibranium=强化台等级过低,需要§n§9振金§r等级
 
 forging.failFeedback.break=损毁
 forging.failFeedback.durability.amount=丢失%s的耐久度
@@ -85,3 +86,4 @@ gameplay.portal_door.interact=玩家§n%s正在通过传送门
 command.sleep_check.msg=还有以下玩家未睡觉:
 command.sleep_check.none=所有玩家均已躺下
 container.workbench.boost=合成速度提升:
+container.strongbox.vibranium=振金箱子

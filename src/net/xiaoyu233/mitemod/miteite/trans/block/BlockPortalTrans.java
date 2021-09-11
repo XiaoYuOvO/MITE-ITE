@@ -17,7 +17,7 @@ public abstract class BlockPortalTrans extends Block {
    @Overwrite
    public int[] getRunegateDestinationCoords(WorldServer world, int x, int y, int z) {
       int seed = this.getRunegateSeed(world, x, y, z);
-      BlockRunestone block_runestone = Block.runestoneMithril;
+      BlockRunestone block_runestone = this.getRunegateType(world, x, y, z);
       int chunk_z;
       int runegate_domain_radius;
       if (seed == 0) {
@@ -54,14 +54,14 @@ public abstract class BlockPortalTrans extends Block {
 
          while(true) {
             ++y;
-            if (y >= 254) {
+            if (y >= 123) {
                break;
             }
 
             if (world.isAirOrPassableBlock(x, y, z, false)) {
                ++y;
                if (world.isAirOrPassableBlock(x, y, z, false) && !world.isAirOrPassableBlock(x, y - 2, z, false) && !world.isLavaBlock(x, y - 2, z) && !world.isLavaBlock(x, y - 1, z)) {
-                  return new int[]{x, Math.max(Configs.WorldGen.Underworld.UNDERWORLD_MANTLE_BLOCK_OFFSET.get() + 1,y - 1), z};
+                  return new int[]{x, y-1, z};
                }
             }
          }
@@ -125,6 +125,8 @@ public abstract class BlockPortalTrans extends Block {
          return new int[]{x, minY, z};
       }
    }
+
+   @Shadow public abstract BlockRunestone getRunegateType(World world, int x, int y, int z);
 
    protected BlockPortalTrans(int par1, Material par2Material, BlockConstants constants) {
       super(par1, par2Material, constants);

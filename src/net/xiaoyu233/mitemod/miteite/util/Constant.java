@@ -8,12 +8,12 @@ import net.xiaoyu233.mitemod.miteite.item.Items;
 public class Constant {
     public static final double[] ENHANCE_FACTORS;
     public static final bjo icons_ite = new bjo("textures/gui/icons_ite.png");
-    public static final String MITE_ITE_VERSION = "v1.1.0-pre9";
+    public static final String MITE_ITE_VERSION = "v1.1.0-pre10";
     public static int nextItemID = 2024;
     public static int nextBlockID = 160;
     public static int nextEnchantmentID = 96;
     public static int nextAchievementID = 136;
-    public static final int MITE_ITE_VER_NUM = 1109;
+    public static final int MITE_ITE_VER_NUM = 1110;
     public static final bjo RES_VIBRANIUM_SINGLE = new bjo("textures/entity/chest/vibranium_single.png");
     public static ItemArmor[] HELMETS = null;
     public static ItemArmor[] CHESTPLATES = null;

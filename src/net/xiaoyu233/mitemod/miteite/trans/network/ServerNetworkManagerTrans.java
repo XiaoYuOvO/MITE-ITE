@@ -2,10 +2,8 @@ package net.xiaoyu233.mitemod.miteite.trans.network;
 
 import net.minecraft.*;
 import net.xiaoyu233.mitemod.miteite.inventory.container.ContainerForgingTable;
-import net.xiaoyu233.mitemod.miteite.network.BiPacketUpdateDefense;
 import net.xiaoyu233.mitemod.miteite.network.CPacketStartForging;
 import net.xiaoyu233.mitemod.miteite.network.CPacketSyncItems;
-import net.xiaoyu233.mitemod.miteite.util.Configs;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.SoftOverride;
@@ -36,11 +34,6 @@ public class ServerNetworkManagerTrans extends NetworkManagerTrans {
    @Shadow
    public boolean isServerHandler() {
       return false;
-   }
-
-   @Override
-   public void handleUpdateDefense(BiPacketUpdateDefense packet) {
-      this.playerEntity.setDefenseCooldown(Configs.GameMechanics.PLAYER_DEFENSE_COOLDOWN.get());
    }
 
    @SoftOverride

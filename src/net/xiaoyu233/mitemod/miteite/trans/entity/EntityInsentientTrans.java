@@ -164,7 +164,7 @@ public abstract class EntityInsentientTrans extends EntityLiving {
                damage.setAmount((float) (damage.getAmount() +
                        //Increase per lvl: enchantment + player base
                        (time * EnchantmentManager.getEnchantmentLevel(Enchantments.CONQUEROR,itemAttackedWith) * Configs.Item.Enchantment.CONQUEROR_DAMAGE_BOOST_PER_LVL.get()) +
-                       (Math.min(max, time * player.getExperienceLevel() * Configs.GameMechanics.STEPPED_PLAYER_DAMAGE_INCREASE_PER_LVL.get()))));
+                       (Math.min(max, time * Math.max(0,player.getExperienceLevel()) * Configs.GameMechanics.STEPPED_PLAYER_DAMAGE_INCREASE_PER_LVL.get()))));
                this.playerSteppedCountMap.put(player, time + 1);
             } else {
                this.playerSteppedCountMap.put(player, 1);

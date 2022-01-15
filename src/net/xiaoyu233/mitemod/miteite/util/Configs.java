@@ -21,9 +21,11 @@ public class Configs {
                     addEntry(ConfigEntry.of("first_day_longer_day_time",GameMechanics.FIRST_DAY_LONGER_DAY_TIME).withComment("加长第一天时间(开关)")).
                     addEntry(ConfigEntry.of("player_defense_cooldown",GameMechanics.PLAYER_DEFENSE_COOLDOWN).withComment("玩家格挡冷却")).
                     addEntry(ConfigEntry.of("player_defence_max_time",GameMechanics.PLAYER_DEFENCE_MAX_TIME).withComment("玩家格挡最大时间")).
+                    addEntry(ConfigEntry.of("player_disarm_player",GameMechanics.PLAYER_DISARM_PLAYER).withComment("玩家缴械玩家")).
                     addEntry(ConfigCategory.of("MobSpawning").
                             addEntry(ConfigEntry.of("blood_moon_max_hostile_fraction",GameMechanics.MobSpawning.BLOOD_MOON_MAX_HOSTILE_FRACTION).withComment("血月最大刷怪数量系数(小数)")).
                             addEntry(ConfigEntry.of("ghast_spawn_limit_day",GameMechanics.MobSpawning.GHAST_SPAWN_LIMIT_DAY).withComment("主世界生成恶魂所需天数(整数)")).
+                            addEntry(ConfigEntry.of("annihilation_skeleton_spawn_in_light",GameMechanics.MobSpawning.ANNIHILATION_SKELETON_SPAWN_IN_LIGHT).withComment("主世界湮灭骷髅在光照出生成")).
                             addEntry(ConfigEntry.of("ancient_bone_lord_spawn_limit_day",GameMechanics.MobSpawning.ANCIENT_BONE_LORD_SPAWN_LIMIT_DAY).withComment("主世界生成远古骷髅公爵所需天数(整数)")).
                             addEntry(ConfigEntry.of("wandering_witch_spawn_chance_overworld",GameMechanics.MobSpawning.WANDERING_WITCH_SPAWN_CHANCE_OVERWORLD).withComment("主世界流浪女巫生成概率百分比(整数)")).
                             addEntry(ConfigEntry.of("wandering_witch_spawn_limit_day_overworld",GameMechanics.MobSpawning.WANDERING_WITCH_SPAWN_LIMIT_DAY_OVERWORLD).withComment("主世界流浪女巫生成天数限制(整数)")).
@@ -91,6 +93,8 @@ public class Configs {
                     addEntry(ConfigEntry.of("ender_dragon_immune_to_arrow_health_percent",Entities.ENDER_DRAGON_IMMUNE_TO_ARROW_HEALTH_PERCENT).withComment("末影龙免疫弓箭血量百分比")).
                     addEntry(ConfigEntry.of("ender_dragon_attack_slowness",Entities.ENDER_DRAGON_ATTACK_SLOWNESS).withComment("末影龙攻击玩家给予玩家缓慢效果")).
                     addEntry(ConfigEntry.of("nether_mod_attack_fire_chance",Entities.NETHER_MOD_ATTACK_FIRE_CHANCE).withComment("地狱生物攻击火焰附加概率")).
+                    addEntry(ConfigEntry.of("slime_attack_damage_multiplier",Entities.SLIME_ATTACK_DAMAGE_MULTIPLIER).withComment("绿色史莱姆伤害倍数")).
+                    addEntry(ConfigEntry.of("slime_attack_damage_bonus",Entities.SLIME_ATTACK_DAMAGE_BONUS).withComment("绿色史莱姆伤害加成")).
                     addEntry(ConfigEntry.of("giant_zombie_spawn_zombie_cooldown",Entities.GIANT_ZOMBIE_SPAWN_ZOMBIE_COOLDOWN).withComment("巨型僵尸生成僵尸间隔")).
                     addEntry(ConfigCategory.of("Animals").
                             addEntry(ConfigEntry.of("animal_ill_to_death_time",Entities.Animals.ANIMAL_ILL_TO_DEATH_TIME).withComment("生物生病死亡时间")).
@@ -175,6 +179,8 @@ public class Configs {
         public static final FieldReference<Float> ENDER_DRAGON_IMMUNE_TO_ARROW_HEALTH_PERCENT = new FieldReference<>(0.3f);
         public static final FieldReference<Boolean> ENDER_DRAGON_ATTACK_SLOWNESS = new FieldReference<>(true);
         public static final FieldReference<Float> NETHER_MOD_ATTACK_FIRE_CHANCE = new FieldReference<>(0.5f);
+        public static final FieldReference<Float> SLIME_ATTACK_DAMAGE_BONUS = new FieldReference<>(4f);
+        public static final FieldReference<Integer> SLIME_ATTACK_DAMAGE_MULTIPLIER = new FieldReference<>(1);
         public static class Animals{
             public static final FieldReference<Integer> ANIMAL_ILL_TO_DEATH_TIME = new FieldReference<>(144000);
             public static final FieldReference<Integer> BREED_XP_CHICKEN = new FieldReference<>(8);
@@ -191,6 +197,7 @@ public class Configs {
         public static final FieldReference<Double> IN_WALL_DAMAGE_FOR_PLAYER = new FieldReference<>(10.0d);
         public static final FieldReference<Integer> PLAYER_DEFENCE_MAX_TIME = new FieldReference<>(2 * 20);
         public static final FieldReference<Integer> PLAYER_DEFENSE_COOLDOWN = new FieldReference<>(20 * 8);
+        public static final FieldReference<Boolean> PLAYER_DISARM_PLAYER = new FieldReference<>(true);
         public static final FieldReference<Double> STEPPED_MOB_DAMAGE_PROGRESS_BASE = new FieldReference<>(1d);
         public static final FieldReference<Integer> STEPPED_MOB_DAMAGE_PROGRESS_INCREASE_DAY = new FieldReference<>(24);
         public static final FieldReference<Double> STEPPED_MOB_DAMAGE_PROGRESS_MAX = new FieldReference<>(4d);
@@ -200,6 +207,7 @@ public class Configs {
             public static final FieldReference<Integer> ANCIENT_BONE_LORD_SPAWN_LIMIT_DAY = new FieldReference<>(192);
             public static final FieldReference<Double> BLOOD_MOON_MAX_HOSTILE_FRACTION = new FieldReference<>(128d);
             public static final FieldReference<Integer> GHAST_SPAWN_LIMIT_DAY = new FieldReference<>(128);
+            public static final FieldReference<Boolean> ANNIHILATION_SKELETON_SPAWN_IN_LIGHT = new FieldReference<>(false);
             public static final FieldReference<Double> MOB_MAX_SPAWN_COUNT_INCREASE_PER_DAY = new FieldReference<>(1d);
             public static final FieldReference<Integer> WANDERING_WITCH_SPAWN_LIMIT_DAY_OTHER = new FieldReference<>(64);
             public static final FieldReference<Integer> WANDERING_WITCH_SPAWN_LIMIT_DAY_OVERWORLD = new FieldReference<>(64);

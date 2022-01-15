@@ -7,7 +7,6 @@ import net.xiaoyu233.mitemod.miteite.item.ArmorModifierTypes;
 import net.xiaoyu233.mitemod.miteite.item.Materials;
 import net.xiaoyu233.mitemod.miteite.item.ToolModifierTypes;
 import net.xiaoyu233.mitemod.miteite.item.enchantment.Enchantments;
-import net.xiaoyu233.mitemod.miteite.network.BiPacketUpdateDefense;
 import net.xiaoyu233.mitemod.miteite.network.CPacketSyncItems;
 import net.xiaoyu233.mitemod.miteite.network.SPacketCraftingBoost;
 import net.xiaoyu233.mitemod.miteite.network.SPacketOverlayMessage;
@@ -106,7 +105,7 @@ public abstract class EntityPlayerTrans extends EntityLiving implements ICommand
                }
             }else if (entity_living_base instanceof EntityPlayer){
                EntityPlayer player = (EntityPlayer) entity_living_base;
-               if (!player.isBlocking()){
+               if (!player.isBlocking() && Configs.GameMechanics.PLAYER_DISARM_PLAYER.get()){
                   EntityItem entityItem = player.dropItemStack(item_stack_to_drop, player.height / 2.0F);
                   Vec3D lookVec = player.getLookVec();
                   entityItem.delayBeforeCanPickup = 20;
@@ -775,8 +774,6 @@ public abstract class EntityPlayerTrans extends EntityLiving implements ICommand
 
          if (this.defenseCooldown > 0){
             this.defenseCooldown--;
-
-               this.sendPacket(new BiPacketUpdateDefense(this.defenseCooldown));
 
          }
       }

@@ -8,14 +8,13 @@ import javax.annotation.Nullable;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.function.Supplier;
 
 public class SPacketForgingTableInfo extends Packet {
-    private String infoClassName;
+    private int infoTypeIndex;
     private SPacketForgingTableInfo.InfoType info;
 
     public SPacketForgingTableInfo() {
@@ -23,7 +22,7 @@ public class SPacketForgingTableInfo extends Packet {
 
     public SPacketForgingTableInfo(SPacketForgingTableInfo.InfoType info) {
         this.info = info;
-        this.infoClassName = this.info.getClass().getName();
+        this.infoTypeIndex = this.info.getType().ordinal();
     }
 
     public SPacketForgingTableInfo.InfoType getInfo() {
@@ -31,7 +30,7 @@ public class SPacketForgingTableInfo extends Packet {
     }
 
     public int getPacketSize() {
-        return 4 + Packet.getPacketSizeOfString(this.infoClassName) + this.info.getDataLength();
+        return 4 + 4 + this.info.getDataLength();
     }
 
     public void processPacket(Connection var1) {
@@ -39,24 +38,40 @@ public class SPacketForgingTableInfo extends Packet {
     }
 
     public void readPacketData(DataInput var1) throws IOException {
-        String className = Packet.readString(var1, 32767);
-        this.infoClassName = className;
+        int infoTypeIndex = var1.readInt();
+        this.infoTypeIndex = infoTypeIndex;
 
         try {
-            Constructor<?> constructor = Class.forName(className).getDeclaredConstructor();
-            constructor.setAccessible(true);
-            SPacketForgingTableInfo.InfoType info = (SPacketForgingTableInfo.InfoType)constructor.newInstance();
+            SPacketForgingTableInfo.InfoType info = InfoTypes.values()[infoTypeIndex].getCtor().get();
             info.readData(var1);
             this.info = info;
-        } catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException | ClassNotFoundException var5) {
+        } catch (ArrayIndexOutOfBoundsException var5) {
             var5.printStackTrace();
         }
 
     }
 
     public void writePacketData(DataOutput var1) throws IOException {
-        Packet.writeString(this.infoClassName, var1);
+        var1.writeInt(this.infoTypeIndex);
         this.info.writeData(var1);
+    }
+
+    enum InfoTypes {
+        Enhance(EnhanceInfo::new),
+        Failed(Failed::new),
+        ReqItems(ReqItems::new),
+        Succeed(Succeed::new),
+        TableLevelInfo(TableLevelInfo::new),
+        ToolInfo(ToolInfo::new);
+        private final Supplier<InfoType> ctor;
+
+        InfoTypes(Supplier<InfoType> ctor) {
+            this.ctor = ctor;
+        }
+
+        public Supplier<InfoType> getCtor() {
+            return ctor;
+        }
     }
 
     public interface InfoType {
@@ -65,6 +80,8 @@ public class SPacketForgingTableInfo extends Packet {
         int getColor();
 
         int getDataLength();
+
+        InfoTypes getType();
 
         void readData(DataInput var1) throws IOException;
 
@@ -129,6 +146,11 @@ public class SPacketForgingTableInfo extends Packet {
 
         public int getDataLength() {
             return 16 + this.faultFeedbacks.stream().mapToInt(FaultFeedbackData::getDataLength).sum();
+        }
+
+        @Override
+        public InfoTypes getType() {
+            return InfoTypes.Enhance;
         }
 
         public int getDuration() {
@@ -196,6 +218,11 @@ public class SPacketForgingTableInfo extends Packet {
             return 0;
         }
 
+        @Override
+        public InfoTypes getType() {
+            return InfoTypes.Failed;
+        }
+
         public void readData(DataInput dataInput) {
         }
 
@@ -251,6 +278,11 @@ public class SPacketForgingTableInfo extends Packet {
 
         }
 
+        @Override
+        public InfoTypes getType() {
+            return InfoTypes.ReqItems;
+        }
+
         public void writeData(DataOutput out) throws IOException {
             out.writeInt(this.items.size());
 
@@ -286,6 +318,11 @@ public class SPacketForgingTableInfo extends Packet {
 
         public void writeData(DataOutput dataOutput) {
         }
+
+        @Override
+        public InfoTypes getType() {
+            return InfoTypes.Succeed;
+        }
     }
 
     public static class TableLevelInfo implements SPacketForgingTableInfo.InfoType{
@@ -294,6 +331,8 @@ public class SPacketForgingTableInfo extends Packet {
         public String asString() {
             return LocaleI18n.translateToLocal("gui.forgingTable.levelToLow." + req.name().toLowerCase(Locale.ROOT));
         }
+
+        private TableLevelInfo(){}
 
         private TableLevelInfo(ForgingTableLevel req){
             this.req = req;
@@ -321,6 +360,11 @@ public class SPacketForgingTableInfo extends Packet {
         @Override
         public void writeData(DataOutput var1) throws IOException {
             var1.writeInt(this.req.ordinal());
+        }
+
+        @Override
+        public InfoTypes getType() {
+            return InfoTypes.TableLevelInfo;
         }
     }
 
@@ -356,6 +400,11 @@ public class SPacketForgingTableInfo extends Packet {
 
         public void writeData(DataOutput dataOutput) throws IOException {
             dataOutput.writeInt(this.tool.ordinal());
+        }
+
+        @Override
+        public InfoTypes getType() {
+            return InfoTypes.ToolInfo;
         }
 
         public enum Tool {

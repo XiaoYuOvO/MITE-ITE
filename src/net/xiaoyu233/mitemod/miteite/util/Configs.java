@@ -26,6 +26,8 @@ public class Configs {
                             addEntry(ConfigEntry.of("ghast_spawn_limit_day",GameMechanics.MobSpawning.GHAST_SPAWN_LIMIT_DAY).withComment("主世界生成恶魂所需天数(整数)")).
                             addEntry(ConfigEntry.of("ancient_bone_lord_spawn_limit_day",GameMechanics.MobSpawning.ANCIENT_BONE_LORD_SPAWN_LIMIT_DAY).withComment("主世界生成远古骷髅公爵所需天数(整数)")).
                             addEntry(ConfigEntry.of("wandering_witch_spawn_chance_overworld",GameMechanics.MobSpawning.WANDERING_WITCH_SPAWN_CHANCE_OVERWORLD).withComment("主世界流浪女巫生成概率百分比(整数)")).
+                            addEntry(ConfigEntry.of("wandering_witch_spawn_limit_day_overworld",GameMechanics.MobSpawning.WANDERING_WITCH_SPAWN_LIMIT_DAY_OVERWORLD).withComment("主世界流浪女巫生成天数限制(整数)")).
+                            addEntry(ConfigEntry.of("wandering_witch_spawn_limit_day_other",GameMechanics.MobSpawning.WANDERING_WITCH_SPAWN_LIMIT_DAY_OTHER).withComment("地狱及地底世界流浪女巫生成天数限制(整数)")).
                             addEntry(ConfigEntry.of("wandering_witch_spawn_chance_underworld",GameMechanics.MobSpawning.WANDERING_WITCH_SPAWN_CHANCE_UNDERWORLD).withComment("地底世界流浪女巫生成概率百分比(整数)")).
                             addEntry(ConfigEntry.of("mob_max_spawn_count_increase_per_day",GameMechanics.MobSpawning.MOB_MAX_SPAWN_COUNT_INCREASE_PER_DAY).withComment("每天刷怪数量上限增量(整数)"))).
                     addEntry(ConfigCategory.of("Underworld").
@@ -199,6 +201,8 @@ public class Configs {
             public static final FieldReference<Double> BLOOD_MOON_MAX_HOSTILE_FRACTION = new FieldReference<>(128d);
             public static final FieldReference<Integer> GHAST_SPAWN_LIMIT_DAY = new FieldReference<>(128);
             public static final FieldReference<Double> MOB_MAX_SPAWN_COUNT_INCREASE_PER_DAY = new FieldReference<>(1d);
+            public static final FieldReference<Integer> WANDERING_WITCH_SPAWN_LIMIT_DAY_OTHER = new FieldReference<>(64);
+            public static final FieldReference<Integer> WANDERING_WITCH_SPAWN_LIMIT_DAY_OVERWORLD = new FieldReference<>(64);
             public static final FieldReference<Integer> WANDERING_WITCH_SPAWN_CHANCE_OVERWORLD = new FieldReference<>(33);
             public static final FieldReference<Integer> WANDERING_WITCH_SPAWN_CHANCE_UNDERWORLD = new FieldReference<>(50);
         }

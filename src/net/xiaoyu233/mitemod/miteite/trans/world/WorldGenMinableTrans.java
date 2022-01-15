@@ -29,12 +29,12 @@ public class WorldGenMinableTrans {
             if (rand.nextFloat() < 0.75F) {
                return 0;
             }else {
-               return rand.nextInt(16 + world.underworld_y_offset);
+               return Math.max(world.underworld_y_offset,250);
             }
          }
 
          if (block instanceof BlockOre && rand.nextFloat() < 0.75F) {
-            return rand.nextInt(16 + world.underworld_y_offset);
+            return Math.max(world.underworld_y_offset,250);
          }
 
          return rand.nextInt(256);

@@ -71,7 +71,14 @@ public class EntityWanderingWitch extends EntityWitch {
         if (this.worldObj.isUnderworld()){
             chanceSpawn = this.rand.nextInt(100) < Configs.GameMechanics.MobSpawning.WANDERING_WITCH_SPAWN_CHANCE_UNDERWORLD.get();
         }
-        return super.getCanSpawnHere(perform_light_check) && this.worldObj.getDayOfOverworld() > 64 && chanceSpawn;
+        if (chanceSpawn){
+            if (this.getWorld().isOverworld()){
+                return super.getCanSpawnHere(perform_light_check) && this.worldObj.getDayOfOverworld() > Configs.GameMechanics.MobSpawning.WANDERING_WITCH_SPAWN_LIMIT_DAY_OVERWORLD.get();
+            }else {
+                return super.getCanSpawnHere(perform_light_check) && this.worldObj.getDayOfOverworld() > Configs.GameMechanics.MobSpawning.WANDERING_WITCH_SPAWN_LIMIT_DAY_OTHER.get();
+            }
+        }
+        return false;
     }
 
     public void onAllyBatsDeath(){

@@ -11,9 +11,26 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class EntityBatTrans extends EntityAmbient {
     private boolean spawnedByWitch;
     private EntityWanderingWitch spawnerWitch;
+    private int spawnWorldID;
 
     public EntityBatTrans(World par1World) {
         super(par1World);
+    }
+
+    @Inject(method = "<init>",at = @At("RETURN"))
+    private void injectCtor(CallbackInfo callbackInfo){
+        if (this.worldObj.isUnderworld()){
+            this.spawnWorldID = 3;
+        }
+        if (this.worldObj.isOverworld()){
+            this.spawnWorldID = 0;
+        }
+        if (this.worldObj.isTheNether()){
+            this.spawnWorldID = 1;
+        }
+        if (this.worldObj.isTheEnd()){
+            this.spawnWorldID = 2;
+        }
     }
 
     @Override
@@ -42,8 +59,14 @@ public class EntityBatTrans extends EntityAmbient {
     @Inject(method = "readEntityFromNBT",at = @At("RETURN"))
     private void injectReadNBT(NBTTagCompound nbt, CallbackInfo callbackInfo){
         if (nbt.hasKey("SpawnedByWitch")){
+            if (nbt.hasKey("SpawnWorldId")){
+                this.spawnWorldID = nbt.getInteger("SpawnWorldId");
+            }
             this.spawnedByWitch = nbt.getBoolean("SpawnedByWitch");
-            Entity entityByID = this.worldObj.getAsWorldServer().getEntityByID(nbt.getInteger("WitchSpawner"));
+            Entity entityByID = this.worldObj.getAsWorldServer().p().worldServers[this.spawnWorldID].getEntityByID(nbt.getInteger("WitchSpawner"));
+            if (entityByID == null){
+                this.setDead();
+            }
             this.spawnerWitch = (EntityWanderingWitch) entityByID;
         }
     }
@@ -53,6 +76,7 @@ public class EntityBatTrans extends EntityAmbient {
         if (this.spawnedByWitch){
             nbt.setBoolean("SpawnedByWitch", true);
             nbt.setInteger("WitchSpawner",this.spawnerWitch.entityId);
+            nbt.setInteger("SpawnWorldId",this.spawnWorldID);
         }
     }
 

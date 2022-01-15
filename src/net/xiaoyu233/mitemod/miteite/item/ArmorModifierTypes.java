@@ -24,15 +24,6 @@ public enum ArmorModifierTypes implements ItemModifierTypes{
     public final int weight;
     private final Predicate<ItemStack>  canApplyTo;
     private final int maxLevel;
-    ArmorModifierTypes(float levelAddition, String displayName, EnumChatFormat color, int weight, Predicate<ItemStack> canApplyTo){
-        this.nbtName = this.name().toLowerCase();
-        this.levelAddition = levelAddition;
-        this.displayName = displayName;
-        this.color = color;
-        this.weight = weight;
-        this.canApplyTo = canApplyTo;
-        this.maxLevel = Integer.MAX_VALUE;
-    }
 
     ArmorModifierTypes(float levelAddition, String displayName, EnumChatFormat color, int weight,int maxLevel, Predicate<ItemStack> canApplyTo){
         this.nbtName = this.name().toLowerCase();

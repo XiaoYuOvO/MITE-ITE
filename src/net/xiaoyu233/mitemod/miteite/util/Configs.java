@@ -7,8 +7,8 @@ import net.xiaoyu233.fml.util.FieldReference;
 import java.io.File;
 
 public class Configs {
-    private static final File CONFIG_FILE = new File("mite-ite-cfg.json");
-    private static final ConfigCategory ROOT = new ConfigCategory("root").
+    public static final File CONFIG_FILE = new File("mite-ite-cfg.json");
+    public static final ConfigCategory ROOT = new ConfigCategory("root").
             addEntry(ConfigCategory.of("GameMechanics").
                     addEntry(ConfigEntry.of("in_wall_damage_for_player", GameMechanics.IN_WALL_DAMAGE_FOR_PLAYER).withComment("玩家墙内窒息伤害(小数)")).
                     addEntry(ConfigEntry.of("stepped_mob_damage_factor",GameMechanics.STEPPED_MOB_DAMAGE_PROGRESS_BASE).withComment("渐进伤害每次增幅点数基础值(小数)")).
@@ -132,10 +132,6 @@ public class Configs {
                             addEntry(ConfigEntry.of("health_bar_y_offset",Client.Gui.HEALTH_BAR_Y_OFFSET).withComment("营养条GUI纵向偏移")))).
             addEntry(ConfigCategory.of("Misc").
                     addEntry(ConfigEntry.of("log_players_interact_with_portal",Misc.LOG_PLAYERS_INTERACT_WITH_PORTAL).withComment("玩家通过传送门时发送警告(开关)")));
-
-    public static void loadConfigs(){
-        ROOT.readFromFile(CONFIG_FILE);
-    }
 
     public static class Block{
 

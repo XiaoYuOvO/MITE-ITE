@@ -3,6 +3,7 @@ package net.xiaoyu233.mitemod.miteite;
 import net.xiaoyu233.fml.AbstractMod;
 import net.xiaoyu233.fml.FishModLoader;
 import net.xiaoyu233.fml.classloading.Mod;
+import net.xiaoyu233.fml.config.ConfigRegistry;
 import net.xiaoyu233.fml.config.InjectionConfig;
 import net.xiaoyu233.fml.util.ModInfo;
 import net.xiaoyu233.mitemod.miteite.events.EventListeners;
@@ -12,15 +13,23 @@ import net.xiaoyu233.mitemod.miteite.util.Constant;
 import org.spongepowered.asm.mixin.MixinEnvironment;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.swing.*;
 
 @Mod
 public class MITEITEMod extends AbstractMod {
     private static final int MOD_LOADER_MIN_VER_NUM = 100;
     private static final String MOD_LOADER_MIN_VER_STRING = "v1.0.0";
+    private transient final ConfigRegistry configRegistry = new ConfigRegistry(Configs.ROOT,Configs.CONFIG_FILE);
     @Override
     public void preInit() {
 
+    }
+
+    @Nullable
+    @Override
+    public ConfigRegistry getConfigRegistry() {
+        return configRegistry;
     }
 
     @Nonnull
@@ -40,7 +49,6 @@ public class MITEITEMod extends AbstractMod {
             System.exit(1);
         }
         EventListeners.registerAllEvents();
-        Configs.loadConfigs();
     }
 
     @Override

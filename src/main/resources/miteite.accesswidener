@@ -1,0 +1,9 @@
+accessWidener v2 named
+accessible method net/minecraft/Block setHardness (F)Lnet/minecraft/Block;
+accessible method net/minecraft/Block setStepSound (Lnet/minecraft/StepSound;)Lnet/minecraft/Block;
+accessible method net/minecraft/Block setResistance (F)Lnet/minecraft/Block;
+accessible method net/minecraft/Item <init> (ILnet/minecraft/Material;Ljava/lang/String;)V
+accessible method net/minecraft/ItemIngot <init> (ILnet/minecraft/Material;)V
+accessible method net/minecraft/CraftingManager addShapelessRecipe (Lnet/minecraft/ItemStack;Z[Ljava/lang/Object;)Lnet/minecraft/ShapelessRecipes;
+accessible method net/minecraft/CraftingManager addShapelessRecipe (Lnet/minecraft/ItemStack;[Ljava/lang/Object;)Lnet/minecraft/ShapelessRecipes;
+accessible field net/minecraft/I18n i18nLocale Lnet/minecraft/Locale;

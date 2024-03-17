@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "id": "mite_ite",
+  "version": "${version}",
+  "depends": {
+    "fishmodloader": ">=3.0.0"
+  },
+  "environment": "*",
+  "name": "MITE-ITE",
+  "description": "A hard mod for MITE",
+  "authors": ["XiaoYu233"],
+  "entrypoints": {
+    "preLaunch": ["net.xiaoyu233.mitemod.miteite.EarlyRiser"],
+    "main": ["net.xiaoyu233.mitemod.miteite.MITEITEMod"]
+  },
+  "mixins": [
+    "miteite.mixin.json"
+  ],
+  "accessWidener": "miteite.accesswidener",
+  "custom": {
+    "loom:injected_interfaces": {
+      "net/minecraft/Item": ["net/xiaoyu233/mitemod/miteite/api/ITEItem"],
+      "net/minecraft/EntityAnimal": ["net/xiaoyu233/mitemod/miteite/api/ITEAnimal"],
+      "net/minecraft/EntityAIArrowAttack": ["net/xiaoyu233/mitemod/miteite/api/ITEArrowAttack"],
+      "net/minecraft/EntityBat": ["net/xiaoyu233/mitemod/miteite/api/ITEBat"],
+      "net/minecraft/TileEntityBeacon": ["net/xiaoyu233/mitemod/miteite/api/ITEBeacon"],
+      "net/minecraft/Block": ["net/xiaoyu233/mitemod/miteite/api/ITEBlock"],
+      "net/minecraft/EntityMinecartChest": ["net/xiaoyu233/mitemod/miteite/api/ITECart"],
+      "net/minecraft/Damage": ["net/xiaoyu233/mitemod/miteite/api/ITEDamage"],
+      "net/minecraft/Material": ["net/xiaoyu233/mitemod/miteite/api/ITEMaterial"],
+      "net/minecraft/EntityPlayer": ["net/xiaoyu233/mitemod/miteite/api/ITEPlayer"],
+      "net/minecraft/ItemStack": ["net/xiaoyu233/mitemod/miteite/api/ITEStack"],
+      "net/minecraft/EntityWitch": ["net/xiaoyu233/mitemod/miteite/api/ITEWitch"],
+      "net/minecraft/World": ["net/xiaoyu233/mitemod/miteite/api/ITEWorld"],
+      "net/minecraft/Enchantment": ["net/xiaoyu233/mitemod/miteite/api/ITEEnchantment"],
+      "net/minecraft/ItemArmor": ["net/xiaoyu233/mitemod/miteite/api/IUpgradableItem"],
+      "net/minecraft/ItemTool": ["net/xiaoyu233/mitemod/miteite/api/IUpgradableItem"],
+      "net/minecraft/EntityClientPlayerMP": ["net/xiaoyu233/mitemod/miteite/api/ITEClientPlayer"],
+      "net/minecraft/GuiIngame": ["net/xiaoyu233/mitemod/miteite/api/ITEGuiIngame"]
+    }
+  }
+}
+

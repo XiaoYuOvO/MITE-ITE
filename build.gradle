@@ -1,0 +1,98 @@
+plugins {
+	id 'fml-loom' version '0.1.local'
+	id 'maven-publish'
+}
+
+version = project.mod_version
+group = project.maven_group
+
+base {
+	archivesName = project.archives_base_name
+}
+
+repositories {
+	// Add repositories to retrieve artifacts from in here.
+	// You should only use this when depending on other mods because
+	// Loom adds the essential maven repositories to download Minecraft and libraries from automatically.
+	// See https://docs.gradle.org/current/userguide/declaring_repositories.html
+	// for more information about repositories.
+	mavenLocal()
+	maven{
+		name = "Spongepowered"
+		url = "https://repo.spongepowered.org/repository/maven-public/"
+	}
+}
+
+loom {
+	accessWidenerPath = file("src/main/resources/miteite.accesswidener")
+	mergedMinecraftJar()
+	setFML(new File("F:\\MITE Plus R5\\.minecraft\\libraries\\net\\xiaoyu233\\fishmodloader\\fishmodloader\\v3.0.0\\FishModLoader-v3.0.0.jar"))
+	mods {
+		"MITE-ITE" {
+			sourceSet sourceSets.main
+		}
+	}
+
+}
+
+runClient{
+	args("--username XiaoYu_233 --session eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIwY2E4NjhiMTVmMjRiZmQ3MjJkYjYzODMwMWMwMGIxOCIsInlnZ3QiOiI0ZjAwNTNhYzVkNTI0ZWY4OWYwN2ZlMTc1Y2Y1MmQwZiIsInNwciI6ImE3OTI4ZDA3Zjg1ZDQ4OWQ4Yzc1NGU2NDljNDJiZDRlIiwiaXNzIjoiWWdnZHJhc2lsLUF1dGgiLCJleHAiOjE1ODE1MTkzNzAsImlhdCI6MTU4MTM0NjU3MH0.rDlxZFSlY90vdeuX3NBmVUPT0ieAsc0mfplPYhRAYFA --version &quot;HMCL 3.2.144&quot; --gameDir &quot;F:\\\\MITE Plus R5\\\\.minecraft&quot; --assetsDir &quot;F:\\\\MITE Plus R5\\\\.minecraft\\\\assets\\\\virtual\\\\legacy&quot; --accessToken eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIwY2E4NjhiMTVmMjRiZmQ3MjJkYjYzODMwMWMwMGIxOCIsInlnZ3QiOiI0ZjAwNTNhYzVkNTI0ZWY4OWYwN2ZlMTc1Y2Y1MmQwZiIsInNwciI6ImE3OTI4ZDA3Zjg1ZDQ4OWQ4Yzc1NGU2NDljNDJiZDRlIiwiaXNzIjoiWWdnZHJhc2lsLUF1dGgiLCJleHAiOjE1ODE1MTkzNzAsImlhdCI6MTU4MTM0NjU3MH0.rDlxZFSlY90vdeuX3NBmVUPT0ieAsc0mfplPYhRAYFA --uuid a7928d07f85d489d8c754e649c42bd4e --width 854 --height 480")
+//	jvmArgs.add("-Dminecraft.client.jar=F:\\\\MITE Plus R5\\\\.minecraft\\\\versions\\\\1.6.4-MITE\\\\1.6.4-MITE.jar")
+}
+
+dependencies {
+	// To change the versions see the gradle.properties file
+
+	minecraft "com.mojang:minecraft:${project.minecraft_version}"
+	mappings loom.fmlMCPMappings()
+	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+//	implementation("org.spongepowered:mixin:0.8.5")
+
+	// FishModLoader API. And I probably want it anyway.
+	implementation files(loom.getFML().toPath())
+}
+
+processResources {
+	inputs.property "version", project.version
+
+	filesMatching("fml.mod.json") {
+		expand "version": project.version
+	}
+}
+
+tasks.withType(JavaCompile).configureEach {
+	it.options.release = 17
+}
+
+java {
+	// Loom will automatically attach sourcesJar to a RemapSourcesJar task and to the "build" task
+	// if it is present.
+	// If you remove this line, sources will not be generated.
+	withSourcesJar()
+
+	sourceCompatibility = JavaVersion.VERSION_17
+	targetCompatibility = JavaVersion.VERSION_17
+}
+
+jar {
+	from("LICENSE") {
+		rename { "${it}_${project.base.archivesName.get()}"}
+	}
+}
+
+// configure the maven publication
+publishing {
+	publications {
+		mavenJava(MavenPublication) {
+			from components.java
+		}
+	}
+
+	// See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
+	repositories {
+		// Add repositories to publish to here.
+		// Notice: This block does NOT have the same function as the block in the top level.
+		// The repositories here will be used for publishing your artifact, not for
+		// retrieving dependencies.
+	}
+}

@@ -1,16 +1,20 @@
 package net.xiaoyu233.mitemod.miteite.util;
 
+import net.fabricmc.loader.api.ModContainer;
+import net.fabricmc.loader.api.Version;
+import net.fabricmc.loader.api.metadata.ModMetadata;
 import net.minecraft.Item;
 import net.minecraft.ItemArmor;
 import net.minecraft.ResourceLocation;
+import net.xiaoyu233.fml.FishModLoader;
 import net.xiaoyu233.fml.util.IdUtil;
 import net.xiaoyu233.mitemod.miteite.item.Items;
 
 public class Constant {
     public static final double[] ENHANCE_FACTORS;
     public static final ResourceLocation icons_ite = new ResourceLocation("textures/gui/icons_ite.png");
-    public static final String MITE_ITE_VERSION = "v2.0.0";
-    public static final int MITE_ITE_VER_NUM = 2000;
+    public static final String MITE_ITE_VERSION = FishModLoader.getModContainer("mite_ite").map(ModContainer::getMetadata).map(ModMetadata::getVersion).map(Version::getFriendlyString).orElse("v?.?.?");
+    public static final int CONFIG_VERSION = 1;
     public static final ResourceLocation RES_VIBRANIUM_SINGLE = new ResourceLocation("textures/entity/chest/vibranium_single.png");
     public static ItemArmor[] HELMETS = null;
     public static ItemArmor[] CHESTPLATES = null;

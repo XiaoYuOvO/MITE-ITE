@@ -4,7 +4,7 @@ import net.minecraft.BlockFurnace;
 import net.minecraft.IconRegister;
 import net.xiaoyu233.mitemod.miteite.item.Materials;
 
-public abstract class BlockFurnaceVibranium extends BlockFurnace {
+public class BlockFurnaceVibranium extends BlockFurnace {
     protected BlockFurnaceVibranium(int par1, boolean par2) {
         super(par1, Materials.vibranium, par2);
     }

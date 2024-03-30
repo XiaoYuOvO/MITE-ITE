@@ -30,13 +30,13 @@ public class Blocks extends Block{
 
     public static void registerItemBlocks(ItemRegistryEvent registryEvent){
         anvilVibranium.stepSound = Block.soundAnvilFootstep;
-        registryEvent.registerAnvil(anvilVibranium,"anvil_vibranium", IdUtil.getNextItemID());
-        registryEvent.registerItemBlock(blockVibranium,"block_vibranium", IdUtil.getNextItemID());
-        registryEvent.registerItemBlock(furnaceVibraniumIdle,"furnace_vibranium_idle", IdUtil.getNextItemID());
-        registryEvent.registerItemBlock(furnaceVibraniumBurning,"furnace_vibranium_burning", IdUtil.getNextItemID());
-        registryEvent.registerItemBlock(blockForgingTable,"block_forging_table", IdUtil.getNextItemID());
-        registryEvent.registerItemBlock(netherAdamantiumOre,"nether_adamantium_ore", IdUtil.getNextItemID());
-        registryEvent.registerItemBlock(chestVibranium,"vibranium_chest", IdUtil.getNextItemID());
+        registryEvent.registerAnvil(anvilVibranium,"anvil_vibranium");
+        registryEvent.registerItemBlock(blockVibranium,"block_vibranium");
+        registryEvent.registerItemBlock(furnaceVibraniumIdle,"furnace_vibranium_idle");
+        registryEvent.registerItemBlock(furnaceVibraniumBurning,"furnace_vibranium_burning");
+        registryEvent.registerItemBlock(blockForgingTable,"block_forging_table");
+        registryEvent.registerItemBlock(netherAdamantiumOre,"nether_adamantium_ore");
+        registryEvent.registerItemBlock(chestVibranium,"vibranium_chest");
     }
 
     public static void registerRecipes(RecipeRegistryEvent register) {

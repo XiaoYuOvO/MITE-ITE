@@ -36,7 +36,6 @@ loom {
 }
 
 runClient{
-	args("--username XiaoYu_233 --session eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIwY2E4NjhiMTVmMjRiZmQ3MjJkYjYzODMwMWMwMGIxOCIsInlnZ3QiOiI0ZjAwNTNhYzVkNTI0ZWY4OWYwN2ZlMTc1Y2Y1MmQwZiIsInNwciI6ImE3OTI4ZDA3Zjg1ZDQ4OWQ4Yzc1NGU2NDljNDJiZDRlIiwiaXNzIjoiWWdnZHJhc2lsLUF1dGgiLCJleHAiOjE1ODE1MTkzNzAsImlhdCI6MTU4MTM0NjU3MH0.rDlxZFSlY90vdeuX3NBmVUPT0ieAsc0mfplPYhRAYFA --version &quot;HMCL 3.2.144&quot; --gameDir &quot;F:\\\\MITE Plus R5\\\\.minecraft&quot; --assetsDir &quot;F:\\\\MITE Plus R5\\\\.minecraft\\\\assets\\\\virtual\\\\legacy&quot; --accessToken eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIwY2E4NjhiMTVmMjRiZmQ3MjJkYjYzODMwMWMwMGIxOCIsInlnZ3QiOiI0ZjAwNTNhYzVkNTI0ZWY4OWYwN2ZlMTc1Y2Y1MmQwZiIsInNwciI6ImE3OTI4ZDA3Zjg1ZDQ4OWQ4Yzc1NGU2NDljNDJiZDRlIiwiaXNzIjoiWWdnZHJhc2lsLUF1dGgiLCJleHAiOjE1ODE1MTkzNzAsImlhdCI6MTU4MTM0NjU3MH0.rDlxZFSlY90vdeuX3NBmVUPT0ieAsc0mfplPYhRAYFA --uuid a7928d07f85d489d8c754e649c42bd4e --width 854 --height 480")
 //	jvmArgs.add("-Dminecraft.client.jar=F:\\\\MITE Plus R5\\\\.minecraft\\\\versions\\\\1.6.4-MITE\\\\1.6.4-MITE.jar")
 }
 

@@ -16,7 +16,7 @@ public class TileEntityFurnaceTrans extends TileEntity {
    @Shadow
    public int furnaceCookTime;
    @Shadow
-   public final int heat_level = 0;
+   public int heat_level;
 
    @Inject(method = "getHeatLevelRequired", at = @At("HEAD"), cancellable = true)
    private static void getHeatLevelRequired(int item_id, CallbackInfoReturnable<Integer> cir) {
@@ -53,6 +53,9 @@ public class TileEntityFurnaceTrans extends TileEntity {
 
    @ModifyConstant(method = "updateEntity", constant = @Constant(intValue = 200))
    private int modifyCookTime(int constant){
-      return this.furnaceItemStacks[0].getItem().getCookTime() / this.heat_level;
+      if (this.heat_level != 0){
+         return this.furnaceItemStacks[0].getItem().getCookTime() / this.heat_level;
+      }
+      return constant;
    }
 }

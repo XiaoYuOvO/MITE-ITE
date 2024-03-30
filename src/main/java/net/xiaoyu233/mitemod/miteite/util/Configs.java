@@ -2,13 +2,14 @@ package net.xiaoyu233.mitemod.miteite.util;
 
 import net.xiaoyu233.fml.config.ConfigCategory;
 import net.xiaoyu233.fml.config.ConfigEntry;
+import net.xiaoyu233.fml.config.ConfigRoot;
 import net.xiaoyu233.fml.util.FieldReference;
 
 import java.io.File;
 
 public class Configs {
     public static final File CONFIG_FILE = new File("mite-ite-cfg.json");
-    public static final ConfigCategory ROOT = new ConfigCategory("root").
+    public static final ConfigRoot ROOT = ConfigRoot.create(Constant.CONFIG_VERSION).
             addEntry(ConfigCategory.of("GameMechanics").
                     addEntry(ConfigEntry.of("in_wall_damage_for_player", GameMechanics.IN_WALL_DAMAGE_FOR_PLAYER).withComment("玩家墙内窒息伤害(小数)")).
                     addEntry(ConfigEntry.of("stepped_mob_damage_factor",GameMechanics.STEPPED_MOB_DAMAGE_PROGRESS_BASE).withComment("渐进伤害每次增幅点数基础值(小数)")).
